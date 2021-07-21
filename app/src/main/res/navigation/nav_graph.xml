@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.alexparra.chatapp.fragments.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_clientConnectFragment"
+            app:destination="@id/clientConnectFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_serverConnectFragment"
+            app:destination="@id/serverConnectFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/clientConnectFragment"
+        android:name="com.alexparra.chatapp.fragments.ClientConnectFragment"
+        android:label="fragment_client_connect"
+        tools:layout="@layout/fragment_client_connect" >
+        <action
+            android:id="@+id/action_clientConnectFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/serverConnectFragment"
+        android:name="com.alexparra.chatapp.fragments.ServerConnectFragment"
+        android:label="fragment_server_connect"
+        tools:layout="@layout/fragment_server_connect" >
+        <action
+            android:id="@+id/action_serverConnectFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.alexparra.chatapp.fragments.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" />
+</navigation>
