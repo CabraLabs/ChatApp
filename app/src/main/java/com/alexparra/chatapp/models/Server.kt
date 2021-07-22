@@ -1,6 +1,5 @@
 package com.alexparra.chatapp.models
 
-import kotlinx.coroutines.launch
 import java.net.ServerSocket
 
 class Server : Chat {
