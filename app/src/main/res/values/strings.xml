@@ -12,4 +12,8 @@
     <string name="ip_hint">IP Address 192.168.1.102</string>
     <string name="join_chat">Join Chat</string>
 
+    <!-- FragmentServerConnect -->
+    <string name="your_ip">Your IP Address is:</string>
+    <string name="create_server">Create Server</string>
+
 </resources>
