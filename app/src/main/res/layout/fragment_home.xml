@@ -8,6 +8,7 @@
     tools:context=".fragments.HomeFragment">
 
     <LinearLayout
+        android:id="@+id/clientButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -24,18 +25,17 @@
             android:text="@string/connect" />
 
         <ImageView
-            android:id="@+id/clientButton"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:src="@drawable/ic_connect"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/serverButton"
             app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/serverButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -52,7 +52,6 @@
             android:text="@string/host" />
 
         <ImageView
-            android:id="@+id/serverButton"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:src="@drawable/ic_host_local"
