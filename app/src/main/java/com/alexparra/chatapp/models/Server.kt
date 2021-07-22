@@ -2,7 +2,7 @@ package com.alexparra.chatapp.models
 
 import java.net.ServerSocket
 
-class Server : Chat {
+class Server(val username: String = "admin") : Chat {
 
     private val serverSocket = ServerSocket(13).accept()
 
