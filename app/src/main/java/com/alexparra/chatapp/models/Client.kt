@@ -1,8 +1,5 @@
 package com.alexparra.chatapp.models
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import java.net.InetAddress
 import java.net.Socket
 
