@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.alexparra.chatapp.databinding.FragmentServerConnectBinding
 import com.alexparra.chatapp.models.Server
 import kotlinx.coroutines.*
-import java.net.InetAddress
+import java.net.Inet4Address
 
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
@@ -34,31 +34,32 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        showIp()
         initializeButtons()
     }
 
     private fun initializeButtons() {
 
         with(binding) {
-            launch(Dispatchers.IO) {
-                val ip = InetAddress.getLocalHost()
-
-                withContext(Dispatchers.Main) {
-                    ipAddress.text = ip.toString()
-                }
-            }
-
             createServer.setOnClickListener {
                 launch(Dispatchers.IO) {
+
                     val server = Server()
 
                     withContext(Dispatchers.Main) {
-                        val action = ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(server)
+                        val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(server)
 
                         navController.navigate(action)
                     }
                 }
             }
+        }
+    }
+
+    private fun showIp() {
+        launch(Dispatchers.IO) {
+            val ip = Inet4Address.getLocalHost()
+            binding.ipAddress.text = ip.toString()
         }
     }
 }
