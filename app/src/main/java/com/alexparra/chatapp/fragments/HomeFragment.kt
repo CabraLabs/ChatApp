@@ -5,21 +5,47 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.alexparra.chatapp.R
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
+import com.alexparra.chatapp.databinding.FragmentHomeBinding
 
 
 class HomeFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private lateinit var binding: FragmentHomeBinding
 
+    private val navController: NavController by lazy {
+        findNavController()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        initializeButtons()
+    }
+
+    private fun initializeButtons() {
+        with(binding) {
+            clientButton.setOnClickListener {
+                val action = HomeFragmentDirections.actionHomeFragmentToClientConnectFragment()
+
+                navController.navigate(action)
+            }
+
+            serverButton.setOnClickListener {
+                val action = HomeFragmentDirections.actionHomeFragmentToServerConnectFragment()
+
+                navController.navigate(action)
+            }
+        }
     }
 }
