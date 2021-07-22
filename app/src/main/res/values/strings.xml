@@ -19,4 +19,7 @@
     <string name="your_ip">Your IP Address is:</string>
     <string name="create_server">Create Server</string>
 
+    <!-- FragmentChat -->
+    <string name="insert_message">Insert your message…</string>
+
 </resources>
