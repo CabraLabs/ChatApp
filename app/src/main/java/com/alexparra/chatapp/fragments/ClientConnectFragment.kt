@@ -1,18 +1,22 @@
 package com.alexparra.chatapp.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.databinding.FragmentClientConnectBinding
 import com.alexparra.chatapp.models.ClientSocket
 import com.alexparra.chatapp.utils.toast
+import kotlinx.coroutines.*
 
-class ClientConnectFragment : Fragment() {
+class ClientConnectFragment : Fragment(), CoroutineScope {
+
+    val parentJob = Job()
+    override val coroutineContext = parentJob + Dispatchers.Main
 
     private lateinit var binding: FragmentClientConnectBinding
 
@@ -39,7 +43,7 @@ class ClientConnectFragment : Fragment() {
         with(binding) {
             joinChat.setOnClickListener {
                 when {
-                    username.text.toString() == ""  -> {
+                    username.text.toString() == "" -> {
                         toast(getString(R.string.username_missing))
                     }
 
@@ -48,11 +52,21 @@ class ClientConnectFragment : Fragment() {
                     }
 
                     else -> {
-                        val client = ClientSocket(username.text.toString(), ipAddress.text.toString(), 13)
+                        launch(Dispatchers.IO) {
+                            try {
+                                val client = ClientSocket(username.text.toString(), ipAddress.text.toString(), 13)
 
-                        val action = ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(client)
+                                withContext(Dispatchers.Main) {
+                                    val action = ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(client)
 
-                        navController.navigate(action)
+                                    navController.navigate(action)
+                                }
+                            } catch (e: java.net.ConnectException) {
+                                withContext(Dispatchers.Main) {
+                                    toast(getString(R.string.connect_error))
+                                }
+                            }
+                        }
                     }
                 }
             }
