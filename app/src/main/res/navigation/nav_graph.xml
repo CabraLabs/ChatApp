@@ -39,5 +39,9 @@
         android:id="@+id/chatFragment"
         android:name="com.alexparra.chatapp.fragments.ChatFragment"
         android:label="fragment_chat"
-        tools:layout="@layout/fragment_chat" />
+        tools:layout="@layout/fragment_chat" >
+        <argument
+            android:name="connection"
+            app:argType="com.alexparra.chatapp.models.Chat" />
+    </fragment>
 </navigation>
