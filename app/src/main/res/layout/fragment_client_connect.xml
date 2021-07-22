@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="20dp"
         android:hint="@string/ip_hint"
-        android:inputType="number" />
+        android:inputType="text" />
 
     <Button
         android:id="@+id/joinChat"
