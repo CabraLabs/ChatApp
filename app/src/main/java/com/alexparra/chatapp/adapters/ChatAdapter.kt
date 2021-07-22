@@ -31,7 +31,7 @@ class ChatAdapter(private val dataSet: ArrayList<String>) :
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        val row = dataSet[position].split(";;")
+        val row = dataSet[position].split(";")
         viewHolder.textViewUsername.text = row[0]
         viewHolder.textViewMessage.text = row[1]
         viewHolder.textViewDate.text = row[2]

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.adapters.ChatAdapter
 import com.alexparra.chatapp.databinding.FragmentChatBinding
+import com.alexparra.chatapp.databinding.FragmentClientConnectBinding
 import com.alexparra.chatapp.utils.ChatManager
 
 
@@ -26,8 +27,9 @@ class ChatFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_chat, container, false)
+    ): View {
+        binding = FragmentChatBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
