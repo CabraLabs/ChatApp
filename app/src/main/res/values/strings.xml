@@ -7,4 +7,9 @@
     <string name="connect">Connect to a chat</string>
     <string name="host">Host a chat</string>
 
+    <!-- FragmentClientConnect -->
+    <string name="username_hint">Insert your Username</string>
+    <string name="ip_hint">IP Address 192.168.1.102</string>
+    <string name="join_chat">Join Chat</string>
+
 </resources>
