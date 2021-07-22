@@ -12,6 +12,7 @@ import com.alexparra.chatapp.databinding.FragmentClientConnectBinding
 import com.alexparra.chatapp.models.ClientSocket
 import com.alexparra.chatapp.utils.toast
 import kotlinx.coroutines.*
+import java.net.Inet4Address
 
 class ClientConnectFragment : Fragment(), CoroutineScope {
 
@@ -54,7 +55,8 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                     else -> {
                         launch(Dispatchers.IO) {
                             try {
-                                val client = ClientSocket(username.text.toString(), ipAddress.text.toString(), 13)
+                                val inetAddress = Inet4Address.getByName(ipAddress.text.toString())
+                                val client = ClientSocket(username.text.toString(), inetAddress, 13)
 
                                 withContext(Dispatchers.Main) {
                                     val action = ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(client)
