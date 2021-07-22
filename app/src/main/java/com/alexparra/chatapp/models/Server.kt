@@ -1,10 +1,17 @@
 package com.alexparra.chatapp.models
 
 import java.net.ServerSocket
+import java.net.Socket
 
 class Server(val username: String = "admin") : Chat {
 
-    private val serverSocket = ServerSocket(13).accept()
+    private val socket = ServerSocket(1026)
+
+    private lateinit var serverSocket: Socket
+
+    fun startServer() {
+        serverSocket = socket.accept()
+    }
 
     override fun writeToSocket(message: ByteArray) {
         val output = serverSocket.getOutputStream()
