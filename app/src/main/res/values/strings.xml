@@ -11,6 +11,8 @@
     <string name="username_hint">Insert your Username</string>
     <string name="ip_hint">IP Address 192.168.1.102</string>
     <string name="join_chat">Join Chat</string>
+    <string name="username_missing">Please insert your username</string>
+    <string name="ip_missing">Please provide the IP Address</string>
 
     <!-- FragmentServerConnect -->
     <string name="your_ip">Your IP Address is:</string>
