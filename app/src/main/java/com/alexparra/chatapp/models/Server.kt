@@ -16,9 +16,10 @@ class Server(username: String = "admin") : Chat(username) {
     fun getIpv4() {
     }
 
-    override fun writeToSocket(message: ByteArray) {
+    override fun writeToSocket(message: String) {
+        val messageByte = message.toByteArray()
         val output = serverSocket.getOutputStream()
-        output.write(message)
+        output.write(messageByte)
     }
 
     override fun updateSocket() {
