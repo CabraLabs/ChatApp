@@ -37,7 +37,6 @@ class ChatFragment : Fragment() {
     }
 
     private fun initializeButtons() {
-
         list = ChatManager.chatList
 
         val recyclerViewList: RecyclerView = binding.chatRecycler
