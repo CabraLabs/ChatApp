@@ -32,6 +32,10 @@ class ChatFragment : Fragment(), CoroutineScope {
     override val coroutineContext = parentJob + Dispatchers.Main
 
     // TODO MAKE ON BACK PRESSED
+    override fun onDestroy() {
+        args.connection.closeSocket()
+        super.onDestroy()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
