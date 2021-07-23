@@ -6,10 +6,10 @@ import java.net.Socket
 class ClientSocket(username: String, ip: InetAddress, port: Int) : Chat(username) {
 
     private val socket = Socket(ip, port)
-    private val output = socket.getOutputStream()
 
     override fun writeToSocket(message: String) {
-        val messageByte = message.toByteArray(Charsets.UTF_8)
+        val messageByte = message.toByteArray(Charsets.US_ASCII)
+        val output = socket.getOutputStream()
         output.write(messageByte)
     }
 
