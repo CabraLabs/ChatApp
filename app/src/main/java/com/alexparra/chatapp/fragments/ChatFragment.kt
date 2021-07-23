@@ -14,10 +14,7 @@ import com.alexparra.chatapp.databinding.FragmentChatBinding
 import com.alexparra.chatapp.models.ClientSocket
 import com.alexparra.chatapp.models.Server
 import com.alexparra.chatapp.utils.ChatManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
 class ChatFragment : Fragment(), CoroutineScope {
@@ -50,17 +47,30 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun initializeButtons() {
         with(binding) {
-            if (args.connection is ClientSocket){
-                list.add("e;${args.connection.username};joined the room;${ChatManager.currentTime()}")
-            }
+
+            list.add(connectMessage())
+
             sendButton.setOnClickListener {
-                if (args.connection is ClientSocket) {
-                    list.add("c;${args.connection.username};${messageField};${ChatManager.currentTime()}")
+                if (getText().isNotBlank()) {
+                    launch(Dispatchers.IO) {
+                        args.connection.writeToSocket(getText())
+
+                        eraseTextField()
+                    }
+
+                    when (args.connection) {
+
+                        is ClientSocket -> {
+                            list.add("c;${args.connection.username};${getText()};${ChatManager.currentTime()}")
+                        }
+
+                        is Server -> {
+                            list.add("s;${args.connection.username};${args.connection.writeToSocket(getText())};${ChatManager.currentTime()}")
+                        }
+                    }
+
+                    chatAdapter.notifyDataSetChanged()
                 }
-                if (args.connection is Server) {
-                    list.add("s;${args.connection.username};${messageField};${ChatManager.currentTime()}")
-                }
-                chatAdapter.notifyDataSetChanged()
             }
         }
 
@@ -73,5 +83,21 @@ class ChatFragment : Fragment(), CoroutineScope {
             adapter = chatAdapter
             layoutManager = LinearLayoutManager(context)
         }
+    }
+
+    private fun getText() = binding.messageField.text.toString() + "\n"
+
+    private fun connectMessage(): String {
+        with(args) {
+            if (connection is ClientSocket) {
+                return "e;${connection.username};joined the room;${ChatManager.currentTime()}"
+            }
+
+            return "e;${connection.username};created the room at;${ChatManager.currentTime()}"
+        }
+    }
+
+    private fun eraseTextField() {
+        binding.messageField.setText("")
     }
 }
