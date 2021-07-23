@@ -32,6 +32,10 @@ class ChatFragment : Fragment(), CoroutineScope {
     override val coroutineContext = parentJob + Dispatchers.Main
 
     // TODO MAKE ON BACK PRESSED
+    override fun onDestroy() {
+        args.connection.closeSocket()
+        super.onDestroy()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,60 +48,61 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeButtons()
+        startChat()
     }
 
-    private fun initializeButtons() {
-        with(binding) {
+    private fun startChat() {
+        list = ChatManager.chatList
+        val recyclerViewList: RecyclerView = binding.chatRecycler
+        chatAdapter = ChatAdapter(list, args.connection)
 
-            list = ChatManager.chatList
-            val recyclerViewList: RecyclerView = binding.chatRecycler
-            chatAdapter = ChatAdapter(list, args.connection)
+        list.add(connectMessage())
 
-            if (args.connection is Server) {
+        updateMessageScreenListener()
+
+        sendMessageListener()
+
+        recyclerViewList.apply {
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            adapter = chatAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+    }
+
+    private fun sendMessageListener() {
+        binding.sendButton.setOnClickListener {
+            if (getText().isNotBlank()) {
                 launch(Dispatchers.IO) {
-                    val server = args.connection as Server
-                    server.startServer()
+                    args.connection.writeToSocket(getText())
 
-                    val scanner = server.updateSocket()
-                    while (scanner.hasNextLine()) {
-                        list.add("${"received"};${scanner.nextLine()};${ChatManager.currentTime()}")
+                    eraseTextField()
+                }
 
-                        withContext(Dispatchers.Main) {
-                            chatAdapter.notifyDataSetChanged()
-                        }
+                when (args.connection) {
+                    is ClientSocket -> {
+                        list.add("${getText()}")
+                    }
+
+                    is Server -> {
+                        list.add("${getText()}")
                     }
                 }
             }
 
-            list.add(connectMessage())
+            notifyAdapterChange()
+        }
+    }
 
-            sendButton.setOnClickListener {
-                if (getText().isNotBlank()) {
-                    launch(Dispatchers.IO) {
-                        args.connection.writeToSocket(getText())
+    private fun updateMessageScreenListener() {
+        launch(Dispatchers.IO) {
+            val scanner = args.connection.updateSocket()
 
-                        eraseTextField()
-                    }
+            while (scanner.hasNextLine()) {
+                ChatManager.chatList.add("s;${"received"};${scanner.nextLine()};${ChatManager.currentTime()}")
 
-                    when (args.connection) {
-                        is ClientSocket -> {
-                            list.add("${getText()}")
-                        }
-
-                        is Server -> {
-                            list.add("${getText()}")
-                        }
-                    }
+                withContext(Dispatchers.Main) {
+                    notifyAdapterChange()
                 }
-
-                chatAdapter.notifyDataSetChanged()
-            }
-
-            recyclerViewList.apply {
-                addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-                adapter = chatAdapter
-                layoutManager = LinearLayoutManager(context)
             }
         }
     }
@@ -116,5 +121,9 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun eraseTextField() {
         binding.messageField.setText("")
+    }
+
+    private fun notifyAdapterChange() {
+        chatAdapter.notifyDataSetChanged()
     }
 }

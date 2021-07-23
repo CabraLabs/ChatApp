@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.alexparra.chatapp.databinding.FragmentServerConnectBinding
 import com.alexparra.chatapp.models.Server
+import com.alexparra.chatapp.utils.toast
 import kotlinx.coroutines.*
 import java.net.DatagramSocket
 import java.net.Inet4Address
@@ -45,13 +46,17 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
         with(binding) {
             createServer.setOnClickListener {
-                launch(Dispatchers.IO) {
+                toast("Waiting for a connection")
+                loading(true)
 
+                launch(Dispatchers.IO) {
                     val server = Server()
+                    server.startServer()
 
                     withContext(Dispatchers.Main) {
-                        val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(server)
+                        loading(true)
 
+                        val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(server)
                         navController.navigate(action)
                     }
                 }
@@ -68,6 +73,18 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 binding.ipAddress.text = ip.toString()
 
                 socket.close()
+            }
+        }
+    }
+
+    private fun loading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.progressBar.apply {
+                visibility = View.VISIBLE
+            }
+        } else {
+            binding.progressBar.apply {
+                visibility = View.GONE
             }
         }
     }
