@@ -31,6 +31,8 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     override val coroutineContext = parentJob + Dispatchers.Main
 
+    // TODO MAKE ON BACK PRESSED
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,6 +50,26 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun initializeButtons() {
         with(binding) {
 
+            list = ChatManager.chatList
+            val recyclerViewList: RecyclerView = binding.chatRecycler
+            chatAdapter = ChatAdapter(list)
+
+            if (args.connection is Server) {
+                launch(Dispatchers.IO) {
+                    val server = args.connection as Server
+                    server.startServer()
+
+                    val scanner = server.updateSocket()
+                    while (scanner.hasNextLine()) {
+                        list.add("s;${"received"};${scanner.nextLine()};${ChatManager.currentTime()}")
+
+                        withContext(Dispatchers.Main) {
+                            chatAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+            }
+
             list.add(connectMessage())
 
             sendButton.setOnClickListener {
@@ -59,33 +81,28 @@ class ChatFragment : Fragment(), CoroutineScope {
                     }
 
                     when (args.connection) {
-
                         is ClientSocket -> {
                             list.add("c;${args.connection.username};${getText()};${ChatManager.currentTime()}")
                         }
 
                         is Server -> {
-                            list.add("s;${args.connection.username};${args.connection.writeToSocket(getText())};${ChatManager.currentTime()}")
+                            list.add("s;${args.connection.username};${getText()};${ChatManager.currentTime()}")
                         }
                     }
-
-                    chatAdapter.notifyDataSetChanged()
                 }
+
+                chatAdapter.notifyDataSetChanged()
             }
-        }
 
-        list = ChatManager.chatList
-        val recyclerViewList: RecyclerView = binding.chatRecycler
-        chatAdapter = ChatAdapter(list)
-
-        recyclerViewList.apply {
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-            adapter = chatAdapter
-            layoutManager = LinearLayoutManager(context)
+            recyclerViewList.apply {
+                addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+                adapter = chatAdapter
+                layoutManager = LinearLayoutManager(context)
+            }
         }
     }
 
-    private fun getText() = binding.messageField.text.toString() + "\n"
+    private fun getText() = "${args.connection.username};${binding.messageField.text}\n"
 
     private fun connectMessage(): String {
         with(args) {

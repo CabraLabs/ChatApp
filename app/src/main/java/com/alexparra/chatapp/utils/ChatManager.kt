@@ -6,7 +6,7 @@ import kotlin.collections.ArrayList
 object ChatManager {
     var chatList: ArrayList<String> = ArrayList()
 
-    fun currentTime(): String{
+    fun currentTime(): String {
         return Calendar.getInstance().time.toString()
     }
 }

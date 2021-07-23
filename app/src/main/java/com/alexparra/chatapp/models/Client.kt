@@ -2,6 +2,7 @@ package com.alexparra.chatapp.models
 
 import java.net.InetAddress
 import java.net.Socket
+import java.util.*
 
 class ClientSocket(username: String, ip: InetAddress, port: Int) : Chat(username) {
 
@@ -13,9 +14,8 @@ class ClientSocket(username: String, ip: InetAddress, port: Int) : Chat(username
         output.write(messageByte)
     }
 
-    override fun updateSocket() {
-        val input = socket.getInputStream()
-        input.read()
+    override fun updateSocket(): Scanner {
+        return Scanner(socket.getInputStream())
     }
 
     override fun closeSocket() {
