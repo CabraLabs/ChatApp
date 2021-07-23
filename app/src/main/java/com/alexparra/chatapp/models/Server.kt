@@ -9,6 +9,8 @@ class Server(username: String = "admin") : Chat(username) {
     private val socket = ServerSocket(1026)
     private lateinit var serverSocket: Socket
 
+    private val output = serverSocket.getOutputStream()
+
     fun startServer() {
         serverSocket = socket.accept()
     }
@@ -19,7 +21,6 @@ class Server(username: String = "admin") : Chat(username) {
 
     override fun writeToSocket(message: String) {
         val messageByte = message.toByteArray()
-        val output = serverSocket.getOutputStream()
         output.write(messageByte)
     }
 
