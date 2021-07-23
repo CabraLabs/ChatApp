@@ -90,6 +90,8 @@ class ChatFragment : Fragment(), CoroutineScope {
             while (scanner.hasNextLine()) {
                 var row = scanner.nextLine().split(";")
 
+                scanner.nextLine()
+
                 withContext(Dispatchers.Main) {
                     ChatManager.chatList.add(Message(MessageType.RECEIVED, row[0], row[1], row[2]))
                     notifyAdapterChange()
