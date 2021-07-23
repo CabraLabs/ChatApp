@@ -38,13 +38,11 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        if(dataSet[position].type == MessageType.SENT){
+        if(dataSet[position].type == MessageType.SENT)
             viewHolder.rowLayout.gravity = Gravity.RIGHT
-        }
-
-        if(dataSet[position].type == MessageType.RECEIVED){
+        
+        if(dataSet[position].type == MessageType.RECEIVED)
             viewHolder.rowLayout.gravity = Gravity.LEFT
-        }
 
         viewHolder.textViewUsername.text = dataSet[position].username
         viewHolder.textViewMessage.text = dataSet[position].message
