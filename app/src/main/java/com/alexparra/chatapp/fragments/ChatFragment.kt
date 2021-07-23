@@ -77,7 +77,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                     args.connection.writeToSocket(sendMessageToSocket())
                     eraseTextField()
                 }
-                list.add(getMessageInstance(MessageType.SENT))
+                list.add(getMessageInstance())
             }
             notifyAdapterChange()
         }
@@ -90,16 +90,16 @@ class ChatFragment : Fragment(), CoroutineScope {
             while (scanner.hasNextLine()) {
                 var row = scanner.nextLine().split(";")
 
-                ChatManager.chatList.add(Message(MessageType.RECEIVED, row[0], row[1], row[2]))
                 withContext(Dispatchers.Main) {
+                    ChatManager.chatList.add(Message(MessageType.RECEIVED, row[0], row[1], row[2]))
                     notifyAdapterChange()
                 }
             }
         }
     }
 
-    private fun getMessageInstance(type: MessageType): Message{
-        return Message(type, args.connection.username, getTextFieldString(), ChatManager.currentTime())
+    private fun getMessageInstance(): Message{
+        return Message(MessageType.SENT, args.connection.username, getTextFieldString(), ChatManager.currentTime())
     }
 
     private fun sendMessageToSocket(): String{
