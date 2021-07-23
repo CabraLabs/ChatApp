@@ -23,8 +23,6 @@ class Server(username: String = "admin") : Chat(username) {
         return Scanner(serverSocket.getInputStream())
     }
 
-
-
     override fun writeToSocket(message: String) {
         val messageByte = message.toByteArray()
         output.write(messageByte)
