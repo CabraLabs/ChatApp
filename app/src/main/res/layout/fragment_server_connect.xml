@@ -41,4 +41,11 @@
         android:layout_marginVertical="20dp"
         android:text="@string/create_server" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"/>
+
 </LinearLayout>
