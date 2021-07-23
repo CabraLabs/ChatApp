@@ -52,7 +52,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
             list = ChatManager.chatList
             val recyclerViewList: RecyclerView = binding.chatRecycler
-            chatAdapter = ChatAdapter(list)
+            chatAdapter = ChatAdapter(list, args.connection)
 
             if (args.connection is Server) {
                 launch(Dispatchers.IO) {
@@ -61,7 +61,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                     val scanner = server.updateSocket()
                     while (scanner.hasNextLine()) {
-                        list.add("s;${"received"};${scanner.nextLine()};${ChatManager.currentTime()}")
+                        list.add("${"received"};${scanner.nextLine()};${ChatManager.currentTime()}")
 
                         withContext(Dispatchers.Main) {
                             chatAdapter.notifyDataSetChanged()
@@ -82,11 +82,11 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                     when (args.connection) {
                         is ClientSocket -> {
-                            list.add("c;${args.connection.username};${getText()};${ChatManager.currentTime()}")
+                            list.add("${getText()}")
                         }
 
                         is Server -> {
-                            list.add("s;${args.connection.username};${getText()};${ChatManager.currentTime()}")
+                            list.add("${getText()}")
                         }
                     }
                 }
@@ -102,15 +102,15 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun getText() = "${args.connection.username};${binding.messageField.text}\n"
+    private fun getText() = "${args.connection.username};${binding.messageField.text};${ChatManager.currentTime()}\n"
 
     private fun connectMessage(): String {
         with(args) {
             if (connection is ClientSocket) {
-                return "e;${connection.username};joined the room;${ChatManager.currentTime()}"
+                return "${connection.username};joined the room;${ChatManager.currentTime()}"
             }
 
-            return "e;${connection.username};created the room at;${ChatManager.currentTime()}"
+            return "${connection.username};created the room at;${ChatManager.currentTime()}"
         }
     }
 
