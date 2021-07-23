@@ -4,8 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:layout_gravity="left"
-    android:padding="3dp"
-    android:id="@+id/chatLayout">
+    android:padding="3dp">
 
     <TextView
         android:id="@+id/chat_row_username"
