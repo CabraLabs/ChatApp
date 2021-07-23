@@ -1,61 +1,34 @@
 package com.alexparra.chatapp.adapters
 
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.R
-import com.alexparra.chatapp.models.Chat
-import com.alexparra.chatapp.models.Server
+import com.alexparra.chatapp.models.Message
+import com.alexparra.chatapp.models.MessageType
 
-class ChatAdapter(private val dataSet: ArrayList<String>, private val chat: Chat) :
+class ChatAdapter(private val dataSet: ArrayList<Message>) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
-
-    inner class ClientViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val textViewUsername: TextView
-        val textViewMessage: TextView
-        val textViewDate: TextView
-
-        init {
-            textViewUsername = view.findViewById(R.id.chat_row_username)
-            textViewMessage = view.findViewById(R.id.chat_row_message)
-            textViewDate = view.findViewById(R.id.chat_row_data)
-        }
-    }
-
-    inner class ServerViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val textViewUsername: TextView
-        val textViewMessage: TextView
-        val textViewDate: TextView
-
-        init {
-            textViewUsername = view.findViewById(R.id.chat_row_username)
-            textViewMessage = view.findViewById(R.id.chat_row_message)
-            textViewDate = view.findViewById(R.id.chat_row_data)
-        }
-    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textViewUsername: TextView
         val textViewMessage: TextView
         val textViewDate: TextView
+        val rowLayout: LinearLayout
 
         init {
             textViewUsername = view.findViewById(R.id.chat_row_username)
             textViewMessage = view.findViewById(R.id.chat_row_message)
             textViewDate = view.findViewById(R.id.chat_row_data)
+            rowLayout = view.findViewById(R.id.rowLayout)
         }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        if (chat is Server) {
-            val view = LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.send_chat_row_item, viewGroup, false)
-
-            return ViewHolder(view)
-        }
-
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.receive_chat_row_item, viewGroup, false)
 
@@ -65,10 +38,17 @@ class ChatAdapter(private val dataSet: ArrayList<String>, private val chat: Chat
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        val row = dataSet[position].split(";")
-        viewHolder.textViewUsername.text = row[0]
-        viewHolder.textViewMessage.text = row[1]
-        viewHolder.textViewDate.text = row[2]
+        if(dataSet[position].type == MessageType.SENT){
+            viewHolder.rowLayout.gravity = Gravity.RIGHT
+        }
+
+        if(dataSet[position].type == MessageType.RECEIVED){
+            viewHolder.rowLayout.gravity = Gravity.LEFT
+        }
+
+        viewHolder.textViewUsername.text = dataSet[position].username
+        viewHolder.textViewMessage.text = dataSet[position].message
+        viewHolder.textViewDate.text = dataSet[position].time
     }
 
     override fun getItemCount() = dataSet.size

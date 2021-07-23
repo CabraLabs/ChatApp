@@ -1,28 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="end"
     android:orientation="vertical"
-    android:gravity="right"
-    android:padding="3dp">
+    android:padding="3dp"
+    android:id="@+id/rowLayout">
 
     <TextView
         android:id="@+id/chat_row_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:text="username"/>
+        tools:text="username" />
+
     <TextView
         android:id="@+id/chat_row_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="2dp"
-        android:text="chat row message"/>
+        tools:text="chat row message" />
+
     <TextView
         android:id="@+id/chat_row_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="10dp"
         android:textStyle="italic"
-        android:text="da/ta/data" />
+        tools:ignore="SmallSp"
+        tools:text="da/ta/data"
+        tools:textSize="10sp" />
 </LinearLayout>

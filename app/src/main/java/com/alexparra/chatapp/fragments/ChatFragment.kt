@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.adapters.ChatAdapter
 import com.alexparra.chatapp.databinding.FragmentChatBinding
 import com.alexparra.chatapp.models.ClientSocket
-import com.alexparra.chatapp.models.Server
+import com.alexparra.chatapp.models.Message
+import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
 import kotlinx.coroutines.*
 
@@ -21,7 +22,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private val args: ChatFragmentArgs by navArgs()
 
-    var list: ArrayList<String> = ArrayList()
+    var list: ArrayList<Message> = ArrayList()
 
     private lateinit var binding: FragmentChatBinding
 
@@ -54,7 +55,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
-        chatAdapter = ChatAdapter(list, args.connection)
+        chatAdapter = ChatAdapter(list)
 
         list.add(connectMessage())
 
@@ -71,24 +72,13 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
-            if (getText().isNotBlank()) {
+            if (getTextFieldString().isNotBlank()) {
                 launch(Dispatchers.IO) {
-                    args.connection.writeToSocket(getText())
-
+                    args.connection.writeToSocket(sendMessageToSocket())
                     eraseTextField()
                 }
-
-                when (args.connection) {
-                    is ClientSocket -> {
-                        list.add("${getText()}")
-                    }
-
-                    is Server -> {
-                        list.add("${getText()}")
-                    }
-                }
+                list.add(getMessageInstance(MessageType.SENT))
             }
-
             notifyAdapterChange()
         }
     }
@@ -98,8 +88,9 @@ class ChatFragment : Fragment(), CoroutineScope {
             val scanner = args.connection.updateSocket()
 
             while (scanner.hasNextLine()) {
-                ChatManager.chatList.add("s;${"received"};${scanner.nextLine()};${ChatManager.currentTime()}")
+                var row = scanner.nextLine().split(";")
 
+                ChatManager.chatList.add(Message(MessageType.RECEIVED, row[0], row[1], row[2]))
                 withContext(Dispatchers.Main) {
                     notifyAdapterChange()
                 }
@@ -107,15 +98,22 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun getText() = "${args.connection.username};${binding.messageField.text};${ChatManager.currentTime()}\n"
+    private fun getMessageInstance(type: MessageType): Message{
+        return Message(type, args.connection.username, getTextFieldString(), ChatManager.currentTime())
+    }
 
-    private fun connectMessage(): String {
+    private fun sendMessageToSocket(): String{
+        return "${args.connection.username};${getTextFieldString()};${ChatManager.currentTime()}"
+    }
+
+    private fun getTextFieldString() = binding.messageField.text.toString()
+
+    private fun connectMessage(): Message {
         with(args) {
             if (connection is ClientSocket) {
-                return "${connection.username};joined the room;${ChatManager.currentTime()}"
+                return Message(MessageType.JOINED, args.connection.username, "joined the room", ChatManager.currentTime())
             }
-
-            return "${connection.username};created the room at;${ChatManager.currentTime()}"
+            return Message(MessageType.JOINED, args.connection.username, "created the room at", ChatManager.currentTime())
         }
     }
 
