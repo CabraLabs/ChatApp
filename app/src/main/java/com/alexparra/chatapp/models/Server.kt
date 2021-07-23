@@ -3,7 +3,7 @@ package com.alexparra.chatapp.models
 import java.net.ServerSocket
 import java.net.Socket
 
-class Server(val username: String = "admin") : Chat {
+class Server(username: String = "admin") : Chat(username) {
 
     private val socket = ServerSocket(1026)
 

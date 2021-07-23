@@ -2,8 +2,8 @@ package com.alexparra.chatapp.models
 
 import java.io.Serializable
 
-interface Chat : Serializable {
-    fun writeToSocket(message: ByteArray)
-    fun updateSocket()
-    fun closeSocket()
+abstract class Chat(username: String) : Serializable {
+    abstract fun writeToSocket(message: ByteArray)
+    abstract fun updateSocket()
+    abstract fun closeSocket()
 }

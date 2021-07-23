@@ -3,7 +3,7 @@ package com.alexparra.chatapp.models
 import java.net.InetAddress
 import java.net.Socket
 
-class ClientSocket(val username: String, ip: InetAddress, port: Int) : Chat {
+class ClientSocket(username: String, ip: InetAddress, port: Int) : Chat(username) {
 
     private val socket = Socket(ip, port)
 
