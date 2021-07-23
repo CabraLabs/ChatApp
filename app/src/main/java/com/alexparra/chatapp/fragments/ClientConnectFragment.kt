@@ -56,7 +56,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                         launch(Dispatchers.IO) {
                             try {
                                 val inetAddress = Inet4Address.getByName(ipAddress.text.toString())
-                                val client = ClientSocket(username.text.toString(), inetAddress, 13)
+                                val client = ClientSocket(username.text.toString(), inetAddress, 1026)
 
                                 withContext(Dispatchers.Main) {
                                     val action = ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(client)
