@@ -40,7 +40,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
         if(dataSet[position].type == MessageType.SENT)
             viewHolder.rowLayout.gravity = Gravity.RIGHT
-        
+
         if(dataSet[position].type == MessageType.RECEIVED)
             viewHolder.rowLayout.gravity = Gravity.LEFT
 
