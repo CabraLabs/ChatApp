@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginHorizontal="10dp"
-    android:layout_marginTop="10dp">
+    android:layout_marginTop="10dp"
+    android:background="">
 
     <androidx.recyclerview.widget.RecyclerView xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/chatRecycler"
@@ -39,10 +40,12 @@
             android:id="@+id/messageField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@color/background_et"
+            android:alpha="0.8f"
             android:hint="@string/insert_message"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
