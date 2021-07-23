@@ -54,7 +54,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                     server.startServer()
 
                     withContext(Dispatchers.Main) {
-                        loading(true)
+                        loading(false)
 
                         val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(server)
                         navController.navigate(action)
