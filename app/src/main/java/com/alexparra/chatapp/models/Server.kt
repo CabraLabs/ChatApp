@@ -23,8 +23,6 @@ class Server(username: String = "admin") : Chat(username) {
         output.write(messageByte)
     }
 
-
-
     override fun closeSocket() {
         serverSocket.close()
     }
