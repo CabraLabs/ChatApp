@@ -10,7 +10,10 @@ import androidx.navigation.fragment.findNavController
 import com.alexparra.chatapp.databinding.FragmentServerConnectBinding
 import com.alexparra.chatapp.models.Server
 import kotlinx.coroutines.*
+import java.net.DatagramSocket
 import java.net.Inet4Address
+import java.net.InetAddress
+import java.util.*
 
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
@@ -58,8 +61,14 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private fun showIp() {
         launch(Dispatchers.IO) {
-            val ip = Inet4Address.getLocalHost()
-            binding.ipAddress.text = ip.toString()
+            DatagramSocket().use { socket ->
+                socket.connect(InetAddress.getByName("8.8.8.8"), 1026)
+                val ip = socket.localAddress.hostAddress
+
+                binding.ipAddress.text = ip.toString()
+
+                socket.close()
+            }
         }
     }
 }
