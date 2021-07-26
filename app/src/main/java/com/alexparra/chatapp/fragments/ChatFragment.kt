@@ -43,7 +43,6 @@ class ChatFragment : Fragment(), CoroutineScope {
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
-    // TODO MAKE ON BACK PRESSED
     override fun onDestroy() {
         args.connection.closeSocket()
         this.cancel()
@@ -58,14 +57,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         return binding.root
     }
 
-
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         startChat()
     }
-
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun startChat() {
@@ -98,6 +95,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                         "/vibrate"
                     )
                 )
+                disableAttention()
             }
         }
     }
@@ -130,7 +128,10 @@ class ChatFragment : Fragment(), CoroutineScope {
                         withContext(Dispatchers.Main) {
                             disableChat()
                             Snackbar.make(view as View, getString(R.string.snack_server_disconnect), Snackbar.LENGTH_INDEFINITE)
-                                .setAction("Exit Chat") { navController.popBackStack() }.show()
+                                .setAction("Exit Chat") {
+                                    onDestroy()
+                                    navController.popBackStack()
+                                }.show()
                         }
                     }
                 }
@@ -207,6 +208,20 @@ class ChatFragment : Fragment(), CoroutineScope {
         binding.messageField.apply {
             alpha = 0.3f
             isClickable = false
+        }
+    }
+
+    private fun disableAttention() {
+        with(binding) {
+            btnVibrate.apply {
+                alpha = 0.2F
+                isClickable = false
+
+                ChatManager.delay(5000) {
+                    alpha = 1F
+                    isClickable = true
+                }
+            }
         }
     }
 

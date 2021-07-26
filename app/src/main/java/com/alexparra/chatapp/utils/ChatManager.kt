@@ -1,6 +1,8 @@
 package com.alexparra.chatapp.utils
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.models.Chat
 import com.alexparra.chatapp.models.ClientSocket
@@ -26,7 +28,7 @@ object ChatManager : CoroutineScope {
         val simpleDateFormat = SimpleDateFormat(pattern)
         return simpleDateFormat.format(Date()).uppercase()
     }
-    
+
     /**
      * Sends the Message data class when the user joins the chat.
      */
@@ -49,5 +51,9 @@ object ChatManager : CoroutineScope {
      */
     fun getSentMessage(chat: Chat, text: String): Message {
         return Message(MessageType.SENT, chat.username, text, currentTime())
+    }
+
+    fun delay(delay: Long = 1500, action: () -> Unit) {
+        Handler(Looper.getMainLooper()).postDelayed(action, delay)
     }
 }
