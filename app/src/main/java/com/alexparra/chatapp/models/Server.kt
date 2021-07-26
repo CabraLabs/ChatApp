@@ -1,7 +1,5 @@
 package com.alexparra.chatapp.models
 
-import java.io.OutputStream
-import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
@@ -10,16 +8,10 @@ class Server(username: String = "admin") : Chat(username) {
 
     private val socket = ServerSocket(1026)
     private lateinit var serverSocket: Socket
-    private lateinit var output: OutputStream
+    private val output = serverSocket.getOutputStream()
 
     fun startServer() {
-        serverSocket = socket.accept().apply {
-
-        }
-    }
-
-    fun getOutput() {
-        output = serverSocket.getOutputStream()
+        serverSocket = socket.accept()
     }
 
     override fun updateSocket(): Scanner {
