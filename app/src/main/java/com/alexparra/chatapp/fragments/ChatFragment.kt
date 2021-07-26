@@ -19,16 +19,15 @@ import kotlinx.coroutines.*
 
 class ChatFragment : Fragment(), CoroutineScope {
 
-    private val args: ChatFragmentArgs by navArgs()
-
     var list: ArrayList<Message> = ArrayList()
 
+    private val args: ChatFragmentArgs by navArgs()
+    
     private lateinit var binding: FragmentChatBinding
 
     private lateinit var chatAdapter: ChatAdapter
 
     private val parentJob = Job()
-
     override val coroutineContext = parentJob + Dispatchers.Main
 
     // TODO MAKE ON BACK PRESSED
