@@ -46,12 +46,10 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                 when {
                     username.text.toString() == "" -> {
                         toast(getString(R.string.username_missing))
-                        //username.error = getString(R.string.username_missing)
                     }
 
                     ipAddress.text.toString() == "" -> {
                         toast(getString(R.string.ip_missing))
-                        //ipAddress.error = getString(R.string.ip_missing)
                     }
 
                     else -> {
