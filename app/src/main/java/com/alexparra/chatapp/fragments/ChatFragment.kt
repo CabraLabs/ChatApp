@@ -42,7 +42,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
-    
+
     override fun onDestroy() {
         args.connection.closeSocket()
         this.cancel()
@@ -57,14 +57,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         return binding.root
     }
 
-
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         startChat()
     }
-
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun startChat() {
