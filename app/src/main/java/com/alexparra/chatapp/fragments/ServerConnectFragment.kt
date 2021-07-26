@@ -52,7 +52,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 launch(Dispatchers.IO) {
                     val server = Server()
                     server.startServer()
-                    server.getOutput()
 
                     withContext(Dispatchers.Main) {
                         loading(false)
