@@ -86,7 +86,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                     try {
                         args.connection.writeToSocket(ChatManager.sendMessageToSocket(args.connection, getTextFieldString()))
                         eraseTextField()
-                    } catch (e: IOException) {
+                    } catch (e: java.net.SocketException) {
                         withContext(Dispatchers.Main) {
                             toast("Not connected")
                             //onDestroy()
