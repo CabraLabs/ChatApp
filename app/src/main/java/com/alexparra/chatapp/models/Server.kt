@@ -7,9 +7,11 @@ import java.util.*
 
 class Server(username: String = "admin") : Chat(username) {
 
-    private val socket = ServerSocket(1026)
-    private lateinit var serverSocket: Socket
-    private lateinit var output: OutputStream
+    @Transient private val socket = ServerSocket(1026)
+
+    @Transient private lateinit var serverSocket: Socket
+
+    @Transient private lateinit var output: OutputStream
 
     fun startServer() {
         serverSocket = socket.accept()
@@ -26,6 +28,6 @@ class Server(username: String = "admin") : Chat(username) {
     }
 
     override fun closeSocket() {
-        serverSocket.close()
+        socket.close()
     }
 }
