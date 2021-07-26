@@ -97,12 +97,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun getMessageInstance(): Message{
+    private fun getMessageInstance(): Message {
         return Message(MessageType.SENT, args.connection.username, getTextFieldString(), ChatManager.currentTime())
     }
 
-    private fun sendMessageToSocket(): String{
-        return "${args.connection.username};${getTextFieldString()};${ChatManager.currentTime()}"
+    private fun sendMessageToSocket(): String {
+        return "${args.connection.username};${getTextFieldString()};${ChatManager.currentTime()}\n"
     }
 
     private fun getTextFieldString() = binding.messageField.text.toString()

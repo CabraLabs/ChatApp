@@ -1,6 +1,7 @@
 package com.alexparra.chatapp.models
 
 import java.io.OutputStream
+import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
@@ -12,7 +13,9 @@ class Server(username: String = "admin") : Chat(username) {
     private lateinit var output: OutputStream
 
     fun startServer() {
-        serverSocket = socket.accept()
+        serverSocket = socket.accept().apply {
+
+        }
     }
 
     fun getOutput() {
