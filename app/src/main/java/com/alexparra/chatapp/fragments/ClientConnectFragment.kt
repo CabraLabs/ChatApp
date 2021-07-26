@@ -16,7 +16,7 @@ import java.net.Inet4Address
 
 class ClientConnectFragment : Fragment(), CoroutineScope {
 
-    val parentJob = Job()
+    private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
     private lateinit var binding: FragmentClientConnectBinding

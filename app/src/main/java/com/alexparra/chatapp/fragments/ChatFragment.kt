@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +20,7 @@ import com.alexparra.chatapp.databinding.FragmentChatBinding
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
-import com.alexparra.chatapp.utils.toast
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
 
@@ -31,6 +33,10 @@ class ChatFragment : Fragment(), CoroutineScope {
     private lateinit var binding: FragmentChatBinding
 
     private lateinit var chatAdapter: ChatAdapter
+
+    private val navController: NavController by lazy {
+        findNavController()
+    }
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
@@ -91,8 +97,9 @@ class ChatFragment : Fragment(), CoroutineScope {
                         eraseTextField()
                     } catch (e: java.net.SocketException) {
                         withContext(Dispatchers.Main) {
-                            toast("Not connected")
-                            //onDestroy()
+                            disableChat()
+                            Snackbar.make(view as View, "result", Snackbar.LENGTH_INDEFINITE)
+                                .setAction("Exit Chat") { navController.popBackStack() }.show()
                         }
                     }
                 }
@@ -130,6 +137,13 @@ class ChatFragment : Fragment(), CoroutineScope {
             val sendMessage = "${message.username};${message.message};${message.time};${message.type}\n"
             args.connection.writeToSocket(sendMessage)
             notifyAdapterChange()
+        }
+    }
+
+    private fun disableChat() {
+        binding.messageField.apply {
+            alpha = 0.3f
+            isClickable = false
         }
     }
 
