@@ -16,12 +16,7 @@ import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.toast
 import kotlinx.coroutines.*
-<<<<<<< HEAD
 import java.io.IOException
-=======
-import android.os.Vibrator
-import android.os.VibrationEffect
->>>>>>> 43fe7d0974afd1fa344b99bc5e9dad4fbedd4fef
 
 
 class ChatFragment : Fragment(), CoroutineScope {
@@ -78,25 +73,30 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun vibrateListener() {
-        binding.btnVibrate.setOnClickListener{
-            
+        binding.btnVibrate.setOnClickListener {
+
         }
     }
 
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
-                try {
-                    launch(Dispatchers.IO) {
+
+                launch(Dispatchers.IO) {
+                    try {
                         args.connection.writeToSocket(ChatManager.sendMessageToSocket(args.connection, getTextFieldString()))
                         eraseTextField()
+                    } catch (e: IOException) {
+                        withContext(Dispatchers.Main) {
+                            toast("Not connected")
+                            //onDestroy()
+                        }
                     }
-                    list.add(ChatManager.getSentMessage(args.connection, getTextFieldString()))
-                } catch (e: IOException) {
-                    toast("Not connected")
-                    //onDestroy()
                 }
+
+                list.add(ChatManager.getSentMessage(args.connection, getTextFieldString()))
             }
+
             notifyAdapterChange()
         }
     }
