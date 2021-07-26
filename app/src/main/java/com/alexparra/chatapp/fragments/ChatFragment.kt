@@ -9,6 +9,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.alexparra.chatapp.R
 import com.alexparra.chatapp.adapters.ChatAdapter
 import com.alexparra.chatapp.databinding.FragmentChatBinding
 import com.alexparra.chatapp.models.Message
@@ -55,10 +56,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         val recyclerViewList: RecyclerView = binding.chatRecycler
         chatAdapter = ChatAdapter(list)
 
-        list.add(ChatManager.connectMessage(args.connection, requireContext()))
+        val connectMessage = ChatManager.connectMessage(args.connection, requireContext())
 
+        list.add(connectMessage)
+
+        sendConnectMessage(connectMessage)
         receiveMessageListener()
-
         sendMessageListener()
 
         recyclerViewList.apply {
@@ -86,14 +89,27 @@ class ChatFragment : Fragment(), CoroutineScope {
             val scanner = args.connection.updateSocket()
 
             while (scanner.hasNextLine()) {
-                // [0] Username | [1] Message | [2] Time
+                // [0] Username | [1] Message | [2] Time | [3] Joined
                 var message = scanner.nextLine().split(";")
 
                 withContext(Dispatchers.Main) {
-                    ChatManager.chatList.add(Message(MessageType.RECEIVED, message[0], message[1], message[2]))
+                    if (message[4].isBlank()) {
+                        ChatManager.chatList.add(Message(MessageType.JOINED, message[0], message[1], message[2]))
+                    } else {
+                        ChatManager.chatList.add(Message(MessageType.RECEIVED, message[0], message[1], message[2]))
+
+                    }
+
                     notifyAdapterChange()
                 }
             }
+        }
+    }
+
+    private fun sendConnectMessage(message: Message) {
+        launch(Dispatchers.IO) {
+            val sendMessage = "${message.username};${message.message};${message.time};${message.type}"
+            args.connection.writeToSocket(sendMessage)
         }
     }
 
