@@ -37,13 +37,11 @@ class HomeFragment : Fragment() {
         with(binding) {
             clientButton.setOnClickListener {
                 val action = HomeFragmentDirections.actionHomeFragmentToClientConnectFragment()
-
                 navController.navigate(action)
             }
 
             serverButton.setOnClickListener {
                 val action = HomeFragmentDirections.actionHomeFragmentToServerConnectFragment()
-
                 navController.navigate(action)
             }
         }
