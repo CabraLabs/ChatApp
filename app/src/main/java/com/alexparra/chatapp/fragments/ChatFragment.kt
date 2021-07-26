@@ -109,6 +109,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         launch(Dispatchers.IO) {
             val sendMessage = "${message.username};${message.message};${message.time};${message.type}"
             args.connection.writeToSocket(sendMessage)
+            notifyAdapterChange()
         }
     }
 
