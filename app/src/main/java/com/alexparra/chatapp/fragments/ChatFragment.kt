@@ -22,7 +22,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     var list: ArrayList<Message> = ArrayList()
 
     private val args: ChatFragmentArgs by navArgs()
-    
+
     private lateinit var binding: FragmentChatBinding
 
     private lateinit var chatAdapter: ChatAdapter
