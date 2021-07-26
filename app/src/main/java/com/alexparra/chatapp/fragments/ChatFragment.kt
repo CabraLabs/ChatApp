@@ -14,7 +14,9 @@ import com.alexparra.chatapp.databinding.FragmentChatBinding
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
+import com.alexparra.chatapp.utils.toast
 import kotlinx.coroutines.*
+import java.io.IOException
 
 
 class ChatFragment : Fragment(), CoroutineScope {
@@ -73,11 +75,16 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
-                launch(Dispatchers.IO) {
-                    args.connection.writeToSocket(ChatManager.sendMessageToSocket(args.connection, getTextFieldString()))
-                    eraseTextField()
+                try {
+                    launch(Dispatchers.IO) {
+                        args.connection.writeToSocket(ChatManager.sendMessageToSocket(args.connection, getTextFieldString()))
+                        eraseTextField()
+                    }
+                    list.add(ChatManager.getSentMessage(args.connection, getTextFieldString()))
+                } catch (e: IOException) {
+                    toast("Not connected")
+                    //onDestroy()
                 }
-                list.add(ChatManager.getSentMessage(args.connection, getTextFieldString()))
             }
             notifyAdapterChange()
         }
