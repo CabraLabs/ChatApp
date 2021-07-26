@@ -40,7 +40,7 @@ object ChatManager : CoroutineScope {
      * Send the correct formatted message output to the Socket.
      */
     fun sendMessageToSocket(chat: Chat, text: String): String {
-        return "${chat.username};${text};${currentTime()}\n"
+        return "${chat.username};${text};${currentTime()};\n"
     }
 
     /**
