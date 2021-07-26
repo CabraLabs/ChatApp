@@ -51,6 +51,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
         if(dataSet[position].type == MessageType.JOINED) {
             viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
+            viewHolder.textViewUsername.setTextColor(Color.parseColor("#1B1B1B"))
         }
 
         viewHolder.textViewUsername.text = dataSet[position].username
