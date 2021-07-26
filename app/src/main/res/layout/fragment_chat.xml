@@ -29,6 +29,19 @@
         app:layout_constraintTop_toBottomOf="@id/chatRecycler"
         app:layout_constraintBottom_toBottomOf="parent">
 
+        <ImageView
+            android:id="@+id/btn_vibrate"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_vibrate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/messageField"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
             android:layout_width="wrap_content"
@@ -42,7 +55,7 @@
             android:layout_height="40dp"
             android:layout_marginStart="5dp"
             android:hint="@string/insert_message"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_vibrate"
             app:layout_constraintEnd_toStartOf="@id/guideline"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

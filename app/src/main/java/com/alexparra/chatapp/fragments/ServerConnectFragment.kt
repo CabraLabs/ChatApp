@@ -17,6 +17,7 @@ import java.net.InetAddress
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private val parentJob = Job()
+
     override val coroutineContext = parentJob + Dispatchers.Main
 
     private lateinit var binding: FragmentServerConnectBinding
@@ -53,7 +54,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
                     withContext(Dispatchers.Main) {
                         loading(false)
-
                         val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(server)
                         navController.navigate(action)
                     }
@@ -69,7 +69,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 val ip = socket.localAddress.hostAddress
 
                 binding.ipAddress.text = ip.toString()
-
                 socket.close()
             }
         }

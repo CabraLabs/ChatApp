@@ -15,6 +15,8 @@ import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
 import kotlinx.coroutines.*
+import android.os.Vibrator
+import android.os.VibrationEffect
 
 
 class ChatFragment : Fragment(), CoroutineScope {
@@ -70,6 +72,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun vibrateListener() {
+        binding.btnVibrate.setOnClickListener{
+            
+        }
+    }
+
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
@@ -89,7 +97,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
             while (scanner.hasNextLine()) {
                 // [0] Username | [1] Message | [2] Time | [3] Joined
-                var message = scanner.nextLine().split(";")
+                val message = scanner.nextLine().split(";")
 
                 withContext(Dispatchers.Main) {
                     if (message[3].isNotBlank()) {
