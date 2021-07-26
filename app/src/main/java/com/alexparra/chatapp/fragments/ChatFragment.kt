@@ -16,6 +16,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.alexparra.chatapp.R
 import com.alexparra.chatapp.adapters.ChatAdapter
 import com.alexparra.chatapp.databinding.FragmentChatBinding
 import com.alexparra.chatapp.models.Message
@@ -56,6 +57,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -113,7 +115,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                     } catch (e: java.net.SocketException) {
                         withContext(Dispatchers.Main) {
                             disableChat()
-                            Snackbar.make(view as View, "result", Snackbar.LENGTH_INDEFINITE)
+                            Snackbar.make(view as View, getString(R.string.snack_server_disconnect), Snackbar.LENGTH_INDEFINITE)
                                 .setAction("Exit Chat") { navController.popBackStack() }.show()
                         }
                     }
