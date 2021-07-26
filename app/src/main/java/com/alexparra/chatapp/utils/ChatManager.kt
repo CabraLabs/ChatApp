@@ -26,7 +26,7 @@ object ChatManager : CoroutineScope {
         val simpleDateFormat = SimpleDateFormat(pattern)
         return simpleDateFormat.format(Date()).uppercase()
     }
-
+    
     /**
      * Sends the Message data class when the user joins the chat.
      */
