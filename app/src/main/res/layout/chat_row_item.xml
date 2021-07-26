@@ -15,6 +15,13 @@
         android:textStyle="bold"
         tools:text="username" />
 
+    <ImageView
+        android:id="@+id/angry_face"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_vibrate"/>
+
     <TextView
         android:id="@+id/chat_row_message"
         android:layout_width="wrap_content"

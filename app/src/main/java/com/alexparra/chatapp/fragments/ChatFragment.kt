@@ -64,7 +64,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         startChat()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
@@ -86,21 +85,28 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun vibrateListener() {
         binding.btnVibrate.setOnClickListener {
-            val vibrator = getSystemService(requireContext(), Vibrator::class.java)
-            vibrator?.vibrate(
-                VibrationEffect.createOneShot(
-                    1000,
-                    VibrationEffect.EFFECT_HEAVY_CLICK
+            launch(Dispatchers.IO) {
+                args.connection.writeToSocket(
+                    ChatManager.sendMessageToSocket(
+                        args.connection,
+                        "/vibrate"
+                    )
                 )
-            )
+            }
         }
     }
 
-    fun sendVibrate(){
-
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun startVibrate(){
+        val vibrator = getSystemService(requireContext(), Vibrator::class.java)
+        vibrator?.vibrate(
+            VibrationEffect.createOneShot(
+                1000,
+                VibrationEffect.EFFECT_HEAVY_CLICK
+            )
+        )
     }
 
     private fun sendMessageListener() {
@@ -132,6 +138,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun receiveMessageListener() {
         launch(Dispatchers.IO) {
             val scanner = args.connection.updateSocket()
@@ -141,24 +148,32 @@ class ChatFragment : Fragment(), CoroutineScope {
                 val message = scanner.nextLine().split(";")
 
                 withContext(Dispatchers.Main) {
-                    if (message[3].isNotBlank()) {
-                        ChatManager.chatList.add(
-                            Message(
-                                MessageType.JOINED,
-                                message[0],
-                                message[1],
-                                message[2]
+                    when {
+                        message[1] == "/vibrate" -> {
+                            startVibrate()
+                        }
+
+                        message[3].isNotBlank() -> {
+                            ChatManager.chatList.add(
+                                Message(
+                                    MessageType.JOINED,
+                                    message[0],
+                                    message[1],
+                                    message[2]
+                                )
                             )
-                        )
-                    } else {
-                        ChatManager.chatList.add(
-                            Message(
-                                MessageType.RECEIVED,
-                                message[0],
-                                message[1],
-                                message[2]
+                        }
+                        
+                        else -> {
+                            ChatManager.chatList.add(
+                                Message(
+                                    MessageType.RECEIVED,
+                                    message[0],
+                                    message[1],
+                                    message[2]
+                                )
                             )
-                        )
+                        }
                     }
 
                     notifyAdapterChange()
