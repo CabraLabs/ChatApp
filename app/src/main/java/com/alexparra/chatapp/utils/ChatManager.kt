@@ -13,6 +13,7 @@ import kotlinx.coroutines.Job
 import java.util.*
 import kotlin.collections.ArrayList
 
+
 object ChatManager : CoroutineScope {
 
     private val parentJob = Job()
@@ -20,7 +21,7 @@ object ChatManager : CoroutineScope {
 
     var chatList: ArrayList<Message> = ArrayList()
 
-    fun currentTime(): String {
+    private fun currentTime(): String {
         val pattern = "HH:mm aa"
         val simpleDateFormat = SimpleDateFormat(pattern)
         return simpleDateFormat.format(Date()).uppercase()
