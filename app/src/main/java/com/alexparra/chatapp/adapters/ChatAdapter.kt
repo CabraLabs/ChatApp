@@ -40,12 +40,12 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
         if(dataSet[position].type == MessageType.SENT) {
-            viewHolder.rowLayout.gravity = Gravity.RIGHT
+            viewHolder.rowLayout.gravity = Gravity.LEFT
             viewHolder.textViewUsername.setTextColor(Color.parseColor("#E91A1A"))
         }
 
         if(dataSet[position].type == MessageType.RECEIVED) {
-            viewHolder.rowLayout.gravity = Gravity.LEFT
+            viewHolder.rowLayout.gravity = Gravity.RIGHT
             viewHolder.textViewUsername.setTextColor(Color.parseColor("#1A58E9"))
         }
 
