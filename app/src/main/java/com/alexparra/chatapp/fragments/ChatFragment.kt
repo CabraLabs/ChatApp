@@ -98,6 +98,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                         "/vibrate"
                     )
                 )
+                disableAttention()
             }
         }
     }
@@ -130,7 +131,10 @@ class ChatFragment : Fragment(), CoroutineScope {
                         withContext(Dispatchers.Main) {
                             disableChat()
                             Snackbar.make(view as View, getString(R.string.snack_server_disconnect), Snackbar.LENGTH_INDEFINITE)
-                                .setAction("Exit Chat") { navController.popBackStack() }.show()
+                                .setAction("Exit Chat") {
+                                    onDestroy()
+                                    navController.popBackStack()
+                                }.show()
                         }
                     }
                 }
@@ -207,6 +211,20 @@ class ChatFragment : Fragment(), CoroutineScope {
         binding.messageField.apply {
             alpha = 0.3f
             isClickable = false
+        }
+    }
+
+    private fun disableAttention() {
+        with(binding) {
+            btnVibrate.apply {
+                alpha = 0.2F
+                isClickable = false
+
+                ChatManager.delay(5000) {
+                    alpha = 1F
+                    isClickable = true
+                }
+            }
         }
     }
 
