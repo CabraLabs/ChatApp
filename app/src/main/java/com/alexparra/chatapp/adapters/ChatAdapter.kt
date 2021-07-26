@@ -23,6 +23,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         val textViewDate: TextView
         val rowLayout: LinearLayout
         val angryFace: ImageView
+        val messageBackground: LinearLayout
 
         init {
             textViewUsername = view.findViewById(R.id.chat_row_username)
@@ -30,6 +31,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
             textViewDate = view.findViewById(R.id.chat_row_data)
             rowLayout = view.findViewById(R.id.rowLayout)
             angryFace = view.findViewById(R.id.angry_face)
+            messageBackground = view.findViewById(R.id.messageBackground)
         }
     }
 
@@ -44,21 +46,25 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
         if(dataSet[position].type == MessageType.SENT) {
             viewHolder.rowLayout.gravity = Gravity.START
+            viewHolder.messageBackground.setBackgroundColor(Color.parseColor("#FFDBDB"))
             viewHolder.textViewUsername.setTextColor(Color.parseColor("#E91A1A"))
         }
 
         if(dataSet[position].type == MessageType.RECEIVED) {
             viewHolder.rowLayout.gravity = Gravity.END
+            viewHolder.messageBackground.setBackgroundColor(Color.parseColor("#DBE0FF"))
             viewHolder.textViewUsername.setTextColor(Color.parseColor("#1A58E9"))
         }
 
         if(dataSet[position].type == MessageType.JOINED) {
             viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
+            viewHolder.messageBackground.setBackgroundColor(Color.parseColor("#F1EFEF"))
             viewHolder.textViewUsername.setTextColor(Color.parseColor("#1B1B1B"))
         }
 
         if(dataSet[position].type == MessageType.ATTENTION) {
             viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
+            viewHolder.messageBackground.setBackgroundColor(Color.parseColor("#F1EFEF"))
             viewHolder.textViewUsername.setTextColor(Color.parseColor("#1B1B1B"))
             viewHolder.angryFace.visibility = View.VISIBLE
             viewHolder.textViewMessage.visibility = View.GONE
