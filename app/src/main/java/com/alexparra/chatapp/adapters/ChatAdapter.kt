@@ -34,7 +34,6 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
             .inflate(R.layout.chat_row_item, viewGroup, false)
 
         return ViewHolder(view)
-
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
