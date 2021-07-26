@@ -1,5 +1,6 @@
 package com.alexparra.chatapp.adapters
 
+import android.graphics.Color
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +31,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.receive_chat_row_item, viewGroup, false)
+            .inflate(R.layout.chat_row_item, viewGroup, false)
 
         return ViewHolder(view)
 
@@ -38,11 +39,19 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        if(dataSet[position].type == MessageType.SENT)
+        if(dataSet[position].type == MessageType.SENT) {
             viewHolder.rowLayout.gravity = Gravity.RIGHT
+            viewHolder.textViewUsername.setTextColor(Color.parseColor("#E91A1A"))
+        }
 
-        if(dataSet[position].type == MessageType.RECEIVED)
+        if(dataSet[position].type == MessageType.RECEIVED) {
             viewHolder.rowLayout.gravity = Gravity.LEFT
+            viewHolder.textViewUsername.setTextColor(Color.parseColor("#1A58E9"))
+        }
+
+        if(dataSet[position].type == MessageType.RECEIVED) {
+            viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
+        }
 
         viewHolder.textViewUsername.text = dataSet[position].username
         viewHolder.textViewMessage.text = dataSet[position].message
