@@ -1,12 +1,13 @@
 package com.alexparra.chatapp.fragments
 
-import android.content.Context
-import android.content.Context.VIBRATOR_SERVICE
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -61,6 +62,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         startChat()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
@@ -73,6 +75,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         sendConnectMessage(connectMessage)
         receiveMessageListener()
         sendMessageListener()
+        vibrateListener()
 
         recyclerViewList.apply {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
@@ -81,9 +84,16 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun vibrateListener() {
         binding.btnVibrate.setOnClickListener {
-            val vibrator = getSystemService(VIBRATOR_SERVICE)
+            val vibrator = getSystemService(requireContext(), Vibrator::class.java)
+            vibrator?.vibrate(
+                VibrationEffect.createOneShot(
+                    1000,
+                    VibrationEffect.DEFAULT_AMPLITUDE
+                )
+            )
         }
     }
 
@@ -93,7 +103,12 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 launch(Dispatchers.IO) {
                     try {
-                        args.connection.writeToSocket(ChatManager.sendMessageToSocket(args.connection, getTextFieldString()))
+                        args.connection.writeToSocket(
+                            ChatManager.sendMessageToSocket(
+                                args.connection,
+                                getTextFieldString()
+                            )
+                        )
                         eraseTextField()
                     } catch (e: java.net.SocketException) {
                         withContext(Dispatchers.Main) {
@@ -121,9 +136,23 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 withContext(Dispatchers.Main) {
                     if (message[3].isNotBlank()) {
-                        ChatManager.chatList.add(Message(MessageType.JOINED, message[0], message[1], message[2]))
+                        ChatManager.chatList.add(
+                            Message(
+                                MessageType.JOINED,
+                                message[0],
+                                message[1],
+                                message[2]
+                            )
+                        )
                     } else {
-                        ChatManager.chatList.add(Message(MessageType.RECEIVED, message[0], message[1], message[2]))
+                        ChatManager.chatList.add(
+                            Message(
+                                MessageType.RECEIVED,
+                                message[0],
+                                message[1],
+                                message[2]
+                            )
+                        )
                     }
 
                     notifyAdapterChange()
@@ -134,7 +163,8 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun sendConnectMessage(message: Message) {
         launch(Dispatchers.IO) {
-            val sendMessage = "${message.username};${message.message};${message.time};${message.type}\n"
+            val sendMessage =
+                "${message.username};${message.message};${message.time};${message.type}\n"
             args.connection.writeToSocket(sendMessage)
             notifyAdapterChange()
         }
