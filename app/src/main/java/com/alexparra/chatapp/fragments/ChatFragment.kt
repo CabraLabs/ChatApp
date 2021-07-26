@@ -91,10 +91,14 @@ class ChatFragment : Fragment(), CoroutineScope {
             vibrator?.vibrate(
                 VibrationEffect.createOneShot(
                     1000,
-                    VibrationEffect.DEFAULT_AMPLITUDE
+                    VibrationEffect.EFFECT_HEAVY_CLICK
                 )
             )
         }
+    }
+
+    fun sendVibrate(){
+
     }
 
     private fun sendMessageListener() {
