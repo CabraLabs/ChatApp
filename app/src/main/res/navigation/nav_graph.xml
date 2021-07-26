@@ -12,10 +12,12 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_clientConnectFragment"
-            app:destination="@id/clientConnectFragment" />
+            app:destination="@id/clientConnectFragment"
+            app:enterAnim="@anim/enter_from_right" />
         <action
             android:id="@+id/action_homeFragment_to_serverConnectFragment"
-            app:destination="@id/serverConnectFragment" />
+            app:destination="@id/serverConnectFragment"
+            app:enterAnim="@anim/enter_from_right" />
     </fragment>
     <fragment
         android:id="@+id/clientConnectFragment"
@@ -24,7 +26,8 @@
         tools:layout="@layout/fragment_client_connect" >
         <action
             android:id="@+id/action_clientConnectFragment_to_chatFragment"
-            app:destination="@id/chatFragment" />
+            app:destination="@id/chatFragment"
+            app:enterAnim="@anim/enter_from_right" />
     </fragment>
     <fragment
         android:id="@+id/serverConnectFragment"
@@ -33,7 +36,8 @@
         tools:layout="@layout/fragment_server_connect" >
         <action
             android:id="@+id/action_serverConnectFragment_to_chatFragment"
-            app:destination="@id/chatFragment" />
+            app:destination="@id/chatFragment"
+            app:enterAnim="@anim/enter_from_right" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
