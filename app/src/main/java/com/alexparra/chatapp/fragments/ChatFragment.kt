@@ -93,11 +93,10 @@ class ChatFragment : Fragment(), CoroutineScope {
                 var message = scanner.nextLine().split(";")
 
                 withContext(Dispatchers.Main) {
-                    if (message[4].isBlank()) {
+                    if (message[3].isNotBlank()) {
                         ChatManager.chatList.add(Message(MessageType.JOINED, message[0], message[1], message[2]))
                     } else {
                         ChatManager.chatList.add(Message(MessageType.RECEIVED, message[0], message[1], message[2]))
-
                     }
 
                     notifyAdapterChange()
