@@ -12,9 +12,7 @@ import com.alexparra.chatapp.models.Server
 import com.alexparra.chatapp.utils.toast
 import kotlinx.coroutines.*
 import java.net.DatagramSocket
-import java.net.Inet4Address
 import java.net.InetAddress
-import java.util.*
 
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
