@@ -16,12 +16,9 @@ import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.toast
 import kotlinx.coroutines.*
-<<<<<<< HEAD
 import java.io.IOException
-=======
 import android.os.Vibrator
 import android.os.VibrationEffect
->>>>>>> 43fe7d0974afd1fa344b99bc5e9dad4fbedd4fef
 
 
 class ChatFragment : Fragment(), CoroutineScope {
