@@ -42,8 +42,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
-
-    // TODO MAKE ON BACK PRESSED
+    
     override fun onDestroy() {
         args.connection.closeSocket()
         this.cancel()
