@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.adapters.ChatAdapter
 import com.alexparra.chatapp.databinding.FragmentChatBinding
-import com.alexparra.chatapp.models.ClientSocket
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
@@ -20,16 +19,15 @@ import kotlinx.coroutines.*
 
 class ChatFragment : Fragment(), CoroutineScope {
 
-    private val args: ChatFragmentArgs by navArgs()
-
     var list: ArrayList<Message> = ArrayList()
+
+    private val args: ChatFragmentArgs by navArgs()
 
     private lateinit var binding: FragmentChatBinding
 
     private lateinit var chatAdapter: ChatAdapter
 
     private val parentJob = Job()
-
     override val coroutineContext = parentJob + Dispatchers.Main
 
     // TODO MAKE ON BACK PRESSED
@@ -57,9 +55,9 @@ class ChatFragment : Fragment(), CoroutineScope {
         val recyclerViewList: RecyclerView = binding.chatRecycler
         chatAdapter = ChatAdapter(list)
 
-        list.add(connectMessage())
+        list.add(ChatManager.connectMessage(args.connection, requireContext()))
 
-        updateMessageScreenListener()
+        receiveMessageListener()
 
         sendMessageListener()
 
@@ -74,47 +72,32 @@ class ChatFragment : Fragment(), CoroutineScope {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
                 launch(Dispatchers.IO) {
-                    args.connection.writeToSocket(sendMessageToSocket())
+                    args.connection.writeToSocket(ChatManager.sendMessageToSocket(args.connection, getTextFieldString()))
                     eraseTextField()
                 }
-                list.add(getMessageInstance())
+                list.add(ChatManager.getSentMessage(args.connection, getTextFieldString()))
             }
             notifyAdapterChange()
         }
     }
 
-    private fun updateMessageScreenListener() {
+    private fun receiveMessageListener() {
         launch(Dispatchers.IO) {
             val scanner = args.connection.updateSocket()
 
             while (scanner.hasNextLine()) {
+                // [0] Username | [1] Message | [2] Time
+                var message = scanner.nextLine().split(";")
 
                 withContext(Dispatchers.Main) {
-                    ChatManager.chatList.add(Message(MessageType.RECEIVED, "received", scanner.nextLine(), "010101"))
+                    ChatManager.chatList.add(Message(MessageType.RECEIVED, message[0], message[1], message[2]))
                     notifyAdapterChange()
                 }
             }
         }
     }
 
-    private fun getMessageInstance(): Message {
-        return Message(MessageType.SENT, args.connection.username, getTextFieldString(), ChatManager.currentTime())
-    }
-
-    private fun sendMessageToSocket(): String {
-        return "${args.connection.username};${getTextFieldString()};${ChatManager.currentTime()}\n"
-    }
-
     private fun getTextFieldString() = binding.messageField.text.toString()
-
-    private fun connectMessage(): Message {
-        with(args) {
-            if (connection is ClientSocket) {
-                return Message(MessageType.JOINED, args.connection.username, "joined the room", ChatManager.currentTime())
-            }
-            return Message(MessageType.JOINED, args.connection.username, "created the room at", ChatManager.currentTime())
-        }
-    }
 
     private fun eraseTextField() {
         binding.messageField.setText("")
