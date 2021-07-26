@@ -23,4 +23,8 @@
     <!-- FragmentChat -->
     <string name="insert_message">Insert your message…</string>
 
+    <!-- Adapter -->
+    <string name="joined_the_room">Joined the room</string>
+    <string name="created_the_room">Created the room</string>
+
 </resources>
