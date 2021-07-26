@@ -46,6 +46,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     // TODO MAKE ON BACK PRESSED
     override fun onDestroy() {
         args.connection.closeSocket()
+        this.cancel()
         super.onDestroy()
     }
 
@@ -57,13 +58,16 @@ class ChatFragment : Fragment(), CoroutineScope {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         startChat()
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
@@ -87,7 +91,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun vibrateListener() {
         binding.btnVibrate.setOnClickListener {
-            launch(Dispatchers.IO) {
+            GlobalScope.launch(Dispatchers.IO) {
                 args.connection.writeToSocket(
                     ChatManager.sendMessageToSocket(
                         args.connection,
@@ -99,7 +103,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun startVibrate(){
+    fun startVibrate() {
         val vibrator = getSystemService(requireContext(), Vibrator::class.java)
         vibrator?.vibrate(
             VibrationEffect.createOneShot(
@@ -113,7 +117,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
 
-                launch(Dispatchers.IO) {
+                GlobalScope.launch(Dispatchers.IO) {
                     try {
                         args.connection.writeToSocket(
                             ChatManager.sendMessageToSocket(
@@ -140,7 +144,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun receiveMessageListener() {
-        launch(Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.IO) {
             val scanner = args.connection.updateSocket()
 
             while (scanner.hasNextLine()) {
@@ -163,7 +167,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                                 )
                             )
                         }
-                        
+
                         else -> {
                             ChatManager.chatList.add(
                                 Message(
@@ -183,7 +187,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun sendConnectMessage(message: Message) {
-        launch(Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.IO) {
             val sendMessage =
                 "${message.username};${message.message};${message.time};${message.type}\n"
             args.connection.writeToSocket(sendMessage)
