@@ -75,25 +75,30 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun vibrateListener() {
-        binding.btnVibrate.setOnClickListener{
-            
+        binding.btnVibrate.setOnClickListener {
+
         }
     }
 
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
-                try {
-                    launch(Dispatchers.IO) {
+
+                launch(Dispatchers.IO) {
+                    try {
                         args.connection.writeToSocket(ChatManager.sendMessageToSocket(args.connection, getTextFieldString()))
                         eraseTextField()
+                    } catch (e: java.net.SocketException) {
+                        withContext(Dispatchers.Main) {
+                            toast("Not connected")
+                            //onDestroy()
+                        }
                     }
-                    list.add(ChatManager.getSentMessage(args.connection, getTextFieldString()))
-                } catch (e: IOException) {
-                    toast("Not connected")
-                    //onDestroy()
                 }
+
+                list.add(ChatManager.getSentMessage(args.connection, getTextFieldString()))
             }
+
             notifyAdapterChange()
         }
     }
