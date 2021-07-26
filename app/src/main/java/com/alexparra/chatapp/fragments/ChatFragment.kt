@@ -1,9 +1,13 @@
 package com.alexparra.chatapp.fragments
 
+import android.content.Context
+import android.content.Context.VIBRATOR_SERVICE
 import android.os.Bundle
+import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -16,9 +20,6 @@ import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.toast
 import kotlinx.coroutines.*
-import java.io.IOException
-import android.os.Vibrator
-import android.os.VibrationEffect
 
 
 class ChatFragment : Fragment(), CoroutineScope {
@@ -76,7 +77,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun vibrateListener() {
         binding.btnVibrate.setOnClickListener {
-
+            val vibrator = getSystemService(VIBRATOR_SERVICE)
         }
     }
 
