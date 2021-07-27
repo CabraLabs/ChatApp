@@ -1,9 +1,7 @@
 package com.alexparra.chatapp.adapters
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -48,30 +46,34 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
     @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        if(dataSet[position].type == MessageType.SENT) {
-            viewHolder.rowLayout.gravity = Gravity.START
-            viewHolder.messageBackground.gravity = Gravity.START
-            viewHolder.messageBackground.setBackgroundResource(R.drawable.send_chat_bg)
-        }
+        with(viewHolder) {
+            when (dataSet[position].type) {
+                MessageType.SENT -> {
+                    rowLayout.gravity = Gravity.START
+                    messageBackground.gravity = Gravity.START
+                    messageBackground.setBackgroundResource(R.drawable.send_chat_bg)
+                }
 
-        if(dataSet[position].type == MessageType.RECEIVED) {
-            viewHolder.rowLayout.gravity = Gravity.END
-            viewHolder.messageBackground.gravity = Gravity.END
-            viewHolder.messageBackground.setBackgroundResource(R.drawable.receive_chat_bg)
-        }
+                MessageType.RECEIVED -> {
+                    rowLayout.gravity = Gravity.END
+                    messageBackground.gravity = Gravity.END
+                    messageBackground.setBackgroundResource(R.drawable.receive_chat_bg)
+                }
 
-        if(dataSet[position].type == MessageType.JOINED) {
-            viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
-            viewHolder.messageBackground.orientation = LinearLayout.HORIZONTAL
-            viewHolder.textViewUsername.setTypeface(null, Typeface.ITALIC)
-            viewHolder.textViewMessage.setTypeface(null, Typeface.ITALIC)
-        }
+                MessageType.JOINED -> {
+                    rowLayout.gravity = Gravity.CENTER_HORIZONTAL
+                    messageBackground.orientation = LinearLayout.HORIZONTAL
+                    textViewUsername.setTypeface(null, Typeface.ITALIC)
+                    textViewMessage.setTypeface(null, Typeface.ITALIC)
+                }
 
-        if(dataSet[position].type == MessageType.ATTENTION) {
-            viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
-            viewHolder.angryFace.visibility = View.VISIBLE
-            viewHolder.textViewMessage.visibility = View.GONE
-            viewHolder.textViewDate.visibility = View.GONE
+                MessageType.ATTENTION -> {
+                    rowLayout.gravity = Gravity.CENTER_HORIZONTAL
+                    angryFace.visibility = View.VISIBLE
+                    textViewMessage.visibility = View.GONE
+                    textViewDate.visibility = View.GONE
+                }
+            }
         }
 
         viewHolder.textViewUsername.text = dataSet[position].username
