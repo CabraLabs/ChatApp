@@ -36,4 +36,8 @@ class ChatNotificationManager(val context: Context, val channel: String) {
             notify(0, builder.build())
         }
     }
+
+    fun cancelNotification() {
+        notificationManager.cancelAll()
+    }
 }
