@@ -33,6 +33,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 class ChatFragment : Fragment(), CoroutineScope {
 
     var list: ArrayList<Message> = ArrayList()
@@ -43,6 +44,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private lateinit var chatAdapter: ChatAdapter
 
+
     private val navController: NavController by lazy {
         findNavController()
     }
@@ -52,10 +54,19 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private val CHAT_CHANNEL = "0"
 
+    private val chatNotification by lazy {
+        ChatNotificationManager(requireContext(), CHAT_CHANNEL)
+    }
+
     override fun onDestroy() {
         args.connection.closeSocket()
         this.cancel()
         super.onDestroy()
+    }
+
+    override fun onResume() {
+        chatNotification.cancelNotification()
+        super.onResume()
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -169,8 +180,6 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 withContext(Dispatchers.Main) {
                     if (background) {
-                        val chatNotification = ChatNotificationManager(requireContext(), CHAT_CHANNEL)
-
                         chatNotification.sendMessage(message[0], message[1])
                     }
 
