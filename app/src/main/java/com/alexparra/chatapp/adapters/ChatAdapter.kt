@@ -55,6 +55,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
         if(dataSet[position].type == MessageType.RECEIVED) {
             viewHolder.rowLayout.gravity = Gravity.END
+            viewHolder.messageBackground.gravity = Gravity.END
             viewHolder.messageBackground.setBackgroundResource(R.drawable.receive_chat_bg)
         }
 
@@ -67,7 +68,6 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
         if(dataSet[position].type == MessageType.ATTENTION) {
             viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
-            viewHolder.messageBackground.orientation = LinearLayout.HORIZONTAL
             viewHolder.angryFace.visibility = View.VISIBLE
             viewHolder.textViewMessage.visibility = View.GONE
             viewHolder.textViewDate.visibility = View.GONE

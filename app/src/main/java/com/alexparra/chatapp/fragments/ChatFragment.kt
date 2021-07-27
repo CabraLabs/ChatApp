@@ -121,7 +121,11 @@ class ChatFragment : Fragment(), CoroutineScope {
                         "/vibrate"
                     )
                 )
-                disableAttention()
+                withContext(Dispatchers.Main){
+                    ChatManager.sendVibrateMessage(args.connection)
+                    notifyAdapterChange()
+                    disableAttention()
+                }
             }
         }
     }

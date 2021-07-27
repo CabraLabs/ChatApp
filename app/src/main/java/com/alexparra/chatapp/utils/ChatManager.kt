@@ -29,6 +29,10 @@ object ChatManager : CoroutineScope {
         return simpleDateFormat.format(Date()).uppercase()
     }
 
+    fun sendVibrateMessage(chat: Chat){
+        chatList.add(Message(MessageType.ATTENTION, chat.username, "/vibrate", currentTime()))
+    }
+
     /**
      * Sends the Message data class when the user joins the chat.
      */
