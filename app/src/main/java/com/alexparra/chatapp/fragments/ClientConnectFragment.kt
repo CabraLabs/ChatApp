@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.databinding.FragmentClientConnectBinding
 import com.alexparra.chatapp.models.ClientSocket
+import com.alexparra.chatapp.utils.AppPreferences
 import com.alexparra.chatapp.utils.toast
 import kotlinx.coroutines.*
 import java.net.Inet4Address
@@ -42,6 +43,11 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
     private fun initializeButtons() {
         with(binding) {
+            if (AppPreferences.getClient(context)[0].isNotBlank()) {
+                username.setText(AppPreferences.getClient(context)[0])
+                ipAddress.setText(AppPreferences.getClient(context)[1])
+            }
+
             joinChat.setOnClickListener {
                 when {
                     username.text.toString() == "" -> {
@@ -58,10 +64,20 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                         launch(Dispatchers.IO) {
                             try {
                                 val inetAddress = Inet4Address.getByName(ipAddress.text.toString())
-                                val client = ClientSocket(username.text.toString(), inetAddress, 1027)
+                                val client =
+                                    ClientSocket(username.text.toString(), inetAddress, 1027)
+
+                                AppPreferences.saveClient(
+                                    username.text.toString(),
+                                    ipAddress.text.toString(),
+                                    context
+                                )
 
                                 withContext(Dispatchers.Main) {
-                                    val action = ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(client)
+                                    val action =
+                                        ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(
+                                            client
+                                        )
 
                                     navController.navigate(action)
                                 }

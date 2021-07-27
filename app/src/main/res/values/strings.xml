@@ -29,4 +29,8 @@
     <string name="joined_the_room">Joined the room</string>
     <string name="created_the_room">Created the room</string>
 
+<!-- ClientPreferences -->
+    <string name="client_user">client_user</string>
+    <string name="client_ip">client_ip</string>
+
 </resources>

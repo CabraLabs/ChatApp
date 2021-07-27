@@ -20,6 +20,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
         val textViewUsername: TextView
         val textViewMessage: TextView
         val textViewDate: TextView
