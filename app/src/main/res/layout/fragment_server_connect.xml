@@ -8,11 +8,6 @@
     android:orientation="vertical"
     tools:context=".fragments.ServerConnectFragment">
 
-    <ImageView
-        android:id="@+id/idQrcode"
-        android:layout_width="300dp"
-        android:layout_height="300dp"/>
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
