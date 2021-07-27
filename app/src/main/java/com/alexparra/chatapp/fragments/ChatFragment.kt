@@ -53,6 +53,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onDestroy() {
         args.connection.closeSocket()
         this.cancel()
+        chatNotification.cancelNotification()
         super.onDestroy()
     }
 
