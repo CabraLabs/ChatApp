@@ -38,6 +38,7 @@
         android:layout_marginVertical="25dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/connect" />
+        android:text="@string/connect"
+        android:background="@drawable/buttons_bg_selector"/>
 
 </LinearLayout>
