@@ -1,7 +1,7 @@
 package com.alexparra.chatapp.adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Color
-import android.opengl.Visibility
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -42,32 +42,34 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         return ViewHolder(view)
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
         if(dataSet[position].type == MessageType.SENT) {
             viewHolder.rowLayout.gravity = Gravity.START
-            viewHolder.messageBackground.setBackgroundColor(Color.parseColor("#FFDBDB"))
-            viewHolder.textViewUsername.setTextColor(Color.parseColor("#E91A1A"))
+            viewHolder.messageBackground.setBackgroundResource(R.drawable.send_chat_bg)
+            viewHolder.textViewUsername.setTextColor(R.color.send_username)
         }
 
         if(dataSet[position].type == MessageType.RECEIVED) {
             viewHolder.rowLayout.gravity = Gravity.END
-            viewHolder.messageBackground.setBackgroundColor(Color.parseColor("#DBE0FF"))
-            viewHolder.textViewUsername.setTextColor(Color.parseColor("#1A58E9"))
+            viewHolder.messageBackground.setBackgroundResource(R.drawable.receive_chat_bg)
+            viewHolder.textViewUsername.setTextColor(R.color.receive_username)
         }
 
         if(dataSet[position].type == MessageType.JOINED) {
             viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
-            viewHolder.messageBackground.setBackgroundColor(Color.parseColor("#F1EFEF"))
-            viewHolder.textViewUsername.setTextColor(Color.parseColor("#1B1B1B"))
+            viewHolder.messageBackground.setBackgroundResource(R.drawable.event_chat_bg)
+            viewHolder.textViewUsername.setTextColor(R.color.event_username)
         }
 
         if(dataSet[position].type == MessageType.ATTENTION) {
             viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
-            viewHolder.messageBackground.setBackgroundColor(Color.parseColor("#F1EFEF"))
-            viewHolder.textViewUsername.setTextColor(Color.parseColor("#1B1B1B"))
+            viewHolder.messageBackground.setBackgroundResource(R.drawable.event_chat_bg)
+            viewHolder.textViewUsername.setTextColor(R.color.event_username)
             viewHolder.angryFace.visibility = View.VISIBLE
             viewHolder.textViewMessage.visibility = View.GONE
+            viewHolder.textViewDate.visibility = View.GONE
         }
 
         viewHolder.textViewUsername.text = dataSet[position].username

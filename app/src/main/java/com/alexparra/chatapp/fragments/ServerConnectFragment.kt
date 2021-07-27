@@ -65,7 +65,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     private fun showIp() {
         launch(Dispatchers.IO) {
             DatagramSocket().use { socket ->
-                socket.connect(InetAddress.getByName("8.8.8.8"), 1026)
+                socket.connect(InetAddress.getByName("8.8.8.8"), 1027)
                 val ip = socket.localAddress.hostAddress
 
                 binding.ipAddress.text = ip.toString()

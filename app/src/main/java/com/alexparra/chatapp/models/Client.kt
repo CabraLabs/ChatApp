@@ -6,8 +6,8 @@ import java.util.*
 
 class ClientSocket(username: String, ip: InetAddress, port: Int) : Chat(username) {
 
-    @Transient private val socket = Socket(ip, port)
-    @Transient private val output = socket.getOutputStream()
+     private val socket = Socket(ip, port)
+     private val output = socket.getOutputStream()
 
     override fun writeToSocket(message: String) {
         val messageByte = message.toByteArray(Charsets.UTF_8)

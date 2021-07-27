@@ -7,7 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="background_et">#F1EFEF</color>
+    <color name="send_username">#1A58E9</color>
+    <color name="receive_username">#E91A1A</color>
+    <color name="event_username">#1B1B1B</color>
+    <color name="receive_chat_bg">#FDE0E0</color>
+    <color name="send_chat_bg">#E0EFFD</color>
+    <color name="event_chat_bg">#E6E6E6</color>
     <color name="gray">#474747</color>
     <color name="blue">#17B0ED</color>
 </resources>
