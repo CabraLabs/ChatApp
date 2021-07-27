@@ -167,13 +167,9 @@ class ChatFragment : Fragment(), CoroutineScope {
                 val message = scanner.nextLine().split(";")
 
                 withContext(Dispatchers.Main) {
-
                     if (background) {
-                        val channel = NotificationChannel(CHAT_CHANNEL, "Chat App", NotificationManager.IMPORTANCE_DEFAULT).apply {
-                            
-                        }
+                        val channel = NotificationChannel(CHAT_CHANNEL, getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT)
 
-                        // Register the channel with the system
                         val notificationManager: NotificationManager =
                             getSystemService(requireContext(), NotificationManager::class.java) as NotificationManager
                         notificationManager.createNotificationChannel(channel)
@@ -189,7 +185,6 @@ class ChatFragment : Fragment(), CoroutineScope {
                         }
 
                         with(NotificationManagerCompat.from(requireContext())) {
-                            // notificationId is a unique int for each notification that you must define
                             notify(0, builder.build())
                         }
                     }
