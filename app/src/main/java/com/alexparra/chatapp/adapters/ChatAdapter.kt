@@ -2,6 +2,8 @@ package com.alexparra.chatapp.adapters
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -47,26 +49,25 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
         if(dataSet[position].type == MessageType.SENT) {
             viewHolder.rowLayout.gravity = Gravity.START
+            viewHolder.messageBackground.gravity = Gravity.START
             viewHolder.messageBackground.setBackgroundResource(R.drawable.send_chat_bg)
-            viewHolder.textViewUsername.setTextColor(R.color.send_username)
         }
 
         if(dataSet[position].type == MessageType.RECEIVED) {
             viewHolder.rowLayout.gravity = Gravity.END
             viewHolder.messageBackground.setBackgroundResource(R.drawable.receive_chat_bg)
-            viewHolder.textViewUsername.setTextColor(R.color.receive_username)
         }
 
         if(dataSet[position].type == MessageType.JOINED) {
             viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
-            viewHolder.messageBackground.setBackgroundResource(R.drawable.event_chat_bg)
-            viewHolder.textViewUsername.setTextColor(R.color.event_username)
+            viewHolder.messageBackground.orientation = LinearLayout.HORIZONTAL
+            viewHolder.textViewUsername.setTypeface(null, Typeface.ITALIC)
+            viewHolder.textViewMessage.setTypeface(null, Typeface.ITALIC)
         }
 
         if(dataSet[position].type == MessageType.ATTENTION) {
             viewHolder.rowLayout.gravity = Gravity.CENTER_HORIZONTAL
-            viewHolder.messageBackground.setBackgroundResource(R.drawable.event_chat_bg)
-            viewHolder.textViewUsername.setTextColor(R.color.event_username)
+            viewHolder.messageBackground.orientation = LinearLayout.HORIZONTAL
             viewHolder.angryFace.visibility = View.VISIBLE
             viewHolder.textViewMessage.visibility = View.GONE
             viewHolder.textViewDate.visibility = View.GONE

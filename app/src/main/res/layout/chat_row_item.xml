@@ -15,12 +15,13 @@
         android:orientation="vertical"
         android:gravity="end"
         android:paddingHorizontal="15dp"
-        android:background="@drawable/receive_chat_bg">
+        android:background="@drawable/event_chat_bg">
 
         <TextView
             android:id="@+id/chat_row_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="2dp"
             android:textStyle="bold"
             tools:text="username" />
 
@@ -35,6 +36,7 @@
             android:id="@+id/chat_row_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="2dp"
             android:paddingBottom="2dp"
             tools:text="chat row message" />
 
@@ -42,6 +44,7 @@
             android:id="@+id/chat_row_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="2dp"
             android:textStyle="italic"
             tools:ignore="SmallSp"
             tools:text="da/ta/data"

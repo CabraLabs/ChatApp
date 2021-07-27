@@ -94,7 +94,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         vibrateListener()
 
         recyclerViewList.apply {
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            //addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             adapter = chatAdapter
             layoutManager = LinearLayoutManager(context)
         }
