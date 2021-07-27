@@ -67,7 +67,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             DatagramSocket().use { socket ->
                 socket.connect(InetAddress.getByName("8.8.8.8"), 1027)
                 val ip = socket.localAddress.hostAddress
-
                 binding.ipAddress.text = ip.toString()
                 socket.close()
             }
