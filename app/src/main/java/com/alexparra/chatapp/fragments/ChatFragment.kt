@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.adapters.ChatAdapter
 import com.alexparra.chatapp.databinding.FragmentChatBinding
+import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
@@ -168,25 +169,9 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 withContext(Dispatchers.Main) {
                     if (background) {
-                        val channel = NotificationChannel(CHAT_CHANNEL, getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT)
+                        val chatNotification = ChatNotificationManager(requireContext(), CHAT_CHANNEL)
 
-                        val notificationManager: NotificationManager =
-                            getSystemService(requireContext(), NotificationManager::class.java) as NotificationManager
-                        notificationManager.createNotificationChannel(channel)
-
-                        val builder = NotificationCompat.Builder(
-                            requireContext(),
-                            CHAT_CHANNEL
-                        ).apply {
-                            setSmallIcon(R.drawable.ic_text_message)
-                            setContentTitle(message[0])
-                            setContentText(message[1])
-                            priority = NotificationCompat.PRIORITY_HIGH
-                        }
-
-                        with(NotificationManagerCompat.from(requireContext())) {
-                            notify(0, builder.build())
-                        }
+                        chatNotification.sendMessage(message[0], message[1])
                     }
 
                     when {
