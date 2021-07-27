@@ -32,7 +32,6 @@ class ChatNotificationManager(val context: Context, val channel: String) {
             color = context.getColor(R.color.blue)
         }
 
-
         with(NotificationManagerCompat.from(context)) {
             notify(0, builder.build())
         }
