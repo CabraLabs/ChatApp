@@ -13,10 +13,12 @@ import com.alexparra.chatapp.R
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatNotificationManager(val context: Context, val channel: String) {
 
+
     private val notificationChannel: NotificationChannel = NotificationChannel(channel, context.getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT)
 
     private val notificationManager: NotificationManager =
         ContextCompat.getSystemService(context, NotificationManager::class.java) as NotificationManager
+
 
     fun sendMessage(username: String, text: String) {
         notificationManager.createNotificationChannel(notificationChannel)
