@@ -23,7 +23,7 @@
         android:id="@+id/messageBar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/receive_chat_bg"
+        android:background="@color/soft_grey_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/chatRecycler"
