@@ -20,8 +20,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/menu_bottons_bg_selector"
-            android:layout_marginHorizontal="15dp"
-            android:layout_marginVertical="15dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
             android:paddingStart="10dp"
             android:clickable="true"
             android:focusable="true"
@@ -36,8 +36,8 @@
                 android:text="@string/connect" />
 
             <ImageView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
                 android:src="@drawable/ic_connect"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -59,8 +59,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/menu_bottons_bg_selector"
-            android:layout_marginHorizontal="15dp"
-            android:layout_marginVertical="15dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
             android:paddingEnd="10dp"
             android:clickable="true"
             android:focusable="true"
@@ -75,8 +75,8 @@
                 android:text="@string/host" />
 
             <ImageView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
                 android:src="@drawable/ic_host_local"
                 app:layout_constraintLeft_toRightOf="@+id/clientButton" />
 
