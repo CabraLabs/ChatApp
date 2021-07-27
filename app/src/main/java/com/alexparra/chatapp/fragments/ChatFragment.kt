@@ -1,5 +1,8 @@
 package com.alexparra.chatapp.fragments
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -8,7 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -43,10 +49,18 @@ class ChatFragment : Fragment(), CoroutineScope {
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
+    private val CHAT_CHANNEL = "0"
+
     override fun onDestroy() {
         args.connection.closeSocket()
         this.cancel()
         super.onDestroy()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    override fun onPause() {
+        receiveMessageListener(true)
+        super.onPause()
     }
 
     override fun onCreateView(
@@ -144,7 +158,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun receiveMessageListener() {
+    private fun receiveMessageListener(background: Boolean = false) {
         GlobalScope.launch(Dispatchers.IO) {
             val scanner = args.connection.updateSocket()
 
@@ -153,6 +167,33 @@ class ChatFragment : Fragment(), CoroutineScope {
                 val message = scanner.nextLine().split(";")
 
                 withContext(Dispatchers.Main) {
+
+                    if (background) {
+                        val channel = NotificationChannel(CHAT_CHANNEL, "Chat App", NotificationManager.IMPORTANCE_DEFAULT).apply {
+                            
+                        }
+
+                        // Register the channel with the system
+                        val notificationManager: NotificationManager =
+                            getSystemService(requireContext(), NotificationManager::class.java) as NotificationManager
+                        notificationManager.createNotificationChannel(channel)
+
+                        val builder = NotificationCompat.Builder(
+                            requireContext(),
+                            CHAT_CHANNEL
+                        ).apply {
+                            setSmallIcon(R.drawable.ic_text_message)
+                            setContentTitle(message[0])
+                            setContentText(message[1])
+                            priority = NotificationCompat.PRIORITY_HIGH
+                        }
+
+                        with(NotificationManagerCompat.from(requireContext())) {
+                            // notificationId is a unique int for each notification that you must define
+                            notify(0, builder.build())
+                        }
+                    }
+
                     when {
                         message[1] == "/vibrate" -> {
                             startVibrate()

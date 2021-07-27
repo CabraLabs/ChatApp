@@ -46,17 +46,19 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                 when {
                     username.text.toString() == "" -> {
                         toast(getString(R.string.username_missing))
+                        username.error = getString(R.string.username_missing)
                     }
 
                     ipAddress.text.toString() == "" -> {
                         toast(getString(R.string.ip_missing))
+                        ipAddress.error = getString(R.string.ip_missing)
                     }
 
                     else -> {
                         launch(Dispatchers.IO) {
                             try {
                                 val inetAddress = Inet4Address.getByName(ipAddress.text.toString())
-                                val client = ClientSocket(username.text.toString(), inetAddress, 1026)
+                                val client = ClientSocket(username.text.toString(), inetAddress, 1027)
 
                                 withContext(Dispatchers.Main) {
                                     val action = ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(client)
