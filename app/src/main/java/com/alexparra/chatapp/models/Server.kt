@@ -7,7 +7,7 @@ import java.util.*
 
 class Server(username: String = "admin") : Chat(username) {
 
-    @Transient private val socket = ServerSocket(1026)
+    @Transient private val socket = ServerSocket(1027)
 
     @Transient private lateinit var serverSocket: Socket
 

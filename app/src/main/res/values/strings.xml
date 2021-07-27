@@ -23,6 +23,7 @@
     <!-- FragmentChat -->
     <string name="insert_message">Insert your message…</string>
     <string name="snack_server_disconnect">Connection lost</string>
+    <string name="notification_new_message">New Message</string>
 
     <!-- Adapter -->
     <string name="joined_the_room">Joined the room</string>
