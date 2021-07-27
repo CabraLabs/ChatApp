@@ -1,8 +1,5 @@
 package com.alexparra.chatapp.fragments
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -11,15 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.R
@@ -36,27 +29,26 @@ import kotlinx.coroutines.*
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatFragment : Fragment(), CoroutineScope {
 
-    var list: ArrayList<Message> = ArrayList()
 
     private val args: ChatFragmentArgs by navArgs()
-
     private lateinit var binding: FragmentChatBinding
-
     private lateinit var chatAdapter: ChatAdapter
-
-
-    private val navController: NavController by lazy {
-        findNavController()
-    }
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
+    var list: ArrayList<Message> = ArrayList()
+    private var BACKGROUND = false
     private val CHAT_CHANNEL = "0"
 
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), CHAT_CHANNEL)
     }
+
+    private val navController: NavController by lazy {
+        findNavController()
+    }
+
 
     override fun onDestroy() {
         args.connection.closeSocket()
@@ -65,13 +57,14 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     override fun onResume() {
+        BACKGROUND = false
         chatNotification.cancelNotification()
         super.onResume()
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onPause() {
-        receiveMessageListener(true)
+        BACKGROUND = true
         super.onPause()
     }
 
@@ -121,7 +114,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                         "/vibrate"
                     )
                 )
-                withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main) {
                     ChatManager.sendVibrateMessage(args.connection)
                     notifyAdapterChange()
                     disableAttention()
@@ -174,7 +167,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun receiveMessageListener(background: Boolean = false) {
+    private fun receiveMessageListener() {
         GlobalScope.launch(Dispatchers.IO) {
             val scanner = args.connection.updateSocket()
 
@@ -183,7 +176,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 val message = scanner.nextLine().split(";")
 
                 withContext(Dispatchers.Main) {
-                    if (background) {
+                    if (BACKGROUND) {
                         chatNotification.sendMessage(message[0], message[1])
                     }
 
@@ -240,7 +233,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun disableChat() {
         binding.messageField.apply {
-            alpha = 0.3f
+            alpha = 0.3F
             isClickable = false
         }
     }
