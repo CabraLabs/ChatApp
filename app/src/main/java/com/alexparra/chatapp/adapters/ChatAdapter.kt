@@ -61,7 +61,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                     angryFace.visibility = View.GONE
                     textViewMessage.visibility = View.VISIBLE
                     textViewDate.visibility = View.VISIBLE
-                    textViewUsername.setTypeface(null, Typeface.NORMAL)
+                    textViewUsername.setTypeface(null, Typeface.BOLD)
                     textViewMessage.setTypeface(null, Typeface.NORMAL)
                 }
 
@@ -73,7 +73,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                     angryFace.visibility = View.GONE
                     textViewMessage.visibility = View.VISIBLE
                     textViewDate.visibility = View.VISIBLE
-                    textViewUsername.setTypeface(null, Typeface.NORMAL)
+                    textViewUsername.setTypeface(null, Typeface.BOLD)
                     textViewMessage.setTypeface(null, Typeface.NORMAL)
                 }
 
@@ -97,7 +97,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                     angryFace.visibility = View.VISIBLE
                     textViewMessage.visibility = View.GONE
                     textViewDate.visibility = View.GONE
-                    textViewUsername.setTypeface(null, Typeface.NORMAL)
+                    textViewUsername.setTypeface(null, Typeface.BOLD)
                     textViewMessage.setTypeface(null, Typeface.NORMAL)
                 }
             }
