@@ -92,7 +92,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                 MessageType.ATTENTION -> {
                     rowLayout.gravity = Gravity.CENTER_HORIZONTAL
                     messageBackground.gravity = Gravity.CENTER_HORIZONTAL
-                    messageBackground.orientation = LinearLayout.HORIZONTAL
+                    messageBackground.orientation = LinearLayout.VERTICAL
                     messageBackground.setBackgroundResource(R.drawable.event_chat_bg)
                     angryFace.visibility = View.VISIBLE
                     textViewMessage.visibility = View.GONE
