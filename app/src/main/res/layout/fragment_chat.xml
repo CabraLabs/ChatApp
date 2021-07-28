@@ -42,7 +42,7 @@
             app:layout_constraintEnd_toStartOf="@id/btn_tictactoe"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
-
+<!---->
         <ImageView
             android:id="@+id/btn_tictactoe"
             android:src="@drawable/ic_x"
