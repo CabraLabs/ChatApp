@@ -19,6 +19,7 @@ import com.alexparra.chatapp.databinding.FragmentChatBinding
 import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.MessageType
+import com.alexparra.chatapp.models.Server
 import com.alexparra.chatapp.utils.ChatManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -53,6 +54,13 @@ class ChatFragment : Fragment(), CoroutineScope {
         args.connection.closeSocket()
         this.cancel()
         chatNotification.cancelNotification()
+
+        if (args.connection is Server) {
+            activity?.title = getString(R.string.server_app_bar_name)
+        } else {
+            activity?.title = getString(R.string.client_app_bar_name)
+        }
+
         super.onDestroy()
     }
 
@@ -72,6 +80,8 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+
+        activity?.title = getString(R.string.chat_app_bar_name)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

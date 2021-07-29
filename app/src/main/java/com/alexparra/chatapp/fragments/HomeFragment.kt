@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.alexparra.chatapp.R
 import com.alexparra.chatapp.databinding.FragmentHomeBinding
 
 
