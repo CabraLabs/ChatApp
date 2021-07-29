@@ -106,7 +106,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun vibrateListener() {
-        binding.btnVibrate.setOnClickListener {
+        binding.vibrateButton.setOnClickListener {
             GlobalScope.launch(Dispatchers.IO) {
                 args.connection.writeToSocket(
                     ChatManager.sendMessageToSocket(
@@ -163,6 +163,11 @@ class ChatFragment : Fragment(), CoroutineScope {
             }
 
             notifyAdapterChange()
+        }
+
+        binding.tictactoeButton.setOnClickListener {
+            val action = ChatFragmentDirections.actionChatFragmentToTictactoe()
+            navController.navigate(action)
         }
     }
 
@@ -240,7 +245,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun disableAttention() {
         with(binding) {
-            btnVibrate.apply {
+            vibrateButton.apply {
                 alpha = 0.2F
                 isClickable = false
 

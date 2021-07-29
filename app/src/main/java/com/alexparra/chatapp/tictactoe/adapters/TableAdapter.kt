@@ -1,5 +1,6 @@
 package com.alexparra.chatapp.tictactoe.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,7 @@ class TableAdapter (
         return HomeViewHolder(view)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
         val imgRes = when (dataSet[position]) {
             "x" -> R.drawable.ic_x
@@ -48,6 +50,7 @@ class TableAdapter (
 
     override fun getItemCount() = dataSet.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun reset() {
         TableManager.fillBoard()
         dataSet = TableManager.board

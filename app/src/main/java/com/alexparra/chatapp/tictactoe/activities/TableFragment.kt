@@ -27,7 +27,6 @@ class TableFragment  : Fragment() {
     }
 
     private fun onCellClick(cell: String, pos: Int) {
-        if (TableManager.player1Turn)
             TableManager.markCell(pos)
         TableManager.identifyWinner()
         if(TableManager.draw)
@@ -46,7 +45,7 @@ class TableFragment  : Fragment() {
         binding.turn.text = "Player1"
         binding.counter.text = TableManager.counter.toString()
 
-        val recyclerViewList: RecyclerView = binding.homeRecycler
+        val recyclerViewList: RecyclerView = binding.tableRecycler
         homeAdapter = TableAdapter(TableManager.board, ::onCellClick)
 
 
