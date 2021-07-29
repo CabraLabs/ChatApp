@@ -34,6 +34,10 @@
     <string name="client_ip">client_ip</string>
 
     <!-- App Bar -->
+    <string name="server_app_bar_name">Server</string>
+    <string name="client_app_bar_name">Client</string>
+    <string name="chat_app_bar_name">Chat</string>
+    <string name="home_app_bar_name">Chat App</string>
     <string name="tic_tac_toe">Tic Tac Toe</string>
 
 </resources>

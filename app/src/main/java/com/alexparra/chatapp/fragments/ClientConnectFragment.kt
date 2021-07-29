@@ -24,6 +24,17 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         findNavController()
     }
 
+    override fun onDestroy() {
+        activity?.title = getString(R.string.home_app_bar_name)
+        super.onDestroy()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        activity?.title = getString(R.string.client_app_bar_name)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

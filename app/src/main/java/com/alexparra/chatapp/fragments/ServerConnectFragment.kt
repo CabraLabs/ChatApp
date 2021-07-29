@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.alexparra.chatapp.R
 import com.alexparra.chatapp.databinding.FragmentServerConnectBinding
 import com.alexparra.chatapp.models.Server
 import com.alexparra.chatapp.utils.toast
@@ -24,6 +25,17 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private val navController: NavController by lazy {
         findNavController()
+    }
+
+    override fun onDestroy() {
+        activity?.title = getString(R.string.home_app_bar_name)
+        super.onDestroy()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        activity?.title = getString(R.string.server_app_bar_name)
     }
 
     override fun onCreateView(
