@@ -20,10 +20,12 @@ object TableManager {
 
     fun markCell(position: Int) {
         if (!player1Win() && !player2Win()) {
-            if (player1Turn)
+            if (player1Turn) {
                 board[position] = "x"
-            else
+            }
+            else {
                 board[position] = "o"
+            }
             counter++
             player1Turn = !player1Turn
         }

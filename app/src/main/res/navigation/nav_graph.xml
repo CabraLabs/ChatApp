@@ -47,5 +47,15 @@
         <argument
             android:name="connection"
             app:argType="com.alexparra.chatapp.models.Chat" />
+        <action
+            android:id="@+id/action_chatFragment_to_tictactoe"
+            app:destination="@id/tictactoe" />
+    </fragment>
+    <fragment
+        android:id="@+id/tictactoe"
+        android:name="com.alexparra.chatapp.tictactoe.activities.TableFragment"
+        android:label="tictactoe"
+        tools:layout="@layout/fragment_table">
+
     </fragment>
 </navigation>

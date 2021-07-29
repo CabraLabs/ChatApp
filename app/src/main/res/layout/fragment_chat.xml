@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".fragments.ChatFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecycler"
@@ -30,7 +31,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
-            android:id="@+id/btn_vibrate"
+            android:id="@+id/vibrateButton"
             android:src="@drawable/ic_vibrate"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -39,12 +40,12 @@
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_tictactoe"
+            app:layout_constraintEnd_toStartOf="@id/tictactoeButton"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
-<!---->
+
         <ImageView
-            android:id="@+id/btn_tictactoe"
+            android:id="@+id/tictactoeButton"
             android:src="@drawable/ic_x"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -52,7 +53,7 @@
             android:layout_gravity="center"
             android:clickable="true"
             android:focusable="true"
-            app:layout_constraintStart_toEndOf="@id/btn_vibrate"
+            app:layout_constraintStart_toEndOf="@id/vibrateButton"
             app:layout_constraintEnd_toStartOf="@id/messageField"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
@@ -70,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:hint="@string/insert_message"
-            app:layout_constraintStart_toEndOf="@id/btn_tictactoe"
+            app:layout_constraintStart_toEndOf="@id/tictactoeButton"
             app:layout_constraintEnd_toStartOf="@id/guideline"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
