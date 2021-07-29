@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_done"
+        android:id="@+id/ticTactToe"
         android:icon="@drawable/ic_tictactoe"
         android:title="@string/tic_tac_toe"
         app:showAsAction="ifRoom"/>

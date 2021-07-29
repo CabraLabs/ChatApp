@@ -67,7 +67,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         super.onPause()
     }
 
-    // Fragment Action Bar
+    // App Bar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -75,6 +75,17 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.chat_fragment_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.ticTactToe -> {
+                // call bottom sheet
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onCreateView(
