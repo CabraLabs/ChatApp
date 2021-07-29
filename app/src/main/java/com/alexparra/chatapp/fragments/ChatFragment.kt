@@ -4,9 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
@@ -50,7 +48,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         findNavController()
     }
 
-
+    // Fragment life cycle
     override fun onDestroy() {
         args.connection.closeSocket()
         this.cancel()
@@ -68,6 +66,16 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onPause() {
         BACKGROUND = true
         super.onPause()
+    }
+
+    // Fragment Action Bar
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.chat_fragment_menu, menu)
     }
 
     override fun onCreateView(
