@@ -22,6 +22,7 @@ import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.utils.ChatManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
