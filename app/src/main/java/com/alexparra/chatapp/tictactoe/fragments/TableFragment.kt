@@ -1,4 +1,4 @@
-package com.alexparra.chatapp.tictactoe.activities
+package com.alexparra.chatapp.tictactoe.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater

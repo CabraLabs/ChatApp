@@ -13,7 +13,7 @@
     <color name="soft_red_bg">#FDE0E0</color>
     <color name="soft_blue_bg">#E0EFFD</color>
     <color name="soft_grey_bg">#E6E6E6</color>
-    <color name="gray">#474747</color>
+    <color name="soft_yellow">#FDF8E4</color>
     <color name="blue">#17B0ED</color>
     <color name="cell">#EAF0FF</color>
 </resources>

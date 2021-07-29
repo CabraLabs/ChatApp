@@ -53,7 +53,7 @@
     </fragment>
     <fragment
         android:id="@+id/tictactoe"
-        android:name="com.alexparra.chatapp.tictactoe.activities.TableFragment"
+        android:name="com.alexparra.chatapp.tictactoe.fragments.TableFragment"
         android:label="tictactoe"
         tools:layout="@layout/fragment_table">
 
