@@ -18,6 +18,9 @@
             android:id="@+id/action_homeFragment_to_serverConnectFragment"
             app:destination="@id/serverConnectFragment"
             app:enterAnim="@anim/enter_from_right" />
+        <action
+            android:id="@+id/action_homeFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
     </fragment>
     <fragment
         android:id="@+id/clientConnectFragment"

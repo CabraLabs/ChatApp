@@ -118,6 +118,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         return binding.root
     }
 
+    @DelicateCoroutinesApi
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -274,6 +275,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
+    @DelicateCoroutinesApi
     private fun sendConnectMessage(message: Message) {
         GlobalScope.launch(Dispatchers.IO) {
             val sendMessage =
