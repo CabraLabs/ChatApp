@@ -14,6 +14,7 @@ import com.alexparra.chatapp.utils.toast
 import kotlinx.coroutines.*
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.net.SocketException
 
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
@@ -23,11 +24,19 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private lateinit var binding: FragmentServerConnectBinding
 
+    private lateinit var server: Server
+
+    private var SERVER_INITIALIZED = false
+
     private val navController: NavController by lazy {
         findNavController()
     }
 
     override fun onDestroy() {
+        if (SERVER_INITIALIZED) {
+            closeServer()
+        }
+
         activity?.title = getString(R.string.home_app_bar_name)
         super.onDestroy()
     }
@@ -57,17 +66,35 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
         with(binding) {
             createServer.setOnClickListener {
-                toast("Waiting for a connection")
                 loading(true)
 
                 launch(Dispatchers.IO) {
-                    val server = Server()
-                    server.startServer()
+                    try {
+                        server = Server()
 
-                    withContext(Dispatchers.Main) {
-                        loading(false)
-                        val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(server)
-                        navController.navigate(action)
+                        withContext(Dispatchers.Main) {
+                            toast(getString(R.string.waiting_for_a_connection))
+                        }
+
+                        try {
+                            server.startServer()
+                        } catch (e: SocketException) {
+                            return@launch
+                        }
+
+                        SERVER_INITIALIZED = true
+
+                        withContext(Dispatchers.Main) {
+                            loading(false)
+                            val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(server)
+                            navController.navigate(action)
+                        }
+                    } catch (e: java.net.BindException) {
+                        withContext(Dispatchers.Main) {
+                            loading(false)
+                            toast(getString(R.string.port_in_use_error))
+                            closeServer()
+                        }
                     }
                 }
             }
@@ -86,13 +113,31 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun loading(isLoading: Boolean) {
-        if (isLoading) {
-            binding.progressBar.apply {
-                visibility = View.VISIBLE
+        with(binding) {
+            if (isLoading) {
+                progressBar.visibility = View.VISIBLE
+                createServer.apply {
+                    alpha = 0.3F
+                    isClickable = false
+                }
+            } else {
+                progressBar.visibility = View.GONE
+                createServer.apply {
+                    alpha = 1F
+                    isClickable = true
+                }
             }
-        } else {
-            binding.progressBar.apply {
-                visibility = View.GONE
+        }
+    }
+
+    private fun closeServer() {
+        runBlocking {
+            launch(Dispatchers.IO) {
+                try {
+                    server.closeSocket()
+                } catch (e: SocketException) {
+                    return@launch
+                }
             }
         }
     }
