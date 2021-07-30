@@ -73,8 +73,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                         launch(Dispatchers.IO) {
                             try {
                                 val inetAddress = Inet4Address.getByName(ipAddress.text.toString())
-                                val client =
-                                    ClientSocket(username.text.toString(), inetAddress, 1027)
+                                val client = ClientSocket(username.text.toString(), inetAddress, 1027)
 
                                 AppPreferences.saveClient(
                                     username.text.toString(),
