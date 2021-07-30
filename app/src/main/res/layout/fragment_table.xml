@@ -7,9 +7,9 @@
     android:layout_height="300dp"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context=".tictactoe.fragments.TableFragment"
+    tools:context=".tictactoe.fragments.TictactoeFragment"
     app:behavior_hideable="true"
-    app:behavior_peekHeight="80dp"
+    app:behavior_peekHeight="50dp"
     android:background="@color/soft_yellow"
 
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
@@ -42,7 +42,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".tictactoe.adapters.TableAdapter"
+        android:nestedScrollingEnabled="false"
+        tools:context=".tictactoe.adapters.TictactoeAdapter"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
