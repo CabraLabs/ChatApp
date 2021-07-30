@@ -7,7 +7,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.*
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -27,10 +26,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatFragment : Fragment(), CoroutineScope {
-
 
     private val args: ChatFragmentArgs by navArgs()
     private lateinit var binding: FragmentChatBinding
@@ -94,18 +91,16 @@ class ChatFragment : Fragment(), CoroutineScope {
         return when (item.itemId) {
             R.id.ticTactToe -> {
                 // call bottom sheet
+
                 val bottomSheet = requireView().findViewById<View>(R.id.tictactoeSheet)
-
                 val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-
                 bottomSheetBehavior.peekHeight = 150
-
                 bottomSheetBehavior.isHideable = false
 
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -123,7 +118,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TODO TICTACTOE RECYCLER
+        //TODO TICTACTOE
 
         startChat()
     }
@@ -212,10 +207,6 @@ class ChatFragment : Fragment(), CoroutineScope {
             notifyAdapterChange()
         }
 
-        binding.tictactoeButton.setOnClickListener {
-            val action = ChatFragmentDirections.actionChatFragmentToTictactoe()
-            navController.navigate(action)
-        }
     }
 
     @DelicateCoroutinesApi

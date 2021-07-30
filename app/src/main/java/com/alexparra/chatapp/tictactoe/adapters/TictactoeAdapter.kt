@@ -8,13 +8,13 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.R
-import com.alexparra.chatapp.tictactoe.utils.TableManager
+import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 
-class TableAdapter (
+class TictactoeAdapter (
     private var dataSet: ArrayList<String>,
     private val onClick: (String, Int) -> Unit
 ) :
-    RecyclerView.Adapter<TableAdapter.HomeViewHolder>() {
+    RecyclerView.Adapter<TictactoeAdapter.HomeViewHolder>() {
 
     class HomeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cell_image: ImageView
@@ -52,13 +52,13 @@ class TableAdapter (
 
     @SuppressLint("NotifyDataSetChanged")
     fun reset() {
-        TableManager.fillBoard()
-        dataSet = TableManager.board
-        TableManager.counter = 1
-        TableManager.player1Turn = true
-        TableManager.draw = false
-        TableManager.player1 = false
-        TableManager.player2 = false
+        TictactoeManager.fillBoard()
+        dataSet = TictactoeManager.board
+        TictactoeManager.counter = 1
+        TictactoeManager.player1Turn = true
+        TictactoeManager.draw = false
+        TictactoeManager.player1 = false
+        TictactoeManager.player2 = false
         notifyDataSetChanged()
     }
 }

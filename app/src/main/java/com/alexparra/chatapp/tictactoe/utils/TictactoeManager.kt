@@ -1,6 +1,6 @@
 package com.alexparra.chatapp.tictactoe.utils
 
-object TableManager {
+object TictactoeManager {
     var board: ArrayList<String> = ArrayList()
     var counter = 1
     var player1Turn = true

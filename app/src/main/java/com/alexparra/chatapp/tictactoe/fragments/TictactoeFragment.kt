@@ -8,14 +8,15 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.databinding.FragmentTableBinding
-import com.alexparra.chatapp.tictactoe.adapters.TableAdapter
-import com.alexparra.chatapp.tictactoe.utils.TableManager
+import com.alexparra.chatapp.tictactoe.adapters.TictactoeAdapter
+import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 
-class TableFragment  : Fragment() {
+class TictactoeFragment  : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentTableBinding
-    private lateinit var homeAdapter: TableAdapter
+    private lateinit var homeAdapter: TictactoeAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,27 +28,30 @@ class TableFragment  : Fragment() {
     }
 
     private fun onCellClick(cell: String, pos: Int) {
-            TableManager.markCell(pos)
-        TableManager.identifyWinner()
-        if(TableManager.draw)
+            TictactoeManager.markCell(pos)
+        TictactoeManager.identifyWinner()
+        if(TictactoeManager.draw)
             Snackbar.make(view as View, "DRAW", Snackbar.LENGTH_INDEFINITE).setAction("RETRY"){homeAdapter.reset()}.show()
-        if(TableManager.player1)
+        if(TictactoeManager.player1)
             Snackbar.make(view as View, "PLAYER 1 WIN!", Snackbar.LENGTH_INDEFINITE).setAction("RETRY"){homeAdapter.reset()}.show()
-        if(TableManager.player2)
+        if(TictactoeManager.player2)
             Snackbar.make(view as View, "PLAYER 2 WIN!", Snackbar.LENGTH_INDEFINITE).setAction("RETRY"){homeAdapter.reset()}.show()
-        binding.counter.text = TableManager.counter.toString()
-        binding.turn.text = TableManager.playerTurn()
+        binding.counter.text = TictactoeManager.counter.toString()
+        binding.turn.text = TictactoeManager.playerTurn()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        TableManager.fillBoard()
+        TictactoeManager.fillBoard()
         binding.turn.text = "Player1"
-        binding.counter.text = TableManager.counter.toString()
+        binding.counter.text = TictactoeManager.counter.toString()
 
+        startTable()
+    }
+
+    fun startTable(){
         val recyclerViewList: RecyclerView = binding.tableRecycler
-        homeAdapter = TableAdapter(TableManager.board, ::onCellClick)
-
+        homeAdapter = TictactoeAdapter(TictactoeManager.board, ::onCellClick)
 
         recyclerViewList.apply {
             adapter = homeAdapter
