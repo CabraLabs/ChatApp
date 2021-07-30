@@ -21,6 +21,8 @@ import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.models.Server
+import com.alexparra.chatapp.tictactoe.adapters.TictactoeAdapter
+import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
 import com.alexparra.chatapp.utils.ChatManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -90,17 +92,18 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.ticTactToe -> {
-                // call bottom sheet
 
                 val bottomSheet = requireView().findViewById<View>(R.id.tictactoeSheet)
-                val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
 
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                bottomSheetBehavior.peekHeight = 150
-                bottomSheetBehavior.isHideable = false
+                BottomSheetBehavior.from(bottomSheet).apply {
+                    state = BottomSheetBehavior.STATE_EXPANDED
+                    peekHeight = 150
+                    isHideable = false
+                }
 
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
