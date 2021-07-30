@@ -18,12 +18,11 @@ import java.net.SocketException
 
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
-    private val parentJob = Job()
 
+    private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
     private lateinit var binding: FragmentServerConnectBinding
-
     private lateinit var server: Server
 
     private var SERVER_INITIALIZED = false
@@ -31,6 +30,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     private val navController: NavController by lazy {
         findNavController()
     }
+
 
     override fun onDestroy() {
         if (SERVER_INITIALIZED) {
@@ -76,13 +76,13 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                             toast(getString(R.string.waiting_for_a_connection))
                         }
 
+                        SERVER_INITIALIZED = true
+
                         try {
                             server.startServer()
                         } catch (e: SocketException) {
                             return@launch
                         }
-
-                        SERVER_INITIALIZED = true
 
                         withContext(Dispatchers.Main) {
                             loading(false)
