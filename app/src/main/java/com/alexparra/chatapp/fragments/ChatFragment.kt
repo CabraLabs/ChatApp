@@ -7,6 +7,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.*
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -35,6 +36,8 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
+
+    private lateinit var sheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     var list: ArrayList<Message> = ArrayList()
     private var BACKGROUND = false

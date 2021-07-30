@@ -55,7 +55,7 @@
         android:id="@+id/tictactoe"
         android:name="com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment"
         android:label="tictactoe"
-        tools:layout="@layout/fragment_table">
+        tools:layout="@layout/fragment_tictactoe">
 
     </fragment>
 </navigation>
