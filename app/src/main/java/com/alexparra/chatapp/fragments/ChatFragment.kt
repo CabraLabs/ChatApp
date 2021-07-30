@@ -1,5 +1,6 @@
 package com.alexparra.chatapp.fragments
 
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -121,6 +122,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         startChat()
     }
 
+    @DelicateCoroutinesApi
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun startChat() {
         list = ChatManager.chatList
@@ -142,6 +144,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
+    @DelicateCoroutinesApi
     private fun vibrateListener() {
         binding.vibrateButton.setOnClickListener {
             GlobalScope.launch(Dispatchers.IO) {
@@ -171,6 +174,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         )
     }
 
+    @DelicateCoroutinesApi
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
@@ -204,6 +208,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     }
 
+    @DelicateCoroutinesApi
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun receiveMessageListener() {
         GlobalScope.launch(Dispatchers.IO) {
@@ -215,7 +220,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 withContext(Dispatchers.Main) {
                     if (BACKGROUND) {
-                        chatNotification.sendMessage(message[0], message[1])
+                        chatNotification.sendMessage(message[0], message[1], activity as Activity)
                     }
 
                     when {
