@@ -61,9 +61,6 @@
         <action
             android:id="@+id/action_chatFragment_to_tictactoe"
             app:destination="@id/tictactoe" />
-        <action
-            android:id="@+id/action_chatFragment_to_tictactoeFragment"
-            app:destination="@id/tictactoeFragment" />
     </fragment>
     <fragment
         android:id="@+id/tictactoe"

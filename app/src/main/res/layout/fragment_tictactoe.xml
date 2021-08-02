@@ -4,12 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tictactoeSheet"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="10dp"
+
     tools:context=".tictactoe.fragments.TictactoeFragment"
-    app:behavior_hideable="true"
-    app:behavior_peekHeight="0dp"
     android:background="@color/soft_yellow"
 
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
