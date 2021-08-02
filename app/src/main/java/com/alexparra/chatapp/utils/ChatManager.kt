@@ -1,8 +1,11 @@
 package com.alexparra.chatapp.utils
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
+import android.os.*
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
+import com.alexparra.chatapp.MainApplication.Companion.applicationContext
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.models.Chat
 import com.alexparra.chatapp.models.ClientSocket
@@ -55,6 +58,60 @@ object ChatManager : CoroutineScope {
      */
     fun getSentMessage(chat: Chat, text: String): Message {
         return Message(MessageType.SENT, chat.username, text, currentTime())
+    }
+
+    /**
+     * Handles the specific message types and send them to the
+     * chatList for the recycler view.
+     */
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun updateRecyclerMessages(message: List<String>) {
+        when {
+            message[1] == "/vibrate" -> {
+                startVibrate()
+                chatList.add(
+                    Message(
+                        MessageType.ATTENTION,
+                        message[0],
+                        message[1],
+                        message[2]
+                    )
+                )
+            }
+
+            message[3].isNotBlank() -> {
+                chatList.add(
+                    Message(
+                        MessageType.JOINED,
+                        message[0],
+                        message[1],
+                        message[2]
+                    )
+                )
+            }
+
+            else -> {
+                chatList.add(
+                    Message(
+                        MessageType.RECEIVED,
+                        message[0],
+                        message[1],
+                        message[2]
+                    )
+                )
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun startVibrate() {
+        val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java)
+        vibrator?.vibrate(
+            VibrationEffect.createOneShot(
+                1000,
+                VibrationEffect.EFFECT_HEAVY_CLICK
+            )
+        )
     }
 
     fun delay(delay: Long = 1500, action: () -> Unit) {
