@@ -21,6 +21,7 @@ import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
 import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.ChatManager.updateRecyclerMessages
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
@@ -89,11 +90,11 @@ class ChatFragment : Fragment(), CoroutineScope {
         return when (item.itemId) {
             R.id.ticTactToe -> {
 
+
                 val currentBoard = TictactoeManager.board
 
                 activity?.supportFragmentManager?.let {
                     TictactoeFragment(currentBoard).show(it, null)
-                }
 
                 true
             }

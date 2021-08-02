@@ -50,7 +50,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:paddingStart="10dp"
+
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -73,16 +73,26 @@
             android:hint="@string/insert_message"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline2"
+            app:layout_constraintEnd_toStartOf="@id/sendImageButton"
             app:layout_constraintStart_toEndOf="@id/guideline1"
             app:layout_constraintHorizontal_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/sendImageButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_upload_image"
+            app:layout_constraintRight_toLeftOf="@id/guideline2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/messageField"/>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.9" />
+            app:layout_constraintGuide_percent="0.89" />
 
         <ImageView
             android:id="@+id/sendButton"

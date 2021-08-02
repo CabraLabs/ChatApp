@@ -22,8 +22,7 @@ object TictactoeManager {
         if (!player1Win() && !player2Win()) {
             if (player1Turn) {
                 board[position] = "x"
-            }
-            else {
+            } else {
                 board[position] = "o"
             }
             counter++
@@ -67,5 +66,14 @@ object TictactoeManager {
             (board[2] == "o" && board[5] == "o" && board[8] == "o")
         ) return true
         return false
+    }
+
+    fun reset() {
+        fillBoard()
+        counter = 1
+        player1Turn = true
+        draw = false
+        player1 = false
+        player2 = false
     }
 }

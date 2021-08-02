@@ -1,6 +1,8 @@
 package com.alexparra.chatapp.utils
 
 import android.content.Context
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.os.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -32,7 +34,7 @@ object ChatManager : CoroutineScope {
         return simpleDateFormat.format(Date()).uppercase()
     }
 
-    fun sendVibrateMessage(chat: Chat){
+    fun sendVibrateMessage(chat: Chat) {
         chatList.add(Message(MessageType.ATTENTION, chat.username, "/vibrate", currentTime()))
     }
 
@@ -112,6 +114,14 @@ object ChatManager : CoroutineScope {
                 VibrationEffect.EFFECT_HEAVY_CLICK
             )
         )
+    }
+
+    fun playSound() {
+        ContextCompat.getSystemService(applicationContext(), AudioManager::class.java)?.apply {
+            setStreamVolume(AudioManager.STREAM_MUSIC, getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioManager.AUDIOFOCUS_GAIN)
+        }
+        val mediaPlayer = MediaPlayer.create(applicationContext(), R.raw.bolso)
+        mediaPlayer.start()
     }
 
     fun delay(delay: Long = 1500, action: () -> Unit) {
