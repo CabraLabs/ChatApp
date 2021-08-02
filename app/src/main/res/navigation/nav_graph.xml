@@ -6,6 +6,14 @@
     app:startDestination="@id/homeFragment">
 
     <fragment
+        android:id="@+id/tictactoeFragment"
+        android:name="com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment"
+        android:label="ttt"
+        tools:layout="@layout/fragment_tictactoe" >
+
+    </fragment>
+
+    <fragment
         android:id="@+id/homeFragment"
         android:name="com.alexparra.chatapp.fragments.HomeFragment"
         android:label="Home"
@@ -53,6 +61,9 @@
         <action
             android:id="@+id/action_chatFragment_to_tictactoe"
             app:destination="@id/tictactoe" />
+        <action
+            android:id="@+id/action_chatFragment_to_tictactoeFragment"
+            app:destination="@id/tictactoeFragment" />
     </fragment>
     <fragment
         android:id="@+id/tictactoe"

@@ -7,6 +7,17 @@
     android:fitsSystemWindows="true"
     tools:context=".fragments.ChatFragment">
 
+    <ImageView
+        android:id="@+id/ttt"
+        android:src="@drawable/ic_tictactoe"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecycler"
         android:layout_width="match_parent"
@@ -29,7 +40,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <include layout="@layout/fragment_tictactoe" />
+        <include layout="@layout/fragment_tictactoe"
+            android:id="@+id/bottomsheet"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

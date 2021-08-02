@@ -32,10 +32,10 @@ class TictactoeFragment : BottomSheetDialogFragment() {
         binding.turn.text = "Player1"
         binding.counter.text = TictactoeManager.counter.toString()
 
-        startTable()
+        startBoard()
     }
 
-    private fun startTable() {
+    private fun startBoard() {
         val recyclerViewList: RecyclerView = binding.tableRecycler
         homeAdapter = TictactoeAdapter(TictactoeManager.board, ::onCellClick)
 
