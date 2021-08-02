@@ -3,12 +3,8 @@ package com.alexparra.chatapp.fragments
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.*
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -20,14 +16,11 @@ import com.alexparra.chatapp.adapters.ChatAdapter
 import com.alexparra.chatapp.databinding.FragmentChatBinding
 import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.models.Message
-import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.models.Server
-import com.alexparra.chatapp.tictactoe.adapters.TictactoeAdapter
 import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
 import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.alexparra.chatapp.utils.ChatManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.alexparra.chatapp.utils.ChatManager.updateRecyclerMessages
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
@@ -167,17 +160,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun startVibrate() {
-        val vibrator = getSystemService(requireContext(), Vibrator::class.java)
-        vibrator?.vibrate(
-            VibrationEffect.createOneShot(
-                1000,
-                VibrationEffect.EFFECT_HEAVY_CLICK
-            )
-        )
-    }
-
     @DelicateCoroutinesApi
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
@@ -227,41 +209,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                         chatNotification.sendMessage(message[0], message[1], activity as Activity)
                     }
 
-                    when {
-                        message[1] == "/vibrate" -> {
-                            startVibrate()
-                            ChatManager.chatList.add(
-                                Message(
-                                    MessageType.ATTENTION,
-                                    message[0],
-                                    message[1],
-                                    message[2]
-                                )
-                            )
-                        }
-
-                        message[3].isNotBlank() -> {
-                            ChatManager.chatList.add(
-                                Message(
-                                    MessageType.JOINED,
-                                    message[0],
-                                    message[1],
-                                    message[2]
-                                )
-                            )
-                        }
-
-                        else -> {
-                            ChatManager.chatList.add(
-                                Message(
-                                    MessageType.RECEIVED,
-                                    message[0],
-                                    message[1],
-                                    message[2]
-                                )
-                            )
-                        }
-                    }
+                    updateRecyclerMessages(message)
 
                     notifyAdapterChange()
                 }

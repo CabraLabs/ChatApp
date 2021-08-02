@@ -7,11 +7,14 @@ import java.util.*
 
 class Server(username: String = "admin") : Chat(username) {
 
-    @Transient private val socket = ServerSocket(1027)
+    @Transient
+    private val socket = ServerSocket(1027)
 
-    @Transient private lateinit var serverSocket: Socket
+    @Transient
+    private lateinit var serverSocket: Socket
 
-    @Transient private lateinit var output: OutputStream
+    @Transient
+    private lateinit var output: OutputStream
 
     fun startServer() {
         serverSocket = socket.accept()
