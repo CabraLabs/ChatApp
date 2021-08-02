@@ -29,7 +29,6 @@ class ChatNotificationManager(val context: Context, val channel: String) {
         notificationManager.createNotificationChannel(notificationChannel)
 
         val intent = Intent(activity, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
 
@@ -37,7 +36,7 @@ class ChatNotificationManager(val context: Context, val channel: String) {
         stackBuilder.addParentStack(MainActivity::class.java)
         stackBuilder.addNextIntent(intent)
 
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val builder = NotificationCompat.Builder(
             context,
