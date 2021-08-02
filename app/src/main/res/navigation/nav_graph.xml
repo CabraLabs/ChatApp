@@ -6,14 +6,6 @@
     app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/tictactoeFragment"
-        android:name="com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment"
-        android:label="ttt"
-        tools:layout="@layout/fragment_tictactoe" >
-
-    </fragment>
-
-    <fragment
         android:id="@+id/homeFragment"
         android:name="com.alexparra.chatapp.fragments.HomeFragment"
         android:label="Home"
@@ -26,9 +18,6 @@
             android:id="@+id/action_homeFragment_to_serverConnectFragment"
             app:destination="@id/serverConnectFragment"
             app:enterAnim="@anim/enter_from_right" />
-        <action
-            android:id="@+id/action_homeFragment_to_chatFragment"
-            app:destination="@id/chatFragment" />
     </fragment>
     <fragment
         android:id="@+id/clientConnectFragment"
@@ -58,9 +47,6 @@
         <argument
             android:name="connection"
             app:argType="com.alexparra.chatapp.models.Chat" />
-        <action
-            android:id="@+id/action_chatFragment_to_tictactoe"
-            app:destination="@id/tictactoe" />
     </fragment>
     <fragment
         android:id="@+id/tictactoe"

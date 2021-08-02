@@ -17,7 +17,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 
-class TictactoeFragment(val currentBoard: ArrayList<String>, val chatView: View?) : BottomSheetDialogFragment() {
+class TictactoeFragment(val currentBoard: ArrayList<String>) :
+    BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentTictactoeBinding
     private lateinit var tictactoeAdapter: TictactoeAdapter
@@ -49,7 +50,6 @@ class TictactoeFragment(val currentBoard: ArrayList<String>, val chatView: View?
                 BottomSheetBehavior.from(it).state = BottomSheetBehavior.STATE_EXPANDED
                 BottomSheetBehavior.from(it).isHideable = true
                 BottomSheetBehavior.from(it).skipCollapsed = true
-                BottomSheetBehavior.from(it).peekHeight = 500
             }
         }
         return bottomSheetDialog
@@ -83,16 +83,23 @@ class TictactoeFragment(val currentBoard: ArrayList<String>, val chatView: View?
 
         if (TictactoeManager.player1)
             activity?.let {
-                Snackbar.make(it.findViewById(R.id.chatLayout), "PLAYER 1 WIN!", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(
+                    it.findViewById(R.id.chatLayout),
+                    "PLAYER 1 WIN!",
+                    Snackbar.LENGTH_INDEFINITE
+                )
                     .setAction("RETRY") { tictactoeAdapter.reset() }.show()
             }
 
-        
+
         if (TictactoeManager.player2)
-            chatView?.let {
-                Snackbar.make(it, "PLAYER 2 WIN!", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("RETRY") { tictactoeAdapter.reset() }.show()
-            }
+            Snackbar.make(
+                requireActivity().findViewById(R.id.mainActivity),
+                "PLAYER 2 WIN!",
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction("RETRY") { tictactoeAdapter.reset() }.show()
+
 
         binding.counter.text = TictactoeManager.counter.toString()
         binding.turn.text = TictactoeManager.playerTurn()

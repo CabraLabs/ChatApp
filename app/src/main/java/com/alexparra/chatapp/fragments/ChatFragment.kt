@@ -92,8 +92,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 val currentBoard = TictactoeManager.board
 
                 activity?.supportFragmentManager?.let {
-                    TictactoeFragment(currentBoard, view).show(it, null)
-
+                    TictactoeFragment(currentBoard).show(it, null)
                 }
 
                 true

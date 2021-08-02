@@ -32,7 +32,7 @@ object TictactoeManager {
     }
 
     fun identifyWinner() {
-        if (counter == 11 && !player1Win() && !player2Win()) {
+        if (counter == 10 && !player1Win() && !player2Win()) {
             draw = true
         }
         if (player1Win()) {
