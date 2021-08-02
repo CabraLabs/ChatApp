@@ -26,6 +26,7 @@ import com.alexparra.chatapp.tictactoe.adapters.TictactoeAdapter
 import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
 import com.alexparra.chatapp.utils.ChatManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
@@ -35,11 +36,12 @@ class ChatFragment : Fragment(), CoroutineScope {
     private val args: ChatFragmentArgs by navArgs()
     private lateinit var binding: FragmentChatBinding
     private lateinit var chatAdapter: ChatAdapter
+    private lateinit var bottomsheet: BottomSheetBehavior<View>
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
-    private lateinit var sheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
     var list: ArrayList<Message> = ArrayList()
     private var BACKGROUND = false
@@ -96,9 +98,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         return when (item.itemId) {
             R.id.ticTactToe -> {
 
-                val bottomSheet = requireView().findViewById<View>(R.id.tictactoeSheet)
-
-                BottomSheetBehavior.from(bottomSheet).apply {
+                bottomsheet = BottomSheetBehavior.from(requireView().findViewById(R.id.bottomsheet)).apply {
                     state = BottomSheetBehavior.STATE_EXPANDED
                     peekHeight = 150
                     isHideable = false
@@ -125,6 +125,11 @@ class ChatFragment : Fragment(), CoroutineScope {
         super.onViewCreated(view, savedInstanceState)
 
         //TODO TICTACTOE
+
+        binding.ttt.setOnClickListener{
+            val action = ChatFragmentDirections.actionChatFragmentToTictactoeFragment()
+            navController.navigate(action)
+        }
 
         startChat()
     }

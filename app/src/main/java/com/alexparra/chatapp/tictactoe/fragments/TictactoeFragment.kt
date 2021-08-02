@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.alexparra.chatapp.databinding.FragmentTableBinding
+import com.alexparra.chatapp.databinding.FragmentTictactoeBinding
 import com.alexparra.chatapp.tictactoe.adapters.TictactoeAdapter
 import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -14,7 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 
 class TictactoeFragment : BottomSheetDialogFragment() {
 
-    private lateinit var binding: FragmentTableBinding
+    private lateinit var binding: FragmentTictactoeBinding
     private lateinit var homeAdapter: TictactoeAdapter
 
     override fun onCreateView(
@@ -22,7 +22,7 @@ class TictactoeFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentTableBinding.inflate(inflater, container, false)
+        binding = FragmentTictactoeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -32,10 +32,10 @@ class TictactoeFragment : BottomSheetDialogFragment() {
         binding.turn.text = "Player1"
         binding.counter.text = TictactoeManager.counter.toString()
 
-        startTable()
+        startBoard()
     }
 
-    private fun startTable() {
+    private fun startBoard() {
         val recyclerViewList: RecyclerView = binding.tableRecycler
         homeAdapter = TictactoeAdapter(TictactoeManager.board, ::onCellClick)
 
