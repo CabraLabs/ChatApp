@@ -53,31 +53,31 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
     private fun initializeButtons() {
         with(binding) {
             if (AppPreferences.getClient(context)[0].isNotBlank()) {
-                username.setText(AppPreferences.getClient(context)[0])
-                ipAddress.setText(AppPreferences.getClient(context)[1])
+                userNameField.setText(AppPreferences.getClient(context)[0])
+                ipAddressField.setText(AppPreferences.getClient(context)[1])
             }
 
             joinChat.setOnClickListener {
                 when {
-                    username.text.toString() == "" -> {
+                    userNameField.text.toString() == "" -> {
                         toast(getString(R.string.username_missing))
                         username.error = getString(R.string.username_missing)
                     }
 
-                    ipAddress.text.toString() == "" -> {
+                    ipAddressField.text.toString() == "" -> {
                         toast(getString(R.string.ip_missing))
-                        ipAddress.error = getString(R.string.ip_missing)
+                        ipAddressField.error = getString(R.string.ip_missing)
                     }
 
                     else -> {
                         launch(Dispatchers.IO) {
                             try {
-                                val inetAddress = Inet4Address.getByName(ipAddress.text.toString())
-                                val client = ClientSocket(username.text.toString(), inetAddress, 1027)
+                                val inetAddress = Inet4Address.getByName(ipAddressField.text.toString())
+                                val client = ClientSocket(userNameField.text.toString(), inetAddress, 1027)
 
                                 AppPreferences.saveClient(
-                                    username.text.toString(),
-                                    ipAddress.text.toString(),
+                                    userNameField.text.toString(),
+                                    ipAddressField.text.toString(),
                                     context
                                 )
 
