@@ -114,13 +114,6 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TODO TICTACTOE
-
-        binding.ttt.setOnClickListener {
-            val action = ChatFragmentDirections.actionChatFragmentToTictactoeFragment()
-            navController.navigate(action)
-        }
-
         startChat()
     }
 
