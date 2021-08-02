@@ -21,7 +21,6 @@ import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
 import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.ChatManager.updateRecyclerMessages
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
@@ -89,19 +88,18 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.ticTactToe -> {
-
-
                 val currentBoard = TictactoeManager.board
 
                 activity?.supportFragmentManager?.let {
                     TictactoeFragment(currentBoard).show(it, null)
-
+                }
                 true
             }
 
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -177,7 +175,11 @@ class ChatFragment : Fragment(), CoroutineScope {
                     } catch (e: java.net.SocketException) {
                         withContext(Dispatchers.Main) {
                             disableChat()
-                            Snackbar.make(view as View, getString(R.string.snack_server_disconnect), Snackbar.LENGTH_INDEFINITE)
+                            Snackbar.make(
+                                view as View,
+                                getString(R.string.snack_server_disconnect),
+                                Snackbar.LENGTH_INDEFINITE
+                            )
                                 .setAction("Exit Chat") {
                                     onDestroy()
                                     navController.popBackStack()
