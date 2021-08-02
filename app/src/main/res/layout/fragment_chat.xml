@@ -14,8 +14,8 @@
         android:layout_height="match_parent"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp"
-        android:paddingBottom="80dp"
         android:orientation="vertical"
+        android:paddingBottom="80dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,8 +30,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <include layout="@layout/fragment_tictactoe"
-            android:id="@+id/bottomsheet"/>
+        <include
+            android:id="@+id/bottomsheet"
+            layout="@layout/fragment_tictactoe" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -46,17 +47,17 @@
 
         <ImageView
             android:id="@+id/vibrateButton"
-            android:src="@drawable/ic_vibrate"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
-
             android:clickable="true"
+
             android:focusable="true"
+            android:src="@drawable/ic_vibrate"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline1"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline1"
@@ -72,20 +73,20 @@
             android:layout_marginStart="5dp"
             android:hint="@string/insert_message"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/sendImageButton"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/guideline1"
-            app:layout_constraintHorizontal_bias="0.0" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/sendImageButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_upload_image"
-            app:layout_constraintRight_toLeftOf="@id/guideline2"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/messageField"/>
+            app:layout_constraintLeft_toRightOf="@id/messageField"
+            app:layout_constraintRight_toLeftOf="@id/guideline2"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"
