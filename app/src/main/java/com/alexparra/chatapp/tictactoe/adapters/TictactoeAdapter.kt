@@ -52,13 +52,8 @@ class TictactoeAdapter (
 
     @SuppressLint("NotifyDataSetChanged")
     fun reset() {
-        TictactoeManager.fillBoard()
+        TictactoeManager.reset()
         dataSet = TictactoeManager.board
-        TictactoeManager.counter = 1
-        TictactoeManager.player1Turn = true
-        TictactoeManager.draw = false
-        TictactoeManager.player1 = false
-        TictactoeManager.player2 = false
         notifyDataSetChanged()
     }
 }
