@@ -3,12 +3,8 @@ package com.alexparra.chatapp.fragments
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.*
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -22,7 +18,6 @@ import com.alexparra.chatapp.models.*
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.ChatManager.updateRecyclerMessages
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
@@ -93,7 +88,6 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.ticTactToe -> {
-
                 bottomsheet = BottomSheetBehavior.from(requireView().findViewById(R.id.bottomsheet)).apply {
                     state = BottomSheetBehavior.STATE_EXPANDED
                     peekHeight = 150
@@ -122,7 +116,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
         //TODO TICTACTOE
 
-        binding.ttt.setOnClickListener{
+        binding.ttt.setOnClickListener {
             val action = ChatFragmentDirections.actionChatFragmentToTictactoeFragment()
             navController.navigate(action)
         }
