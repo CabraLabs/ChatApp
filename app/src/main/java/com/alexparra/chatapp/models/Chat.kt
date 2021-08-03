@@ -5,6 +5,7 @@ import java.util.*
 
 abstract class Chat(val username: String) : Serializable {
     abstract fun writeToSocket(message: String)
-    abstract fun updateSocket(): Scanner
+    abstract fun readSocket(): Scanner
+    //abstract fun sendImage()
     abstract fun closeSocket()
 }

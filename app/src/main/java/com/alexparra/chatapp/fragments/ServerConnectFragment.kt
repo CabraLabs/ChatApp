@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.databinding.FragmentServerConnectBinding
 import com.alexparra.chatapp.models.Server
 import com.alexparra.chatapp.utils.toast
+import com.alexparra.chatapp.viewmodel.ServerViewModel
 import kotlinx.coroutines.*
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -18,6 +20,8 @@ import java.net.SocketException
 
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
+
+    private val model: ServerViewModel by activityViewModels()
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main

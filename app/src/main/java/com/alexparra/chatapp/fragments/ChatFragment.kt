@@ -200,7 +200,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun receiveMessageListener() {
         GlobalScope.launch(Dispatchers.IO) {
-            val scanner = args.connection.updateSocket()
+            val scanner = args.connection.readSocket()
 
             while (scanner.hasNextLine()) {
                 // [0] Username | [1] Message | [2] Time | [3] Joined

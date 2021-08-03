@@ -21,7 +21,7 @@ class Server(username: String = "admin") : Chat(username) {
         output = serverSocket.getOutputStream()
     }
 
-    override fun updateSocket(): Scanner {
+    override fun readSocket(): Scanner {
         return Scanner(serverSocket.getInputStream())
     }
 

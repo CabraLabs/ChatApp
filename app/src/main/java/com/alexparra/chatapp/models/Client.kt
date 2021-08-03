@@ -14,7 +14,7 @@ class ClientSocket(username: String, ip: InetAddress, port: Int) : Chat(username
         output.write(messageByte)
     }
 
-    override fun updateSocket(): Scanner {
+    override fun readSocket(): Scanner {
         return Scanner(socket.getInputStream())
     }
 
