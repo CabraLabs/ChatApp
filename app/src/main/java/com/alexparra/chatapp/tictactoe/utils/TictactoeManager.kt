@@ -1,8 +1,6 @@
 package com.alexparra.chatapp.tictactoe.utils
 
-import com.alexparra.chatapp.models.Chat
 import com.alexparra.chatapp.models.ClientSocket
-import com.alexparra.chatapp.models.Server
 
 object TictactoeManager {
     var board: ArrayList<String> = ArrayList()

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -16,18 +17,19 @@ import com.alexparra.chatapp.adapters.ChatAdapter
 import com.alexparra.chatapp.databinding.FragmentChatBinding
 import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.models.Message
-import com.alexparra.chatapp.models.Server
+import com.alexparra.chatapp.models.UserType
 import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
 import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.ChatManager.updateRecyclerMessages
+import com.alexparra.chatapp.viewmodel.ClientViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatFragment : Fragment(), CoroutineScope {
 
-    private val args: ChatFragmentArgs by navArgs()
+    private val arg: ChatFragmentArgs by navArgs()
     private lateinit var binding: FragmentChatBinding
     private lateinit var chatAdapter: ChatAdapter
 
@@ -46,13 +48,15 @@ class ChatFragment : Fragment(), CoroutineScope {
         findNavController()
     }
 
+    private val client: ClientViewModel by activityViewModels()
+
     // Fragment life cycle
     override fun onDestroy() {
         args.connection.closeSocket()
         this.cancel()
         chatNotification.cancelNotification()
 
-        if (args.connection is Server) {
+        if (arg.user == UserType.SERVER) {
             activity?.title = getString(R.string.server_app_bar_name)
         } else {
             activity?.title = getString(R.string.client_app_bar_name)
@@ -165,29 +169,25 @@ class ChatFragment : Fragment(), CoroutineScope {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
 
-                GlobalScope.launch(Dispatchers.IO) {
-                    try {
-                        args.connection.writeToSocket(
-                            ChatManager.sendMessageToSocket(
-                                args.connection,
-                                getTextFieldString()
-                            )
-                        )
-                        eraseTextField()
-                    } catch (e: java.net.SocketException) {
-                        withContext(Dispatchers.Main) {
-                            disableChat()
-                            Snackbar.make(
-                                view as View,
-                                getString(R.string.snack_server_disconnect),
-                                Snackbar.LENGTH_INDEFINITE
-                            )
-                                .setAction("Exit Chat") {
-                                    onDestroy()
-                                    navController.popBackStack()
-                                }.show()
-                        }
-                    }
+                var success = client.writeToSocket(ChatManager.sendMessageToSocket(client.getUsername(), getTextFieldString()))
+
+                if (success) {
+                    eraseTextField()
+                } else {
+                    disableChat()
+                    Snackbar.make(
+                        view as View,
+                        getString(R.string.snack_server_disconnect),
+                        Snackbar.LENGTH_INDEFINITE
+                    )
+                        .setAction("Exit Chat") {
+                            onDestroy()
+                            navController.popBackStack()
+                        }.show()
+                }
+
+                if (BACKGROUND) {
+                    chatNotification.sendMessage(message[0], message[1], activity as Activity)
                 }
 
                 list.add(ChatManager.getSentMessage(args.connection, getTextFieldString()))

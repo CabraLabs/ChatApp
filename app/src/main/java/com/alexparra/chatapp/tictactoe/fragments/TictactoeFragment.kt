@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.databinding.FragmentTictactoeBinding
-import com.alexparra.chatapp.models.Chat
 import com.alexparra.chatapp.tictactoe.adapters.TictactoeAdapter
 import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
