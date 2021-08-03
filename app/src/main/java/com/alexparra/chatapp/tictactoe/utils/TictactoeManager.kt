@@ -1,6 +1,7 @@
 package com.alexparra.chatapp.tictactoe.utils
 
 import com.alexparra.chatapp.models.Chat
+import com.alexparra.chatapp.models.ClientSocket
 import com.alexparra.chatapp.models.Server
 
 object TictactoeManager {
@@ -22,11 +23,13 @@ object TictactoeManager {
         if (!player1Win() && !player2Win()) {
             if (player1Turn && chat is Server) {
                 board[position] = "x"
-            } else {
+                counter++
+                player1Turn = !player1Turn
+            } else if(!player1Turn && chat is ClientSocket){
                 board[position] = "o"
+                counter++
+                player1Turn = !player1Turn
             }
-            counter++
-            player1Turn = !player1Turn
         }
     }
 
