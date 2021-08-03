@@ -1,12 +1,12 @@
 package com.alexparra.chatapp.tictactoe.utils
 
+import com.alexparra.chatapp.models.Chat
+import com.alexparra.chatapp.models.Server
+
 object TictactoeManager {
     var board: ArrayList<String> = ArrayList()
     var counter = 1
     var player1Turn = true
-    var draw = false
-    var player1 = false
-    var player2 = false
 
     fun fillBoard() {
         board = arrayListOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
@@ -18,9 +18,9 @@ object TictactoeManager {
         return "Player 2"
     }
 
-    fun markCell(position: Int) {
+    fun markCell(position: Int, chat: Chat) {
         if (!player1Win() && !player2Win()) {
-            if (player1Turn) {
+            if (player1Turn && chat is Server) {
                 board[position] = "x"
             } else {
                 board[position] = "o"
@@ -30,16 +30,17 @@ object TictactoeManager {
         }
     }
 
-    fun identifyWinner() {
+    fun identifyWinner(): String {
         if (counter == 10 && !player1Win() && !player2Win()) {
-            draw = true
+            return "draw"
         }
         if (player1Win()) {
-            player1 = true
+            return "player1"
         }
         if (player2Win()) {
-            player2 = true
+            return "player2"
         }
+        return "none"
     }
 
     fun player1Win(): Boolean {
@@ -72,8 +73,5 @@ object TictactoeManager {
         fillBoard()
         counter = 1
         player1Turn = true
-        draw = false
-        player1 = false
-        player2 = false
     }
 }

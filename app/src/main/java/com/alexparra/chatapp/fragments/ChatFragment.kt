@@ -90,8 +90,10 @@ class ChatFragment : Fragment(), CoroutineScope {
             R.id.ticTactToe -> {
                 val currentBoard = TictactoeManager.board
 
+                val tictactoeFragment = TictactoeFragment(currentBoard, args.connection)
+
                 activity?.supportFragmentManager?.let {
-                    TictactoeFragment(currentBoard).show(it, null)
+                    tictactoeFragment.show(it, null)
                 }
                 true
             }

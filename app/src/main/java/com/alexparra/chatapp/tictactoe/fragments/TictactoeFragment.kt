@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.databinding.FragmentTictactoeBinding
+import com.alexparra.chatapp.models.Chat
 import com.alexparra.chatapp.tictactoe.adapters.TictactoeAdapter
 import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -17,7 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 
-class TictactoeFragment(val currentBoard: ArrayList<String>) :
+class TictactoeFragment(val currentBoard: ArrayList<String>, val chat: Chat) :
     BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentTictactoeBinding
@@ -56,7 +57,6 @@ class TictactoeFragment(val currentBoard: ArrayList<String>) :
     }
 
     private fun startBoard() {
-
         if (TictactoeManager.counter == 1)
             TictactoeManager.fillBoard()
         else
@@ -72,34 +72,38 @@ class TictactoeFragment(val currentBoard: ArrayList<String>) :
     }
 
     private fun onCellClick(cell: String, pos: Int) {
-        TictactoeManager.markCell(pos)
-        TictactoeManager.identifyWinner()
+        TictactoeManager.markCell(pos, chat)
 
-        if (TictactoeManager.draw)
-            dialog?.window?.let {
-                Snackbar.make(it.decorView, "DRAW", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("RETRY") { tictactoeAdapter.reset() }.show()
+        val parent = requireActivity().window.decorView.findViewById<View>(android.R.id.content)
+        val status = TictactoeManager.identifyWinner()
+
+        when(status){
+            "draw" -> {
+                dialog?.window?.let {
+                    Snackbar.make(it.decorView, "DRAW", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("RETRY") { tictactoeAdapter.reset() }.show()
+                }
             }
 
-        if (TictactoeManager.player1)
-            activity?.let {
-                Snackbar.make(
-                    it.findViewById(R.id.chatLayout),
-                    "PLAYER 1 WIN!",
+            "player1" -> {
+                activity?.let {
+                    Snackbar.make(
+                        it.findViewById(R.id.chatLayout),
+                        "PLAYER 1 WIN!",
+                        Snackbar.LENGTH_INDEFINITE
+                    )
+                        .setAction("RETRY") { tictactoeAdapter.reset() }.show()
+                }
+            }
+
+            "player2" -> {
+                Snackbar.make(parent,
+                    "PLAYER 2 WIN!",
                     Snackbar.LENGTH_INDEFINITE
                 )
                     .setAction("RETRY") { tictactoeAdapter.reset() }.show()
             }
-
-
-        if (TictactoeManager.player2)
-            Snackbar.make(
-                requireActivity().findViewById(R.id.mainActivity),
-                "PLAYER 2 WIN!",
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction("RETRY") { tictactoeAdapter.reset() }.show()
-
+        }
 
         binding.counter.text = TictactoeManager.counter.toString()
         binding.turn.text = TictactoeManager.playerTurn()
