@@ -24,6 +24,8 @@ class ServerService: Service(), CoroutineScope {
         startServer()
     }
 
+    // TODO create list with accepted sockets.
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val notificationManager = ChatNotificationManager(applicationContext, "1")
@@ -57,9 +59,9 @@ class ServerService: Service(), CoroutineScope {
             socket.getOutputStream()
         }
     }
-    
-    private fun forwardMessage() {
 
+    private fun forwardMessage() {
+        // TODO foreach on the socket list to send all the images.
     }
 
 
