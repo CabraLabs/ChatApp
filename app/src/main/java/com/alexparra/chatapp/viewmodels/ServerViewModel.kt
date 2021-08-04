@@ -1,4 +1,4 @@
-package com.alexparra.chatapp.viewmodel
+package com.alexparra.chatapp.viewmodels
 
 import android.os.Build
 import androidx.annotation.RequiresApi

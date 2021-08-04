@@ -25,6 +25,9 @@ import com.alexparra.chatapp.utils.ChatManager.updateRecyclerMessages
 import com.alexparra.chatapp.viewmodels.ClientViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
+import java.net.ServerSocket
+import java.util.*
+import kotlin.collections.ArrayList
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatFragment : Fragment(), CoroutineScope {
@@ -92,8 +95,16 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.ticTactToe -> {
-                val currentBoard = TictactoeManager.board
-                val tictactoeFragment = TictactoeFragment(currentBoard, args.connection)
+                val tictactoeFragment = TictactoeFragment(args.connection)
+
+                GlobalScope.launch(Dispatchers.IO) {
+                    args.connection.writeToSocket(
+                        ChatManager.sendMessageToSocket(
+                            args.connection,
+                            "/TICTACTOE_INVITE"
+                        )
+                    )
+                }
 
                 activity?.supportFragmentManager?.let {
                     tictactoeFragment.show(it, null)
@@ -104,7 +115,6 @@ class ChatFragment : Fragment(), CoroutineScope {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -212,7 +222,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                         chatNotification.sendMessage(message[0], message[1], activity as Activity)
                     }
 
-                    updateRecyclerMessages(message)
+                    updateRecyclerMessages(message, view, activity)
 
                     notifyAdapterChange()
                 }

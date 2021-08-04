@@ -1,10 +1,9 @@
-package com.alexparra.chatapp.viewmodel
+package com.alexparra.chatapp.viewmodels
 
 import android.app.Activity
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
-import com.alexparra.chatapp.MainActivity
 import com.alexparra.chatapp.MainApplication.Companion.applicationContext
 import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.utils.ChatManager
