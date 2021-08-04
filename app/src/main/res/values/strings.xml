@@ -42,4 +42,10 @@
     <string name="home_app_bar_name">Chat App</string>
     <string name="tic_tac_toe">Tic Tac Toe</string>
 
+<!-- Tictactoe -->
+    <string name="retry">RETRY</string>
+    <string name="draw">DRAW</string>
+    <string name="player1">Player 1</string>
+    <string name="player2">Player 2</string>
+
 </resources>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -21,6 +22,7 @@ import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
 import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.ChatManager.updateRecyclerMessages
+import com.alexparra.chatapp.viewmodels.TictactoeViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
@@ -89,7 +91,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         return when (item.itemId) {
             R.id.ticTactToe -> {
                 val currentBoard = TictactoeManager.board
-
                 val tictactoeFragment = TictactoeFragment(currentBoard, args.connection)
 
                 activity?.supportFragmentManager?.let {

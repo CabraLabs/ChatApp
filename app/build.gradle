@@ -12,6 +12,10 @@ android {
         viewBinding true
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.alexparra.socket"
         minSdkVersion 23
