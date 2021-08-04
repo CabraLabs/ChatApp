@@ -7,7 +7,6 @@ import com.alexparra.chatapp.R
 import com.alexparra.chatapp.models.Chat
 import com.alexparra.chatapp.models.ClientSocket
 import com.alexparra.chatapp.models.Server
-import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.viewmodels.TictactoeViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -15,6 +14,8 @@ import kotlinx.coroutines.launch
 import java.net.ServerSocket
 import java.util.*
 import kotlin.collections.ArrayList
+import com.alexparra.chatapp.models.ClientSocket
+
 
 object TictactoeManager {
     var board: ArrayList<String> = ArrayList()

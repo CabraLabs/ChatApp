@@ -45,8 +45,8 @@
         android:label="Chat"
         tools:layout="@layout/fragment_chat" >
         <argument
-            android:name="connection"
-            app:argType="com.alexparra.chatapp.models.Chat" />
+            android:name="user"
+            app:argType="com.alexparra.chatapp.models.UserType" />
     </fragment>
     <fragment
         android:id="@+id/tictactoe"

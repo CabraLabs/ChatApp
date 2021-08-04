@@ -5,15 +5,13 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import com.alexparra.chatapp.MainApplication.Companion.applicationContext
 import com.alexparra.chatapp.R
-import com.alexparra.chatapp.models.Chat
-import com.alexparra.chatapp.models.ClientSocket
 import com.alexparra.chatapp.models.Message
 import java.text.SimpleDateFormat
 import com.alexparra.chatapp.models.MessageType
+import com.alexparra.chatapp.models.UserType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,32 +32,32 @@ object ChatManager : CoroutineScope {
         return simpleDateFormat.format(Date()).uppercase()
     }
 
-    fun sendVibrateMessage(chat: Chat) {
-        chatList.add(Message(MessageType.ATTENTION, chat.username, "/vibrate", currentTime()))
+    fun sendVibrateMessage(username: String) {
+        chatList.add(Message(MessageType.ATTENTION, username, "/vibrate", currentTime()))
     }
 
     /**
      * Sends the Message data class when the user joins the chat.
      */
-    fun connectMessage(chat: Chat, context: Context): Message {
-        if (chat is ClientSocket) {
-            return Message(MessageType.JOINED, chat.username, context.getString(R.string.joined_the_room), currentTime())
+    fun connectMessage(user: UserType, username: String,context: Context): Message {
+        if (user == UserType.CLIENT) {
+            return Message(MessageType.JOINED, username, context.getString(R.string.joined_the_room), currentTime())
         }
-        return Message(MessageType.JOINED, chat.username, context.getString(R.string.created_the_room), currentTime())
+        return Message(MessageType.JOINED, username, context.getString(R.string.created_the_room), currentTime())
     }
 
     /**
      * Send the correct formatted message output to the Socket.
      */
-    fun sendMessageToSocket(chat: Chat, text: String): String {
-        return "${chat.username};${text};${currentTime()};\n"
+    fun sendMessageToSocket(username: String, text: String): String {
+        return "${username};${text};${currentTime()};\n"
     }
 
     /**
      * Generates the Message data class for the sent message.
      */
-    fun getSentMessage(chat: Chat, text: String): Message {
-        return Message(MessageType.SENT, chat.username, text, currentTime())
+    fun getSentMessage(username: String, text: String): Message {
+        return Message(MessageType.SENT, username, text, currentTime())
     }
 
     /**
