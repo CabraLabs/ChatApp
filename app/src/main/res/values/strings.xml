@@ -16,6 +16,7 @@
     <string name="connect_error">IP Address doesn\'t have a chat server</string>
 
     <!-- FragmentServerConnect -->
+    <string name="admin">Admin</string>
     <string name="your_ip">Your IP Address is:</string>
     <string name="create_server">Create Server</string>
     <string name="waiting_for_a_connection">Waiting for a connection</string>
@@ -41,5 +42,8 @@
     <string name="chat_app_bar_name">Chat</string>
     <string name="home_app_bar_name">Chat App</string>
     <string name="tic_tac_toe">Tic Tac Toe</string>
+
+    <!-- Foreground -->
+    <string name="server_running">Server is running</string>
 
 </resources>

@@ -78,7 +78,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
                     ipAddressField.text.toString() == "" -> {
                         toast(getString(R.string.ip_missing))
-                        ipAddressField.error = getString(R.string.ip_missing)
+                        ipAddress.error = getString(R.string.ip_missing)
                     }
 
                     else -> {
@@ -98,6 +98,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                             navController.navigate(action)
                         } else {
                             toast(getString(R.string.connect_error))
+                            ipAddress.error
                         }
                     }
                 }

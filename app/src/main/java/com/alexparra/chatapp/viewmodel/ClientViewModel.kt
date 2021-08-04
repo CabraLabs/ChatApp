@@ -4,11 +4,11 @@ import android.app.Activity
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
-import com.alexparra.chatapp.MainActivity
 import com.alexparra.chatapp.MainApplication.Companion.applicationContext
 import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.utils.ChatManager
 import kotlinx.coroutines.*
+import java.net.DatagramSocket
 import java.net.InetAddress
 import java.net.Socket
 import java.util.*
@@ -26,6 +26,17 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         ChatNotificationManager(applicationContext(), "0")
     }
 
+    private val output by lazy {
+        client.getOutputStream()
+    }
+
+    override fun onCleared() {
+        this.cancel()
+        super.onCleared()
+    }
+
+    fun getUsername() = userName
+
     fun startSocket(username: String, ip: InetAddress): Boolean {
         return try {
             client = Socket(ip, 1027)
@@ -36,12 +47,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         }
     }
 
-    fun getUsername() = userName
-
     fun writeToSocket(message: String): Boolean {
         var success = true
 
-        val output = client.getOutputStream()
         val messageByte = message.toByteArray(Charsets.UTF_8)
         launch(Dispatchers.IO) {
             success = try {
@@ -63,6 +71,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
             if (scanner.hasNext()) {
                 var message = scanner.nextLine().split(";")
+
                 ChatManager.updateRecyclerMessages(message)
 
                 if (background) {
@@ -70,6 +79,19 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                 }
             }
         }
+    }
+
+    fun getIpAddress(): String {
+        var ip = ""
+        launch(Dispatchers.IO) {
+            DatagramSocket().use { socket ->
+                socket.connect(InetAddress.getByName("8.8.8.8"), 1027)
+                ip = socket.localAddress.hostAddress.toString()
+                socket.close()
+            }
+        }
+
+        return ip
     }
 
     fun closeSocket() {
