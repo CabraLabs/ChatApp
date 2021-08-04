@@ -19,7 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 
-class TictactoeFragment(val currentBoard: ArrayList<String>, val chat: Chat) :
+class TictactoeFragment(val chat: Chat) :
     BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentTictactoeBinding
@@ -65,8 +65,11 @@ class TictactoeFragment(val currentBoard: ArrayList<String>, val chat: Chat) :
     }
 
     private fun startBoard() {
-        TictactoeManager.board = tictactoeViewModel.getCurrentBoard()
-        TictactoeManager.receiveMessageListener(tictactoeViewModel)
+        if(TictactoeManager.counter != 1){
+            tictactoeViewModel.updateBoard(TictactoeManager.board)
+        }else {
+            TictactoeManager.fillBoard()
+        }
 
         val recyclerViewList: RecyclerView = binding.tableRecycler
         tictactoeAdapter = TictactoeAdapter(TictactoeManager.board, ::onCellClick)

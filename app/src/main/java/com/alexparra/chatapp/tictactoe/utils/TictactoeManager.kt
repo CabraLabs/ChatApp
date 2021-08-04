@@ -42,7 +42,7 @@ object TictactoeManager {
 
     fun stringToBoard(string: String): ArrayList<String> {
         string.replace("BOARD:", "")
-        return ArrayList<String>((string.split("/")))
+        return ArrayList((string.split("/")))
     }
 
     fun sendMessage(chat: Chat, message: String) {
@@ -59,21 +59,8 @@ object TictactoeManager {
         }
     }
 
-    fun receiveMessageListener(tictactoeViewModel: TictactoeViewModel) {
-        GlobalScope.launch(Dispatchers.IO) {
-            val socket = ServerSocket(1027)
-            val serverSocket = socket.accept()
-            val scanner = Scanner(serverSocket.getInputStream())
-
-            while (scanner.hasNextLine()) {
-                // [0] Username | [1] Message | [2] Time | [3] Joined
-                val message = scanner.nextLine().split(";")
-                if (message.contains("BOARD:")) {
-                    board = stringToBoard(message[1])
-                    tictactoeViewModel.updateBoard(board)
-                }
-            }
-        }
+    fun receiveMessageListener(string: String) {
+        board = stringToBoard(string)
     }
 
     fun markCell(position: Int, chat: Chat, tictactoeViewModel: TictactoeViewModel) {
