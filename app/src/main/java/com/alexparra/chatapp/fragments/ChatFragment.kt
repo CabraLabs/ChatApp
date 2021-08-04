@@ -1,6 +1,5 @@
 package com.alexparra.chatapp.fragments
 
-import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -19,7 +18,6 @@ import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.UserType
 import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
-import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.ChatManager.updateRecyclerMessages
 import com.alexparra.chatapp.viewmodels.ClientViewModel
@@ -39,7 +37,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
-    var list: ArrayList<Message> = ArrayList()
+    private var list: ArrayList<Message> = ArrayList()
     private var BACKGROUND = false
     private val CHAT_CHANNEL = "0"
 
@@ -53,9 +51,13 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private val client: ClientViewModel by activityViewModels()
 
+    private val clientUsername: String by lazy {
+        client.getUsername()
+    }
+
     // Fragment life cycle
     override fun onDestroy() {
-        args.connection.closeSocket()
+        client.closeSocket()
         this.cancel()
         chatNotification.cancelNotification()
 
@@ -139,11 +141,10 @@ class ChatFragment : Fragment(), CoroutineScope {
         val recyclerViewList: RecyclerView = binding.chatRecycler
         chatAdapter = ChatAdapter(list)
 
-        val connectMessage = ChatManager.connectMessage(args.connection, requireContext())
-
+        val connectMessage = ChatManager.connectMessage(arg.user, client.getUsername(), requireContext())
         list.add(connectMessage)
-
         sendConnectMessage(connectMessage)
+
         receiveMessageListener()
         sendMessageListener()
         vibrateListener()
@@ -156,19 +157,17 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     @DelicateCoroutinesApi
     private fun vibrateListener() {
+        val vibrate = "/vibrate"
+
         binding.vibrateButton.setOnClickListener {
-            GlobalScope.launch(Dispatchers.IO) {
-                args.connection.writeToSocket(
-                    ChatManager.sendMessageToSocket(
-                        args.connection,
-                        "/vibrate"
-                    )
-                )
-                withContext(Dispatchers.Main) {
-                    ChatManager.sendVibrateMessage(args.connection)
-                    notifyAdapterChange()
-                    disableAttention()
-                }
+            val success = client.writeToSocket(ChatManager.sendMessageToSocket(clientUsername, vibrate))
+
+            if (success) {
+                ChatManager.sendVibrateMessage(clientUsername)
+                notifyAdapterChange()
+                disableAttention()
+            } else {
+                disconnectedSnackbar()
             }
         }
     }
@@ -178,33 +177,19 @@ class ChatFragment : Fragment(), CoroutineScope {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
 
-                var success = client.writeToSocket(ChatManager.sendMessageToSocket(client.getUsername(), getTextFieldString()))
+                val success = client.writeToSocket(ChatManager.sendMessageToSocket(clientUsername, getTextFieldString()))
 
                 if (success) {
                     eraseTextField()
                 } else {
-                    disableChat()
-                    Snackbar.make(
-                        view as View,
-                        getString(R.string.snack_server_disconnect),
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                        .setAction("Exit Chat") {
-                            onDestroy()
-                            navController.popBackStack()
-                        }.show()
+                    disconnectedSnackbar()
                 }
 
-                if (BACKGROUND) {
-                    chatNotification.sendMessage(message[0], message[1], activity as Activity)
-                }
-
-                list.add(ChatManager.getSentMessage(args.connection, getTextFieldString()))
+                list.add(ChatManager.getSentMessage(clientUsername, getTextFieldString()))
             }
 
             notifyAdapterChange()
         }
-
     }
 
     @DelicateCoroutinesApi
@@ -227,17 +212,21 @@ class ChatFragment : Fragment(), CoroutineScope {
                     notifyAdapterChange()
                 }
             }
+        if (BACKGROUND) {
+            client.readSocket(true, activity)
+        } else {
+            client.readSocket()
         }
+
+        notifyAdapterChange()
     }
 
+    // TODO
     @DelicateCoroutinesApi
     private fun sendConnectMessage(message: Message) {
-        GlobalScope.launch(Dispatchers.IO) {
-            val sendMessage =
-                "${message.username};${message.message};${message.time};${message.type}\n"
-            args.connection.writeToSocket(sendMessage)
-            notifyAdapterChange()
-        }
+        val sendMessage = "${message.username};${message.message};${message.time};${message.type}\n"
+        client.writeToSocket(sendMessage)
+        notifyAdapterChange()
     }
 
     private fun disableChat() {
@@ -248,6 +237,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun disableAttention() {
+        // TODO CHECK IF DISABLE CHAT DISABLES THIS
         with(binding) {
             vibrateButton.apply {
                 alpha = 0.2F
@@ -259,6 +249,19 @@ class ChatFragment : Fragment(), CoroutineScope {
                 }
             }
         }
+    }
+
+    private fun disconnectedSnackbar() {
+        disableChat()
+        Snackbar.make(
+            view as View,
+            getString(R.string.snack_server_disconnect),
+            Snackbar.LENGTH_INDEFINITE
+        )
+            .setAction("Exit Chat") {
+                onDestroy()
+                navController.popBackStack()
+            }.show()
     }
 
     private fun getTextFieldString() = binding.messageField.text.toString()

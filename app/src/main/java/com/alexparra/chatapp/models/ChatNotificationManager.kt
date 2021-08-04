@@ -1,19 +1,17 @@
 package com.alexparra.chatapp.models
 
-import android.app.Activity
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startForegroundService
 import com.alexparra.chatapp.MainActivity
 import com.alexparra.chatapp.R
+import com.alexparra.chatapp.ServerService
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatNotificationManager(val context: Context, val channel: String) {
@@ -45,8 +43,26 @@ class ChatNotificationManager(val context: Context, val channel: String) {
             color = context.getColor(R.color.blue)
         }
 
+        showNotification(notification = builder)
+    }
+
+    fun foregroundNotification(serverInfo: String): Notification {
+        val intent = Intent(context, ServerService::class.java)
+
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+
+        return Notification.Builder(context, "foreground")
+            .setColor(context.getColor(R.color.blue))
+            .setContentTitle(context.getString(R.string.server_running))
+            .setContentText(serverInfo)
+            .setSmallIcon(R.drawable.ic_server_foreground)
+            .setContentIntent(pendingIntent)
+            .build()
+    }
+
+    private fun showNotification(channel: Int = 0, notification: NotificationCompat.Builder) {
         with(NotificationManagerCompat.from(context)) {
-            notify(0, builder.build())
+            notify(channel, notification.build())
         }
     }
 
