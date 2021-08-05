@@ -20,7 +20,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     override val coroutineContext = parentJob + Dispatchers.IO
 
     private lateinit var client: Socket
+
     private lateinit var userName: String
+
 
     private val chatNotification by lazy {
         ChatNotificationManager(applicationContext(), "0")
@@ -31,9 +33,14 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     fun startSocket(username: String, ip: InetAddress): Boolean {
+        var counter = 0
         return try {
-            client = Socket(ip, 1027)
-            userName = username
+            runBlocking {
+                launch(Dispatchers.IO) {
+                    client = Socket(ip, 1027)
+                    userName = username
+                }
+            }
             true
         } catch (e: java.net.ConnectException) {
             false
@@ -79,11 +86,14 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     fun getIpAddress(): String {
         var ip = ""
-        launch(Dispatchers.IO) {
-            DatagramSocket().use { socket ->
-                socket.connect(InetAddress.getByName("8.8.8.8"), 1027)
-                ip = socket.localAddress.hostAddress.toString()
-                socket.close()
+
+        runBlocking {
+            launch(Dispatchers.IO) {
+                DatagramSocket().use { socket ->
+                    socket.connect(InetAddress.getByName("8.8.8.8"), 1027)
+                    ip = socket.localAddress.hostAddress
+                    socket.close()
+                }
             }
         }
 

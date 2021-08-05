@@ -47,10 +47,10 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textSize="20sp"
-        tools:text="192.168.0.1" />
+        tools:text="192.168.0.1"
+        android:layout_marginBottom="20dp"/>
 
     <LinearLayout
-        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -64,8 +64,8 @@
             android:layout_marginEnd="10dp"/>
 
         <Button
-            android:elevation="1dp"
             android:id="@+id/createServer"
+            android:elevation="1dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/create_server"

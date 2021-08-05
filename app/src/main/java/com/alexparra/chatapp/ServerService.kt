@@ -18,30 +18,30 @@ class ServerService: Service(), CoroutineScope {
 
     private val STOP = "STOP"
 
-    private var RUNNING = false
+    private var SERVER_START = false
+    private var running = true
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
 
-    private val serverSocket = ServerSocket(1027)
+    private lateinit var serverSocket: ServerSocket
+    private var socketList: ArrayList<Socket?> = arrayListOf()
 
-    private var running = true
+    private val channel = Channel<Pair<InetAddress, ByteArray>>()
 
     override fun onCreate() {
         startServer()
         forwardMessage()
     }
 
-    private lateinit var socketList: ArrayList<Socket>
-
-    private val channel = Channel<Pair<InetAddress, ByteArray>>()
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val notificationManager = ChatNotificationManager(applicationContext, "1")
-        startForeground(1, notificationManager.foregroundNotification(""))
+        val notificationManager = ChatNotificationManager(applicationContext, "foreground")
+        startForeground(100, notificationManager.foregroundNotification(""))
 
-        if (intent.action == STOP) {
+        if (intent.getStringExtra("STOP") == STOP) {
+            stopForeground(true)
+            notificationManager.cancelNotification()
             onDestroy()
         }
 
@@ -49,7 +49,7 @@ class ServerService: Service(), CoroutineScope {
     }
 
     override fun onDestroy() {
-        if (RUNNING) {
+        if (SERVER_START) {
             closeServer()
         }
 
@@ -66,13 +66,15 @@ class ServerService: Service(), CoroutineScope {
     private fun startServer() {
         var count = 0
         launch(Dispatchers.IO) {
+            serverSocket = ServerSocket(1027)
+
             while (count <= 3) {
                 try {
                     val socket = serverSocket.accept()
                     socketList.add(socket)
                     socketListen(socket)
                     count++
-                    RUNNING = true
+                    SERVER_START = true
                 } catch (e: java.net.BindException) {
                     // TODO
                 }
@@ -96,9 +98,9 @@ class ServerService: Service(), CoroutineScope {
             while (running) {
                 val message = channel.receive()
                 socketList.forEach { socket ->
-                    if (message.first != socket.localAddress) {
+                    if (message.first != socket?.localAddress) {
                         try {
-                            socket.getOutputStream().write(message.second)
+                            socket?.getOutputStream()?.write(message.second)
                         } catch (e: java.net.SocketException) {
                             socketList.remove(socket)
                         }
@@ -110,7 +112,7 @@ class ServerService: Service(), CoroutineScope {
 
     private fun closeServer() {
         socketList.forEach { socket ->
-            socket.close()
+            socket?.close()
         }
         serverSocket.close()
     }
