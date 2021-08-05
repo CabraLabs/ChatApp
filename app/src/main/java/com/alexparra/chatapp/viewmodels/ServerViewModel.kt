@@ -66,19 +66,6 @@ class ServerViewModel : AndroidViewModel(), CoroutineScope {
         }
     }
 
-    fun getIpAddress(): String {
-        var ip = ""
-        launch(Dispatchers.IO) {
-            DatagramSocket().use { socket ->
-                socket.connect(InetAddress.getByName("8.8.8.8"), 1027)
-                ip = socket.localAddress.hostAddress.toString()
-                socket.close()
-            }
-        }
-
-        return ip
-    }
-
     fun closeServer() {
         server.close()
     }

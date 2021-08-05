@@ -8,6 +8,7 @@ import com.alexparra.chatapp.MainApplication.Companion.applicationContext
 import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.utils.ChatManager
 import kotlinx.coroutines.*
+import java.net.DatagramSocket
 import java.net.InetAddress
 import java.net.Socket
 import java.util.*
@@ -69,6 +70,19 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                 }
             }
         }
+    }
+
+    fun getIpAddress(): String {
+        var ip = ""
+        launch(Dispatchers.IO) {
+            DatagramSocket().use { socket ->
+                socket.connect(InetAddress.getByName("8.8.8.8"), 1027)
+                ip = socket.localAddress.hostAddress.toString()
+                socket.close()
+            }
+        }
+
+        return ip
     }
 
     fun closeSocket() {
