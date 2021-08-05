@@ -84,7 +84,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                     val intent = Intent(activity, ServerService::class.java)
                     ContextCompat.startForegroundService(requireContext(), intent)
 
-                    ChatManager.delay(2000) {
+                    ChatManager.delay(1000) {
                         val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ipAddress.text.toString()))
 
                         if (success) {
