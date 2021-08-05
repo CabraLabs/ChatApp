@@ -4,18 +4,12 @@ import android.content.res.Resources
 import android.widget.Toast
 import com.alexparra.chatapp.MainApplication
 import com.alexparra.chatapp.R
-import com.alexparra.chatapp.models.Chat
-import com.alexparra.chatapp.models.ClientSocket
-import com.alexparra.chatapp.models.Server
 import com.alexparra.chatapp.viewmodels.TictactoeViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.net.ServerSocket
 import java.util.*
 import kotlin.collections.ArrayList
-import com.alexparra.chatapp.models.ClientSocket
-
 
 object TictactoeManager {
     var board: ArrayList<String> = ArrayList()
@@ -45,10 +39,10 @@ object TictactoeManager {
         return ArrayList((string.split("/")))
     }
 
-    fun sendMessage(chat: Chat, message: String) {
+    fun sendMessage(message: String) {
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                chat.writeToSocket(message)
+                //TODO writetosocket with necessary information
             } catch (e: java.net.SocketException) {
                 Toast.makeText(
                     MainApplication.applicationContext(),
@@ -63,18 +57,19 @@ object TictactoeManager {
         board = stringToBoard(string)
     }
 
-    fun markCell(position: Int, chat: Chat, tictactoeViewModel: TictactoeViewModel) {
+    fun markCell(position: Int, hostGame: Boolean, tictactoeViewModel: TictactoeViewModel) {
         if (!player1Win() && !player2Win()) {
-            if (player1Turn && chat is Server) {
+            if (player1Turn && hostGame) {
                 board[position] = "x"
                 tictactoeViewModel.updateBoard(board)
-                sendMessage(chat, boardToString(board))
+                sendMessage(boardToString(board))
                 counter++
                 player1Turn = !player1Turn
-            } else if (!player1Turn && chat is ClientSocket) {
+            }
+            else if (!player1Turn && !hostGame) {
                 board[position] = "o"
                 tictactoeViewModel.updateBoard(board)
-                sendMessage(chat, boardToString(board))
+                sendMessage(boardToString(board))
                 counter++
                 player1Turn = !player1Turn
             }
@@ -91,7 +86,7 @@ object TictactoeManager {
         if (player2Win()) {
             return Resources.getSystem().getString(R.string.player2)
         }
-        return "none"
+        return ""
     }
 
     fun player1Win(): Boolean {

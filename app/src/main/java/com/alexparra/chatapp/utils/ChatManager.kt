@@ -74,6 +74,7 @@ object ChatManager : CoroutineScope {
     @RequiresApi(Build.VERSION_CODES.Q)
     fun updateRecyclerMessages(message: List<String>, chat: Chat, view: View?, activity: FragmentActivity?) {
         when {
+            //TODO change prefix code from board message changes
             message[1] == "BOARD:" -> {
                 TictactoeManager.receiveMessageListener(message[1])
             }

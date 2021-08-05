@@ -19,7 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 
-class TictactoeFragment(val chat: Chat) :
+class TictactoeFragment(val hostGame: Boolean) :
     BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentTictactoeBinding
@@ -28,7 +28,7 @@ class TictactoeFragment(val chat: Chat) :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        //TODO tictactoe viewmodel
         tictactoeViewModel = ViewModelProvider(this).get(TictactoeViewModel::class.java)
     }
 
@@ -46,7 +46,7 @@ class TictactoeFragment(val chat: Chat) :
         binding.turn.text = "Player1"
         binding.counter.text = TictactoeManager.counter.toString()
 
-        startBoard()
+        startBoard(hostGame)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -64,7 +64,7 @@ class TictactoeFragment(val chat: Chat) :
         return bottomSheetDialog
     }
 
-    private fun startBoard() {
+    private fun startBoard(hostGame: Boolean) {
         if(TictactoeManager.counter != 1){
             tictactoeViewModel.updateBoard(TictactoeManager.board)
         }else {
@@ -82,16 +82,13 @@ class TictactoeFragment(val chat: Chat) :
 
     private fun onCellClick(cell: String, pos: Int) {
 
-        TictactoeManager.markCell(pos, chat, tictactoeViewModel)
+        TictactoeManager.markCell(pos, hostGame, tictactoeViewModel)
 
-        val parent = requireActivity().window.decorView.findViewById<View>(android.R.id.content)
-        val status = TictactoeManager.identifyWinner()
-
-        when (status) {
+        when (TictactoeManager.identifyWinner()) {
             getString(R.string.draw) -> {
-                dialog?.window?.let {
+                activity?.let {
                     Snackbar.make(
-                        it.decorView,
+                        it.findViewById(R.id.chatLayout),
                         getString(R.string.draw),
                         Snackbar.LENGTH_INDEFINITE
                     )
@@ -111,12 +108,14 @@ class TictactoeFragment(val chat: Chat) :
             }
 
             getString(R.string.player2) -> {
-                Snackbar.make(
-                    parent,
-                    "PLAYER 2 WIN!",
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                    .setAction(getString(R.string.retry)) { tictactoeAdapter.reset() }.show()
+                activity?.let {
+                    Snackbar.make(
+                        it.findViewById(R.id.chatLayout),
+                        "PLAYER 2 WIN!",
+                        Snackbar.LENGTH_INDEFINITE
+                    )
+                        .setAction(getString(R.string.retry)) { tictactoeAdapter.reset() }.show()
+                }
             }
         }
 

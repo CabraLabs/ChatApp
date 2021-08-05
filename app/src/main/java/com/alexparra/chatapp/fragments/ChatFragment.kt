@@ -97,7 +97,10 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.ticTactToe -> {
-                val tictactoeFragment = TictactoeFragment(args.connection)
+
+                //TODO send invite to specific user and wait to start the game
+
+                val tictactoeFragment = TictactoeFragment(true)
 
                 GlobalScope.launch(Dispatchers.IO) {
                     args.connection.writeToSocket(
