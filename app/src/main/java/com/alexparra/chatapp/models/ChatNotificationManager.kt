@@ -49,11 +49,12 @@ class ChatNotificationManager(val context: Context, val channel: String) {
     fun foregroundNotification(serverInfo: String): Notification {
         notificationManager.createNotificationChannel(notificationChannel)
 
-        val intent = Intent(context, ServerService::class.java).putExtra("STOP", "STOP")
+        val intent = Intent(context, ServerService::class.java)
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val closeIntent = Intent(context, ServerService::class.java).apply {
             action = "STOP"
+            putExtra("STOP", "STOP")
         }
         val closePendingIntent: PendingIntent = PendingIntent.getActivity(context, 2, closeIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
