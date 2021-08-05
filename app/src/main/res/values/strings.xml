@@ -18,7 +18,8 @@
     <!-- FragmentServerConnect -->
     <string name="admin">Admin</string>
     <string name="your_ip">Your IP Address is:</string>
-    <string name="create_server">Create Server</string>
+    <string name="create_and_join">Create and Join</string>
+    <string name="create_server">Only create</string>
     <string name="waiting_for_a_connection">Waiting for a connection</string>
     <string name="server_error">Unexpected error, couldn\'t create server</string>
     <string name="port_in_use_error">The default port is already been hosted by other server.</string>
@@ -44,6 +45,7 @@
     <string name="tic_tac_toe">Tic Tac Toe</string>
 
     <!-- Foreground -->
+    <string name="close_server">Close Server</string>
     <string name="server_running">Server is running</string>
 
 </resources>
