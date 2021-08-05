@@ -19,6 +19,8 @@ class ServerService: Service(), CoroutineScope {
 
     private val STOP = "STOP"
 
+    private var RUNNING = false
+
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
 
@@ -48,6 +50,10 @@ class ServerService: Service(), CoroutineScope {
     }
 
     override fun onDestroy() {
+        if (RUNNING) {
+            closeServer()
+        }
+
         channel.close()
         running = false
         this.cancel()
@@ -67,6 +73,7 @@ class ServerService: Service(), CoroutineScope {
                     socketList.add(socket)
                     socketListen(socket)
                     count++
+                    RUNNING = true
                 } catch (e: java.net.BindException) {
                     // TODO
                 }
