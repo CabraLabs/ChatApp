@@ -1,14 +1,20 @@
 package com.alexparra.chatapp.models
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.*
 import android.content.Context
+import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.IconCompat.createFromIcon
+import androidx.core.graphics.drawable.toAdaptiveIcon
+import com.alexparra.chatapp.MainActivity
 import com.alexparra.chatapp.R
+import com.alexparra.chatapp.ServerService
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatNotificationManager(val context: Context, val channel: String) {
@@ -20,8 +26,12 @@ class ChatNotificationManager(val context: Context, val channel: String) {
         ContextCompat.getSystemService(context, NotificationManager::class.java) as NotificationManager
 
 
-    fun sendMessage(username: String, text: String) {
+    fun sendMessage(username: String, text: String, activity: Activity) {
         notificationManager.createNotificationChannel(notificationChannel)
+
+        val intent = Intent(activity, MainActivity::class.java)
+
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val builder = NotificationCompat.Builder(
             context,
@@ -30,12 +40,49 @@ class ChatNotificationManager(val context: Context, val channel: String) {
             setSmallIcon(R.drawable.ic_text_message)
             setContentTitle(username)
             setContentText(text)
+            setContentIntent(pendingIntent)
+            setAutoCancel(true)
             priority = NotificationCompat.PRIORITY_HIGH
             color = context.getColor(R.color.blue)
         }
 
+        showNotification(notification = builder)
+    }
+
+    fun foregroundNotification(serverInfo: String): Notification {
+        val intent = Intent(context, ServerService::class.java)
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+
+        val closeIntent = Intent(context, ServerService::class.java).apply {
+            action = "STOP"
+        }
+        val closePendingIntent: PendingIntent = PendingIntent.getActivity(context, 69, closeIntent, 0)
+
+        val icon = BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.ic_stop
+        )
+        val compatIcon = createFromIcon(icon.toAdaptiveIcon())
+
+        val closeAction = NotificationCompat.Action.Builder(
+            compatIcon,
+            context.getString(R.string.close_server),
+            closePendingIntent
+        ).build()
+
+            return NotificationCompat.Builder(context, "foreground")
+            .addAction(closeAction)
+            .setColor(context.getColor(R.color.blue))
+            .setContentTitle(context.getString(R.string.server_running))
+            .setContentText(serverInfo)
+            .setSmallIcon(R.drawable.ic_server_foreground)
+            .setContentIntent(pendingIntent)
+            .build()
+    }
+
+    private fun showNotification(channel: Int = 0, notification: NotificationCompat.Builder) {
         with(NotificationManagerCompat.from(context)) {
-            notify(0, builder.build())
+            notify(channel, notification.build())
         }
     }
 

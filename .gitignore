@@ -1,6 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/androidstudio,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=androidstudio,windows
-
+.idea/
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
