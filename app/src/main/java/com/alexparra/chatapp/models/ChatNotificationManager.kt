@@ -3,15 +3,18 @@ package com.alexparra.chatapp.models
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startForegroundService
+import androidx.core.graphics.drawable.IconCompat.createFromIcon
+import androidx.core.graphics.drawable.toAdaptiveIcon
 import com.alexparra.chatapp.MainActivity
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.ServerService
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatNotificationManager(val context: Context, val channel: String) {
@@ -48,10 +51,27 @@ class ChatNotificationManager(val context: Context, val channel: String) {
 
     fun foregroundNotification(serverInfo: String): Notification {
         val intent = Intent(context, ServerService::class.java)
-
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
-        return Notification.Builder(context, "foreground")
+        val closeIntent = Intent(context, ServerService::class.java).apply {
+            action = "STOP"
+        }
+        val closePendingIntent: PendingIntent = PendingIntent.getActivity(context, 69, closeIntent, 0)
+
+        val icon = BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.ic_stop
+        )
+        val compatIcon = createFromIcon(icon.toAdaptiveIcon())
+
+        val closeAction = NotificationCompat.Action.Builder(
+            compatIcon,
+            context.getString(R.string.close_server),
+            closePendingIntent
+        ).build()
+
+            return NotificationCompat.Builder(context, "foreground")
+            .addAction(closeAction)
             .setColor(context.getColor(R.color.blue))
             .setContentTitle(context.getString(R.string.server_running))
             .setContentText(serverInfo)
