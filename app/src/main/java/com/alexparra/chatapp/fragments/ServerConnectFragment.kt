@@ -89,7 +89,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                     if (success) {
                         loading(false)
 
-                        // TODO CONTINUE
                         val intent = Intent(activity, ServerService::class.java)
                         ContextCompat.startForegroundService(requireContext(), intent)
 

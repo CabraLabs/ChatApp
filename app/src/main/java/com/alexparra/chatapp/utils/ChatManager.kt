@@ -4,16 +4,12 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
-import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import com.alexparra.chatapp.MainActivity
 import com.alexparra.chatapp.MainApplication.Companion.applicationContext
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.models.Message
-import java.text.SimpleDateFormat
 import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.models.UserType
 import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
@@ -22,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -35,7 +32,7 @@ object ChatManager : CoroutineScope {
 
     var chatList: ArrayList<Message> = ArrayList()
 
-    fun getFragmentActivity(parameterFragmentActivity: FragmentActivity?){
+    fun getFragmentActivity(parameterFragmentActivity: FragmentActivity?) {
         if (parameterFragmentActivity != null) {
             fragmentActivity = parameterFragmentActivity
         }
@@ -54,7 +51,7 @@ object ChatManager : CoroutineScope {
     /**
      * Sends the Message data class when the user joins the chat.
      */
-    fun connectMessage(user: UserType, username: String,context: Context): Message {
+    fun connectMessage(user: UserType, username: String, context: Context): Message {
         if (user == UserType.CLIENT) {
             return Message(MessageType.JOINED, username, context.getString(R.string.joined_the_room), currentTime())
         }
@@ -127,19 +124,19 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    fun startTictactoe(){
+    fun startTictactoe() {
         val tictactoeFragment = TictactoeFragment(false)
 
-        fragmentActivity?.supportFragmentManager?.let {
+        fragmentActivity.supportFragmentManager.let {
             tictactoeFragment.show(it, null)
         }
     }
 
-    fun tictactoeListener(){
+    fun tictactoeListener() {
         fragmentActivity.let {
             Snackbar.make(
                 it.findViewById(R.id.chatLayout),
-                "ACEPT INVITE?",
+                applicationContext().getString(R.string.accept),
                 Snackbar.LENGTH_INDEFINITE
             )
                 .setAction("YES") { startTictactoe() }.show()

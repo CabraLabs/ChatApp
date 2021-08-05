@@ -26,6 +26,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         ChatNotificationManager(applicationContext(), "0")
     }
 
+    private val output by lazy {
+        client.getOutputStream()
+    }
+
     fun startSocket(username: String, ip: InetAddress): Boolean {
         return try {
             client = Socket(ip, 1027)
@@ -38,11 +42,12 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     fun getUsername() = userName
 
+    @Synchronized
     fun writeToSocket(message: String): Boolean {
         var success = true
 
-        val output = client.getOutputStream()
         val messageByte = message.toByteArray(Charsets.UTF_8)
+
         launch(Dispatchers.IO) {
             success = try {
                 output.write(messageByte)
