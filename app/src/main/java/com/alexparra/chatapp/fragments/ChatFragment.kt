@@ -18,11 +18,14 @@ import com.alexparra.chatapp.models.ChatNotificationManager
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.UserType
 import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
-import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
 import com.alexparra.chatapp.utils.ChatManager
-import com.alexparra.chatapp.viewmodel.ClientViewModel
+import com.alexparra.chatapp.utils.ChatManager.updateRecyclerMessages
+import com.alexparra.chatapp.viewmodels.ClientViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
+import java.net.ServerSocket
+import java.util.*
+import kotlin.collections.ArrayList
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatFragment : Fragment(), CoroutineScope {
@@ -94,9 +97,19 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.ticTactToe -> {
-                val currentBoard = TictactoeManager.board
 
-                val tictactoeFragment = TictactoeFragment(currentBoard, args.connection)
+                //TODO send invite to specific user and wait to start the game
+
+                val tictactoeFragment = TictactoeFragment(true)
+
+                GlobalScope.launch(Dispatchers.IO) {
+                    args.connection.writeToSocket(
+                        ChatManager.sendMessageToSocket(
+                            args.connection,
+                            "/TICTACTOE_INVITE"
+                        )
+                    )
+                }
 
                 activity?.supportFragmentManager?.let {
                     tictactoeFragment.show(it, null)
@@ -107,7 +120,6 @@ class ChatFragment : Fragment(), CoroutineScope {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -186,6 +198,23 @@ class ChatFragment : Fragment(), CoroutineScope {
     @DelicateCoroutinesApi
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun receiveMessageListener() {
+        GlobalScope.launch(Dispatchers.IO) {
+            val scanner = args.connection.readSocket()
+
+            while (scanner.hasNextLine()) {
+                // [0] Username | [1] Message | [2] Time | [3] Joined
+                val message = scanner.nextLine().split(";")
+
+                withContext(Dispatchers.Main) {
+                    if (BACKGROUND) {
+                        chatNotification.sendMessage(message[0], message[1], activity as Activity)
+                    }
+
+                    updateRecyclerMessages(message, view, activity)
+
+                    notifyAdapterChange()
+                }
+            }
         if (BACKGROUND) {
             client.readSocket(true, activity)
         } else {

@@ -4,14 +4,21 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import com.alexparra.chatapp.MainActivity
 import com.alexparra.chatapp.MainApplication.Companion.applicationContext
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.models.Message
 import java.text.SimpleDateFormat
 import com.alexparra.chatapp.models.MessageType
 import com.alexparra.chatapp.models.UserType
+import com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment
+import com.alexparra.chatapp.tictactoe.utils.TictactoeManager
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -65,8 +72,21 @@ object ChatManager : CoroutineScope {
      * chatList for the recycler view.
      */
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun updateRecyclerMessages(message: List<String>) {
+    fun updateRecyclerMessages(message: List<String>, chat: Chat, view: View?, activity: FragmentActivity?) {
         when {
+            //TODO change prefix code from board message changes
+            message[1] == "BOARD:" -> {
+                TictactoeManager.receiveMessageListener(message[1])
+            }
+
+            message[1] == "/TICTACTOE_INVITE" -> {
+                Snackbar.make(view as View,
+                    "START TICTACTOE?",
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                    .setAction("YES") { startTictactoe(activity, chat) }.show()
+            }
+
             message[1] == "/vibrate" -> {
                 startVibrate()
                 chatList.add(
@@ -100,6 +120,15 @@ object ChatManager : CoroutineScope {
                     )
                 )
             }
+        }
+    }
+
+    fun startTictactoe(activity: FragmentActivity?, chat: Chat){
+        val currentBoard = TictactoeManager.board
+        val tictactoeFragment = TictactoeFragment(currentBoard, chat.connection)
+
+        activity?.supportFragmentManager?.let {
+            tictactoeFragment.show(it, null)
         }
     }
 

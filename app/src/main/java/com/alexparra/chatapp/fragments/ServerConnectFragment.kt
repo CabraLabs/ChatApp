@@ -17,6 +17,7 @@ import com.alexparra.chatapp.ServerService
 import com.alexparra.chatapp.databinding.FragmentServerConnectBinding
 import com.alexparra.chatapp.models.UserType
 import com.alexparra.chatapp.utils.toast
+
 import com.alexparra.chatapp.viewmodel.ClientViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
