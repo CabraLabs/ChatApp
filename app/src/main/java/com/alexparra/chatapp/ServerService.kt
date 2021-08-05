@@ -6,33 +6,52 @@ import android.os.Build
 import android.os.IBinder
 import androidx.annotation.RequiresApi
 import com.alexparra.chatapp.models.ChatNotificationManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
+import java.util.*
+import java.util.concurrent.locks.Lock
+import kotlin.collections.ArrayList
 
 class ServerService: Service(), CoroutineScope {
+
+    private val STOP = "STOP"
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
 
     private val serverSocket = ServerSocket(1027)
 
+    private var running = true
+
     override fun onCreate() {
         startServer()
+        forwardMessage()
     }
 
-    // TODO create list with accepted sockets.
+    private lateinit var socketList: ArrayList<Socket>
+
+    private val channel = Channel<Pair<InetAddress, ByteArray>>()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val notificationManager = ChatNotificationManager(applicationContext, "1")
-
         startForeground(1, notificationManager.foregroundNotification(""))
 
-        return START_STICKY
+        if (intent.action == STOP) {
+            onDestroy()
+        }
+
+        return START_NOT_STICKY
+    }
+
+    override fun onDestroy() {
+        channel.close()
+        running = false
+        this.cancel()
+        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -45,6 +64,7 @@ class ServerService: Service(), CoroutineScope {
             while (count <= 3) {
                 try {
                     val socket = serverSocket.accept()
+                    socketList.add(socket)
                     socketListen(socket)
                     count++
                 } catch (e: java.net.BindException) {
@@ -56,17 +76,36 @@ class ServerService: Service(), CoroutineScope {
 
     private fun socketListen(socket: Socket) {
         launch(Dispatchers.IO) {
-            socket.getOutputStream()
+            val scanner = Scanner(socket.getInputStream())
+
+            if (scanner.hasNext()) {
+                var message = scanner.nextLine().toByteArray(Charsets.UTF_8)
+                channel.send(Pair(socket.localAddress, message))
+            }
         }
     }
 
     private fun forwardMessage() {
-        // TODO foreach on the socket list to send all the images.
+        launch(Dispatchers.IO) {
+            while (running) {
+                val message = channel.receive()
+                socketList.forEach { socket ->
+                    if (message.first != socket.localAddress) {
+                        try {
+                            socket.getOutputStream().write(message.second)
+                        } catch (e: java.net.SocketException) {
+                            socketList.remove(socket)
+                        }
+                    }
+                }
+            }
+        }
     }
 
-
     private fun closeServer() {
+        socketList.forEach { socket ->
+            socket.close()
+        }
         serverSocket.close()
     }
 }
-
