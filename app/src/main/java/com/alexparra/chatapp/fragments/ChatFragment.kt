@@ -84,7 +84,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
+        ChatManager.getFragmentActivity(activity)
         activity?.title = getString(R.string.chat_app_bar_name)
     }
 
@@ -101,9 +101,9 @@ class ChatFragment : Fragment(), CoroutineScope {
                 val tictactoeFragment = TictactoeFragment(true)
 
                 GlobalScope.launch(Dispatchers.IO) {
-                    args.connection.writeToSocket(
+                    client.writeToSocket(
                         ChatManager.sendMessageToSocket(
-                            args.connection,
+                            clientUsername,
                             "/TICTACTOE_INVITE"
                         )
                     )

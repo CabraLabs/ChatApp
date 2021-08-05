@@ -31,7 +31,15 @@ object ChatManager : CoroutineScope {
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
+    private lateinit var fragmentActivity: FragmentActivity
+
     var chatList: ArrayList<Message> = ArrayList()
+
+    fun getFragmentActivity(parameterFragmentActivity: FragmentActivity?){
+        if (parameterFragmentActivity != null) {
+            fragmentActivity = parameterFragmentActivity
+        }
+    }
 
     private fun currentTime(): String {
         val pattern = "HH:mm aa"
@@ -72,7 +80,7 @@ object ChatManager : CoroutineScope {
      * chatList for the recycler view.
      */
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun updateRecyclerMessages(message: List<String>, chat: Chat, view: View?, activity: FragmentActivity?) {
+    fun updateRecyclerMessages(message: List<String>) {
         when {
             //TODO change prefix code from board message changes
             message[1] == "BOARD:" -> {
@@ -80,11 +88,7 @@ object ChatManager : CoroutineScope {
             }
 
             message[1] == "/TICTACTOE_INVITE" -> {
-                Snackbar.make(view as View,
-                    "START TICTACTOE?",
-                    Snackbar.LENGTH_INDEFINITE
-                )
-                    .setAction("YES") { startTictactoe(activity, chat) }.show()
+                tictactoeListener()
             }
 
             message[1] == "/vibrate" -> {
@@ -123,12 +127,22 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    fun startTictactoe(activity: FragmentActivity?, chat: Chat){
-        val currentBoard = TictactoeManager.board
-        val tictactoeFragment = TictactoeFragment(currentBoard, chat.connection)
+    fun startTictactoe(){
+        val tictactoeFragment = TictactoeFragment(false)
 
-        activity?.supportFragmentManager?.let {
+        fragmentActivity?.supportFragmentManager?.let {
             tictactoeFragment.show(it, null)
+        }
+    }
+
+    fun tictactoeListener(){
+        fragmentActivity.let {
+            Snackbar.make(
+                it.findViewById(R.id.chatLayout),
+                "ACEPT INVITE?",
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction("YES") { startTictactoe() }.show()
         }
     }
 
