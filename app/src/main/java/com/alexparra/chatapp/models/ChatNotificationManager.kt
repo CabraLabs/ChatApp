@@ -49,14 +49,11 @@ class ChatNotificationManager(val context: Context, val channel: String) {
     fun foregroundNotification(serverInfo: String): Notification {
         notificationManager.createNotificationChannel(notificationChannel)
 
-        val intent = Intent(context, ServerService::class.java)
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-
         val closeIntent = Intent(context, ServerService::class.java).apply {
             action = "STOP"
             putExtra("STOP", "STOP")
         }
-        val closePendingIntent: PendingIntent = PendingIntent.getActivity(context, 2, closeIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val closePendingIntent: PendingIntent = PendingIntent.getActivity(context, 100, closeIntent, 0)
 
         val closeAction = NotificationCompat.Action.Builder(
             R.drawable.ic_stop,
@@ -69,7 +66,6 @@ class ChatNotificationManager(val context: Context, val channel: String) {
             .setContentTitle(context.getString(R.string.server_running))
             .setContentText(serverInfo)
             .setSmallIcon(R.drawable.ic_server_foreground)
-            .setContentIntent(pendingIntent)
             .addAction(closeAction)
             .build()
     }

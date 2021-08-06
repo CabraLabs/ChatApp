@@ -14,7 +14,7 @@ import java.net.Socket
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ServerService: Service(), CoroutineScope {
+class ServerService : Service(), CoroutineScope {
 
     private val STOP = "STOP"
 
@@ -29,6 +29,8 @@ class ServerService: Service(), CoroutineScope {
 
     private val channel = Channel<Pair<InetAddress, ByteArray>>()
 
+    private lateinit var notificationManager: ChatNotificationManager
+
     override fun onCreate() {
         startServer()
         forwardMessage()
@@ -36,10 +38,10 @@ class ServerService: Service(), CoroutineScope {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val notificationManager = ChatNotificationManager(applicationContext, "foreground")
+        notificationManager = ChatNotificationManager(applicationContext, "foreground")
         startForeground(100, notificationManager.foregroundNotification(""))
 
-        if (intent.getStringExtra("STOP") == STOP) {
+        if (intent.action == "closeAction") {
             stopForeground(true)
             notificationManager.cancelNotification()
             onDestroy()

@@ -15,7 +15,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Socket">
-        <service android:name=".ServerService" />
+        <service android:name=".ServerService" >
+            <intent-filter>
+                <action android:name="android.intent.action.closeAction" />
+            </intent-filter>
+        </service>
         <activity
             android:name="com.alexparra.chatapp.MainActivity"
             android:launchMode="singleTask">
