@@ -12,7 +12,7 @@
         android:id="@+id/messageBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center"
         android:paddingHorizontal="15dp"
         android:background="@drawable/chat_bg_event">
@@ -22,16 +22,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
-            android:textStyle="bold |italic"
+            android:textStyle="bold"
             tools:text="username" />
 
-        <TextView
-            android:id="@+id/chatRowMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="3dp"
-            android:textStyle="italic"
-            tools:text="chat row message" />
+        <ImageView
+            android:id="@+id/chatRowImage"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_vibrate" />
 
         <TextView
             android:id="@+id/chatRowTime"
@@ -39,6 +37,8 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
             android:textStyle="italic"
-            tools:text="da/ta/data" />
+            tools:ignore="SmallSp"
+            tools:text="da/ta/data"
+            tools:textSize="10sp" />
     </LinearLayout>
 </LinearLayout>

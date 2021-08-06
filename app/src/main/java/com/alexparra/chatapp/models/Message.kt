@@ -8,5 +8,5 @@ data class Message(
 )
 
 enum class MessageType {
-    SENT, RECEIVED, JOINED, ATTENTION
+    SENT, RECEIVED, JOINED, VIBRATE
 }

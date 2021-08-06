@@ -4,12 +4,9 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
-import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import com.alexparra.chatapp.MainActivity
 import com.alexparra.chatapp.MainApplication.Companion.applicationContext
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.models.Message
@@ -48,7 +45,7 @@ object ChatManager : CoroutineScope {
     }
 
     fun sendVibrateMessage(username: String) {
-        chatList.add(Message(MessageType.ATTENTION, username, "/vibrate", currentTime()))
+        chatList.add(Message(MessageType.VIBRATE, username, "/vibrate", currentTime()))
     }
 
     /**
@@ -95,7 +92,7 @@ object ChatManager : CoroutineScope {
                 startVibrate()
                 chatList.add(
                     Message(
-                        MessageType.ATTENTION,
+                        MessageType.VIBRATE,
                         message[0],
                         message[1],
                         message[2]

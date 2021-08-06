@@ -4,9 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.alexparra.chatapp.R
 import com.alexparra.chatapp.databinding.ChatRowItemEventBinding
 import com.alexparra.chatapp.databinding.ChatRowItemReceiveBinding
 import com.alexparra.chatapp.databinding.ChatRowItemSendBinding
+import com.alexparra.chatapp.databinding.ChatRowItemVibrateBinding
 import com.alexparra.chatapp.models.Message
 import com.alexparra.chatapp.models.MessageType
 
@@ -47,10 +49,21 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         }
     }
 
+    inner class ViewHolderVibrateMessage(private val binding: ChatRowItemVibrateBinding): ViewHolder(binding.root){
+        override fun bind(message: Message) {
+            with(binding){
+                chatRowUsername.text = message.username
+                chatRowImage.setImageResource(R.drawable.ic_vibrate)
+                chatRowTime.text = message.time
+            }
+        }
+    }
+
     override fun getItemViewType(position: Int): Int {
         return when (dataSet[position].type){
             MessageType.SENT -> 1
             MessageType.RECEIVED -> 2
+            MessageType.JOINED -> 3
             else -> 3
         }
     }
@@ -65,8 +78,12 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                 ViewHolderReceiveMessage(ChatRowItemReceiveBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
 
-            else -> {
+            3 -> {
                 ViewHolderEventMessage(ChatRowItemEventBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+            }
+
+            else -> {
+                ViewHolderVibrateMessage(ChatRowItemVibrateBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
         }
     }
