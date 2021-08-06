@@ -33,7 +33,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     fun startSocket(username: String, ip: InetAddress): Boolean {
-        var counter = 0
         return try {
             runBlocking {
                 launch(Dispatchers.IO) {
