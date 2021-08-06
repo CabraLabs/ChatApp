@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.alexparra.chatapp.fragments.HomeFragment"
+        android:name="com.psandroidlabs.chatapp.fragments.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/clientConnectFragment"
-        android:name="com.alexparra.chatapp.fragments.ClientConnectFragment"
+        android:name="com.psandroidlabs.chatapp.fragments.ClientConnectFragment"
         android:label="Chat Connect"
         tools:layout="@layout/fragment_client_connect" >
         <action
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/serverConnectFragment"
-        android:name="com.alexparra.chatapp.fragments.ServerConnectFragment"
+        android:name="com.psandroidlabs.chatapp.fragments.ServerConnectFragment"
         android:label="Chat Host"
         tools:layout="@layout/fragment_server_connect" >
         <action
@@ -41,7 +41,7 @@
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
-        android:name="com.alexparra.chatapp.fragments.ChatFragment"
+        android:name="com.psandroidlabs.chatapp.fragments.ChatFragment"
         android:label="Chat"
         tools:layout="@layout/fragment_chat" >
         <argument
@@ -50,7 +50,7 @@
     </fragment>
     <fragment
         android:id="@+id/tictactoe"
-        android:name="com.alexparra.chatapp.tictactoe.fragments.TictactoeFragment"
+        android:name="com.psandroidlabs.chatapp.tictactoe.fragments.TictactoeFragment"
         android:label="tictactoe"
         tools:layout="@layout/fragment_tictactoe">
 
