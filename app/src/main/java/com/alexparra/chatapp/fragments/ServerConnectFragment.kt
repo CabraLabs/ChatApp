@@ -16,6 +16,7 @@ import com.alexparra.chatapp.R
 import com.alexparra.chatapp.ServerService
 import com.alexparra.chatapp.databinding.FragmentServerConnectBinding
 import com.alexparra.chatapp.models.UserType
+import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.toast
 import com.alexparra.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -62,50 +63,43 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val ip = client.getIpAddress()
-
-        showIp(ip)
-        initializeButtons(ip)
+        showIp()
+        initializeButtons()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun initializeButtons(ip: String) {
+    private fun initializeButtons() {
 
         with(binding) {
             userNameField.setText(R.string.admin)
 
-            createServer.setOnClickListener {
+            createAndJoin.setOnClickListener {
                 if (userNameField.text.toString() == "") {
                     toast(getString(R.string.username_missing))
                     username.error = getString(R.string.username_missing)
+
                 } else {
                     loading(true)
 
-                    toast(getString(R.string.waiting_for_a_connection))
+                    val intent = Intent(activity, ServerService::class.java)
+                    ContextCompat.startForegroundService(requireContext(), intent)
 
+                    ChatManager.delay(1000) {
+                        val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ipAddress.text.toString()))
 
-                    val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ip))
+                        if (success) {
+                            loading(false)
 
-                    if (success) {
-                        loading(false)
-
-                        val intent = Intent(activity, ServerService::class.java)
-                        ContextCompat.startForegroundService(requireContext(), intent)
-
-                        val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(UserType.SERVER)
-                        navController.navigate(action)
-                    } else {
-                        loading(false)
-                        toast(getString(R.string.port_in_use_error))
+                            val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(UserType.SERVER)
+                            navController.navigate(action)
+                        } else {
+                            loading(false)
+                            toast(getString(R.string.port_in_use_error))
+                        }
                     }
                 }
             }
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun showIp(ip: String) {
-        binding.ipAddress.text = ip
     }
 
     private fun loading(isLoading: Boolean) {
@@ -124,5 +118,10 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 }
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showIp() {
+        binding.ipAddress.text = client.getIpAddress()
     }
 }
