@@ -17,7 +17,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.alexparra.socket"
+        applicationId "com.psandroidlabs.socket"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
