@@ -1,5 +1,6 @@
 package com.alexparra.chatapp.models
 
+// TODO CREATE TO STRING METHOD TO TRANSFORM INTO SENDABLE MESSAGE
 data class Message(
     val type: MessageType,
     val username: String,

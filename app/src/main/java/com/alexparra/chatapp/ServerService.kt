@@ -1,22 +1,24 @@
 package com.alexparra.chatapp
 
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import androidx.annotation.RequiresApi
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.alexparra.chatapp.models.ChatNotificationManager
+import com.alexparra.chatapp.utils.Constants
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ServerService : Service(), CoroutineScope {
-
-    private val STOP = "STOP"
 
     private var SERVER_START = false
     private var running = true
@@ -31,9 +33,21 @@ class ServerService : Service(), CoroutineScope {
 
     private lateinit var notificationManager: ChatNotificationManager
 
+    private val receiver = object : BroadcastReceiver() {
+        @RequiresApi(Build.VERSION_CODES.O)
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == Constants.ACTION_STOP) {
+                onDestroy()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
         startServer()
         forwardMessage()
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, IntentFilter(Constants.ACTION_STOP))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -41,23 +55,21 @@ class ServerService : Service(), CoroutineScope {
         notificationManager = ChatNotificationManager(applicationContext, "foreground")
         startForeground(100, notificationManager.foregroundNotification(""))
 
-        if (intent.action == "closeAction") {
-            stopForeground(true)
-            notificationManager.cancelNotification()
-            onDestroy()
-        }
-
         return START_NOT_STICKY
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onDestroy() {
         if (SERVER_START) {
             closeServer()
         }
 
-        channel.close()
-        running = false
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
         this.cancel()
+        stopForeground(true)
+        notificationManager.cancelNotification()
+        channel.cancel()
+        running = false
         super.onDestroy()
     }
 
@@ -65,6 +77,7 @@ class ServerService : Service(), CoroutineScope {
         return null
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun startServer() {
         var count = 0
         launch(Dispatchers.IO) {
@@ -77,8 +90,8 @@ class ServerService : Service(), CoroutineScope {
                     socketListen(socket)
                     count++
                     SERVER_START = true
-                } catch (e: java.net.BindException) {
-                    // TODO
+                } catch (e: java.net.SocketException) {
+                    return@launch
                 }
             }
         }

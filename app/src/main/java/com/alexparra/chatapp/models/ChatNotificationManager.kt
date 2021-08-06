@@ -8,13 +8,15 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.alexparra.chatapp.ActionManager
 import com.alexparra.chatapp.MainActivity
 import com.alexparra.chatapp.R
 import com.alexparra.chatapp.ServerService
+import com.alexparra.chatapp.utils.Constants
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-class ChatNotificationManager(val context: Context, val channel: String) {
+class ChatNotificationManager(val context: Context, private val channel: String) {
 
 
     private val notificationChannel: NotificationChannel = NotificationChannel(channel, context.getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT)
@@ -49,11 +51,10 @@ class ChatNotificationManager(val context: Context, val channel: String) {
     fun foregroundNotification(serverInfo: String): Notification {
         notificationManager.createNotificationChannel(notificationChannel)
 
-        val closeIntent = Intent(context, ServerService::class.java).apply {
-            action = "STOP"
-            putExtra("STOP", "STOP")
+        val closeIntent = Intent(context, ActionManager::class.java).apply {
+            action = Constants.ACTION_STOP
         }
-        val closePendingIntent: PendingIntent = PendingIntent.getActivity(context, 100, closeIntent, 0)
+        val closePendingIntent: PendingIntent = PendingIntent.getBroadcast(context, 100, closeIntent, 0)
 
         val closeAction = NotificationCompat.Action.Builder(
             R.drawable.ic_stop,
@@ -61,7 +62,7 @@ class ChatNotificationManager(val context: Context, val channel: String) {
             closePendingIntent
         ).build()
 
-        return NotificationCompat.Builder(context, "foreground")
+        return NotificationCompat.Builder(context, channel)
             .setColor(context.getColor(R.color.blue))
             .setContentTitle(context.getString(R.string.server_running))
             .setContentText(serverInfo)

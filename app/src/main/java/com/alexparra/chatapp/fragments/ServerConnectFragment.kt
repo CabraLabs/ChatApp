@@ -1,24 +1,23 @@
 package com.alexparra.chatapp.fragments
 
-import android.content.Intent
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.alexparra.chatapp.R
-import com.alexparra.chatapp.ServerService
 import com.alexparra.chatapp.databinding.FragmentServerConnectBinding
 import com.alexparra.chatapp.models.UserType
 import com.alexparra.chatapp.utils.ChatManager
 import com.alexparra.chatapp.utils.toast
 import com.alexparra.chatapp.viewmodels.ClientViewModel
+import com.alexparra.chatapp.viewmodels.ServerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,6 +26,7 @@ import java.net.InetAddress
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private val client: ClientViewModel by activityViewModels()
+    private val server: ServerViewModel by activityViewModels()
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
@@ -64,6 +64,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         super.onViewCreated(view, savedInstanceState)
 
         showIp()
+        changeButtons()
         initializeButtons()
     }
 
@@ -74,31 +75,73 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             userNameField.setText(R.string.admin)
 
             createAndJoin.setOnClickListener {
-                if (userNameField.text.toString() == "") {
-                    toast(getString(R.string.username_missing))
-                    username.error = getString(R.string.username_missing)
-
-                } else {
+                if (usernameText()) {
                     loading(true)
 
-                    val intent = Intent(activity, ServerService::class.java)
-                    ContextCompat.startForegroundService(requireContext(), intent)
-
-                    ChatManager.delay(1000) {
-                        val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ipAddress.text.toString()))
-
-                        if (success) {
-                            loading(false)
-
-                            val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(UserType.SERVER)
-                            navController.navigate(action)
-                        } else {
-                            loading(false)
-                            toast(getString(R.string.port_in_use_error))
-                        }
-                    }
+                    server.startServerService(activity as Activity)
+                    join()
                 }
             }
+
+            createServer.setOnClickListener {
+                server.startServerService(activity as Activity)
+                server.updateServerState(true)
+                changeButtons()
+            }
+
+            joinChat.setOnClickListener {
+                if (usernameText()) {
+                    loading(true)
+
+                    join()
+                }
+            }
+
+            stopServer.setOnClickListener {
+                context?.let { server.stopServer(it) }
+                server.updateServerState(false)
+                changeButtons()
+            }
+        }
+    }
+
+    private fun changeButtons() {
+        with(binding) {
+            if (server.getServerState()) {
+                createAndJoin.visibility = View.GONE
+                createServer.visibility = View.GONE
+
+                joinChat.visibility = View.VISIBLE
+                stopServer.visibility = View.VISIBLE
+            } else {
+                createAndJoin.visibility = View.VISIBLE
+                createServer.visibility = View.VISIBLE
+
+                joinChat.visibility = View.GONE
+                stopServer.visibility = View.GONE
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun join() {
+        with(binding) {
+            ChatManager.delay(1000) {
+                val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ipAddress.text.toString()))
+
+                if (success) {
+                    loading(false)
+
+                    server.updateServerState(true)
+
+                    val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(UserType.SERVER)
+                    navController.navigate(action)
+                } else {
+                    loading(false)
+                    toast(getString(R.string.port_in_use_error))
+                }
+            }
+            changeButtons()
         }
     }
 
@@ -116,6 +159,18 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                     alpha = 1F
                     isClickable = true
                 }
+            }
+        }
+    }
+
+    private fun usernameText(): Boolean {
+        with(binding) {
+            return if (userNameField.text.toString() == "") {
+                toast(getString(R.string.username_missing))
+                username.error = getString(R.string.username_missing)
+                false
+            } else {
+                true
             }
         }
     }

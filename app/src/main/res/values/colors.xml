@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="send_username">#1A58E9</color>
+    <color name="red">#CA1B1B</color>
     <color name="receive_username">#E91A1A</color>
     <color name="event_username">#1B1B1B</color>
     <color name="soft_red_bg">#FDE0E0</color>
