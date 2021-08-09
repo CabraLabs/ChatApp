@@ -7,14 +7,15 @@ import android.os.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.models.Message
+import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.tictactoe.fragments.TictactoeFragment
 import com.psandroidlabs.chatapp.tictactoe.utils.TictactoeManager
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -44,32 +45,59 @@ object ChatManager : CoroutineScope {
         return simpleDateFormat.format(Date()).uppercase()
     }
 
-    fun sendVibrateMessage(username: String) {
-        chatList.add(Message(MessageType.ATTENTION, username, "/vibrate", currentTime()))
-    }
-
     /**
-     * Sends the Message data class when the user joins the chat.
+     * Determines the message type based on the beginning of the string.
+     *
+     * If the message starts with '/' it is probably a command.
      */
-    fun connectMessage(user: UserType, username: String, context: Context): Message {
-        if (user == UserType.CLIENT) {
-            return Message(MessageType.JOINED, username, context.getString(R.string.joined_the_room), currentTime())
+    fun determineMessageType(username: String, message: String): Message {
+        return if(message.startsWith("/")) {
+            when(message) {
+                Constants.VIBRATE_COMMAND -> createMessage(MessageType.VIBRATE, MessageStatus.RECEIVED, username, message)
+                else -> createMessage(MessageType.MESSAGE, MessageStatus.RECEIVED, username, message)
+            }
+        } else {
+            createMessage(MessageType.MESSAGE, MessageStatus.RECEIVED, username, message)
         }
-        return Message(MessageType.JOINED, username, context.getString(R.string.created_the_room), currentTime())
     }
 
     /**
-     * Send the correct formatted message output to the Socket.
+     * Create a Message data class and returns it.
      */
+    fun createMessage(
+        type: MessageType,
+        status: MessageStatus,
+        username: String,
+        message: String,
+        date: String = currentTime()
+    ) = Message(
+        type,
+        status,
+        username,
+        message,
+        date
+    )
+
+    /**
+     * Add the data class Message to the Chat Adapter View.
+     */
+    fun addToAdapter(message: Message) {
+        chatList.add(message)
+    }
+
+    /**
+     * Returns the connect message based on the user type
+     */
+    fun connectMessage(user: UserType, context: Context): String {
+        if (user == UserType.CLIENT) {
+            return context.getString(R.string.joined_the_room)
+        }
+        return context.getString(R.string.created_the_room)
+    }
+
+    // TODO Remove this function.
     fun sendMessageToSocket(username: String, text: String): String {
         return "${username};${text};${currentTime()};\n"
-    }
-
-    /**
-     * Generates the Message data class for the sent message.
-     */
-    fun getSentMessage(username: String, text: String): Message {
-        return Message(MessageType.SENT, username, text, currentTime())
     }
 
     /**
@@ -124,11 +152,11 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    fun startTictactoe() {
-        val tictactoeFragment = TictactoeFragment(false)
+    fun startTicTacToe() {
+        val ticTacToeFragment = TictactoeFragment(false)
 
         fragmentActivity.supportFragmentManager.let {
-            tictactoeFragment.show(it, null)
+            ticTacToeFragment.show(it, null)
         }
     }
 
@@ -139,7 +167,7 @@ object ChatManager : CoroutineScope {
                 applicationContext().getString(R.string.accept),
                 Snackbar.LENGTH_INDEFINITE
             )
-                .setAction("YES") { startTictactoe() }.show()
+                .setAction("YES") { startTicTacToe() }.show()
         }
     }
 
@@ -154,6 +182,7 @@ object ChatManager : CoroutineScope {
         )
     }
 
+    // TODO Make implementation somewhere for this function.
     fun playSound() {
         ContextCompat.getSystemService(applicationContext(), AudioManager::class.java)?.apply {
             setStreamVolume(AudioManager.STREAM_MUSIC, getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioManager.AUDIOFOCUS_GAIN)
