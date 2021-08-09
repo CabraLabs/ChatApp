@@ -1,11 +1,24 @@
 package com.psandroidlabs.chatapp.models
 
-// TODO CREATE TO STRING METHOD TO TRANSFORM INTO SENDABLE MESSAGE
+import com.psandroidlabs.chatapp.utils.toMessageStatus
+import com.psandroidlabs.chatapp.utils.toMessageType
+
 data class Message(
-    val type: MessageType,
+    var type: MessageType,
     val status: MessageStatus,
     val username: String,
     val message: String,
     val time: String
-)
+) {
+    override fun toString(): String {
+        return "${this.type};${this.status};${this.username};${this.message};${this.time}"
+    }
 
+    constructor(messageList: List<String>) : this(
+        type = messageList[0].toMessageType(),
+        status = messageList[1].toMessageStatus(),
+        username = messageList[2],
+        message = messageList[3],
+        time = messageList[4]
+    )
+}
