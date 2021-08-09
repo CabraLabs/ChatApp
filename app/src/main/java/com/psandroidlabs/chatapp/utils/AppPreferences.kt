@@ -12,23 +12,23 @@ object AppPreferences {
 
     fun saveClient(clientUsername: String, clientIp: String, context: Context?){
         val sharedClient = getSharedClient(context) ?: return
+
         with(sharedClient.edit()) {
             clear()
-            putString("client_user", clientUsername)
-            putString("client_ip", clientIp)
+
+            putString(Constants.CLIENT_USER, clientUsername)
+            putString(Constants.CLIENT_IP, clientIp)
+
             apply()
         }
     }
 
     fun getClient(context: Context?): ArrayList<String> {
         val sharedClient = getSharedClient(context)
-        return arrayListOf(
-            (sharedClient?.getString("client_user", "")).toString(),
-            (sharedClient?.getString("client_ip", "")).toString()
-        )
-    }
 
-    fun disconnectClient(context: Context) {
-        getSharedClient(context)!!.edit().clear().apply()
+        return arrayListOf(
+            (sharedClient?.getString(Constants.CLIENT_USER, "")).toString(),
+            (sharedClient?.getString(Constants.CLIENT_IP, "")).toString()
+        )
     }
 }
