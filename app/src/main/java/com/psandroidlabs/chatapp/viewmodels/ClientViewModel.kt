@@ -73,7 +73,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
             val scanner = Scanner(client.getInputStream())
 
             if (scanner.hasNext()) {
-                var message = scanner.nextLine().split(";")
+                val message = scanner.nextLine().split(";")
+
                 ChatManager.updateRecyclerMessages(message)
 
                 if (background) {
