@@ -46,7 +46,7 @@
         tools:layout="@layout/fragment_chat" >
         <argument
             android:name="user"
-            app:argType="com.alexparra.chatapp.models.UserType" />
+            app:argType="com.psandroidlabs.chatapp.models.UserType" />
     </fragment>
     <fragment
         android:id="@+id/tictactoe"

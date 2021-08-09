@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chat App</string>
+    <string name="insert">Insira sua mensagem</string>
+    <string name="connect">Conecte-se a um chat</string>
+    <string name="host">Hosteie um chat</string>
+    <string name="username_hint">Nome de usuário</string>
+    <string name="ip_hint">Endereço de IP</string>
+    <string name="join_chat">Entre no Chat</string>
+    <string name="username_missing">Por favor, insira seu nome de usuário</string>
+    <string name="ip_missing">Por favor, providencie o endereço de IP</string>
+    <string name="connect_error">Endereço de IP não possui um servidor de chat</string>
+    <string name="admin">Admin</string>
+    <string name="your_ip">Seu endereço de IP é:</string>
+    <string name="create_and_join">Criar e Entrar</string>
+    <string name="create_server">Apenas criar</string>
+    <string name="stop_server">Parar servidor</string>
+    <string name="waiting_for_a_connection">Esperando por uma conexão</string>
+    <string name="server_error">Erro inesperado, não foi possível criar o servidor</string>
+    <string name="port_in_use_error">A porta padrão já está sendo hosteada por outro servidor.</string>
+    <string name="insert_message">Insira sua mensagem...</string>
+    <string name="snack_server_disconnect">Conexão perdida</string>
+    <string name="notification_new_message">Nova Mensagem</string>
+    <string name="joined_the_room">Entrar na sala</string>
+    <string name="created_the_room">Criar a sala</string>
+    <string name="client_ip">client_ip</string>
+    <string name="client_user">client_user</string>
+    <string name="server_app_bar_name">Servidor</string>
+    <string name="client_app_bar_name">Cliente</string>
+    <string name="tic_tac_toe">Jogo da Velha</string>
+    <string name="retry">REINICIAR</string>
+    <string name="draw">EMPATE</string>
+    <string name="player1">Jogador 1</string>
+    <string name="player2">Jogador 2</string>
+    <string name="accept">Aceitar convite?</string>
+    <string name="close_server">Fechar servidor</string>
+    <string name="server_running">O servidor está rodando</string>
+</resources>

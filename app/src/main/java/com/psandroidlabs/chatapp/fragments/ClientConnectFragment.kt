@@ -12,10 +12,14 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentClientConnectBinding
+import com.psandroidlabs.chatapp.models.UserType
+import com.psandroidlabs.chatapp.utils.AppPreferences
+import com.psandroidlabs.chatapp.utils.toast
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import java.net.Inet4Address
 
 class ClientConnectFragment : Fragment(), CoroutineScope {
 

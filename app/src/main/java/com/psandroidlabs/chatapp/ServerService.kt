@@ -103,7 +103,7 @@ class ServerService : Service(), CoroutineScope {
 
             if (scanner.hasNext()) {
                 var message = scanner.nextLine().toByteArray(Charsets.UTF_8)
-                channel.send(Pair(socket.localAddress, message))
+                channelSendMessage(socket.localAddress, message)
             }
         }
     }
@@ -117,11 +117,27 @@ class ServerService : Service(), CoroutineScope {
                         try {
                             socket?.getOutputStream()?.write(message.second)
                         } catch (e: java.net.SocketException) {
-                            socketList.remove(socket)
+                            if (socket != null) {
+                                removeSocket(socket)
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+
+    @Synchronized
+    private fun channelSendMessage(address: InetAddress, message: ByteArray) {
+        launch(Dispatchers.IO) {
+            channel.send(Pair(address, message))
+        }
+    }
+
+    @Synchronized
+    private fun removeSocket(socket: Socket) {
+        launch(Dispatchers.IO) {
+            socketList.remove(socket)
         }
     }
 

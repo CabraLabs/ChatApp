@@ -21,8 +21,8 @@ import com.psandroidlabs.chatapp.tictactoe.fragments.TictactoeFragment
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.psandroidlabs.chatapp.utils.Constants
 import kotlinx.coroutines.*
-import java.util.*
 import kotlin.collections.ArrayList
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -36,11 +36,11 @@ class ChatFragment : Fragment(), CoroutineScope {
     override val coroutineContext = parentJob + Dispatchers.Main
 
     private var list: ArrayList<Message> = ArrayList()
-    private var BACKGROUND = false
-    private val CHAT_CHANNEL = "0"
+
+    private var background = false
 
     private val chatNotification by lazy {
-        ChatNotificationManager(requireContext(), CHAT_CHANNEL)
+        ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
     }
 
     private val navController: NavController by lazy {
@@ -53,11 +53,25 @@ class ChatFragment : Fragment(), CoroutineScope {
         client.getUsername()
     }
 
+    private val disconnectSnack: Snackbar by lazy {
+        Snackbar.make(
+            view as View,
+            getString(R.string.snack_server_disconnect),
+            Snackbar.LENGTH_INDEFINITE
+        )
+            .setAction("Exit Chat") {
+                onDestroy()
+                navController.popBackStack()
+            }
+    }
+
+
     // Fragment life cycle
     override fun onDestroy() {
         client.closeSocket()
         this.cancel()
         chatNotification.cancelNotification()
+        disconnectSnack.dismiss()
 
         if (arg.user == UserType.SERVER) {
             activity?.title = getString(R.string.server_app_bar_name)
@@ -69,14 +83,14 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     override fun onResume() {
-        BACKGROUND = false
+        background = false
         chatNotification.cancelNotification()
         super.onResume()
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onPause() {
-        BACKGROUND = true
+        background = true
         super.onPause()
     }
 
@@ -98,7 +112,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 //TODO send invite to specific user and wait to start the game
 
-                val tictactoeFragment = TictactoeFragment(true)
+                val ticTacToeFragment = TictactoeFragment(true)
 
                 GlobalScope.launch(Dispatchers.IO) {
                     client.writeToSocket(
@@ -110,8 +124,9 @@ class ChatFragment : Fragment(), CoroutineScope {
                 }
 
                 activity?.supportFragmentManager?.let {
-                    tictactoeFragment.show(it, null)
+                    ticTacToeFragment.show(it, null)
                 }
+
                 true
             }
 
@@ -168,7 +183,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 notifyAdapterChange()
                 disableAttention()
             } else {
-                disconnectedSnackbar()
+                disconnectedSnackBar()
             }
         }
     }
@@ -183,7 +198,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 if (success) {
                     eraseTextField()
                 } else {
-                    disconnectedSnackbar()
+                    disconnectedSnackBar()
                 }
 
                 list.add(ChatManager.getSentMessage(clientUsername, getTextFieldString()))
@@ -196,7 +211,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     @DelicateCoroutinesApi
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun receiveMessageListener() {
-        if (BACKGROUND) {
+        if (background) {
             client.readSocket(true, activity)
         } else {
             client.readSocket()
@@ -233,17 +248,9 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun disconnectedSnackbar() {
+    private fun disconnectedSnackBar() {
         disableChat()
-        Snackbar.make(
-            view as View,
-            getString(R.string.snack_server_disconnect),
-            Snackbar.LENGTH_INDEFINITE
-        )
-            .setAction("Exit Chat") {
-                onDestroy()
-                navController.popBackStack()
-            }.show()
+        disconnectSnack.show()
     }
 
     private fun getTextFieldString() = binding.messageField.text.toString()
