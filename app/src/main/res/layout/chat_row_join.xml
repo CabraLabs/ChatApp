@@ -30,6 +30,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
+<<<<<<< Updated upstream:app/src/main/res/layout/chat_row_item_event.xml
+=======
+            android:paddingBottom="2dp"
+>>>>>>> Stashed changes:app/src/main/res/layout/chat_row_join.xml
             android:textStyle="italic"
             tools:text="chat row message" />
 
@@ -39,6 +43,10 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
             android:textStyle="italic"
+<<<<<<< Updated upstream:app/src/main/res/layout/chat_row_item_event.xml
             tools:text="da/ta/data" />
+=======
+            tools:text="da/ta/data"/>
+>>>>>>> Stashed changes:app/src/main/res/layout/chat_row_join.xml
     </LinearLayout>
 </LinearLayout>

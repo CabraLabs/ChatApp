@@ -3,19 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="start"
+    android:gravity="end"
     android:orientation="vertical"
     android:padding="3dp"
-    android:id="@+id/rowMessageReceive">
+    android:id="@+id/rowMessageSend">
 
     <LinearLayout
         android:id="@+id/messageBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="start"
+        android:gravity="end"
         android:paddingHorizontal="15dp"
-        android:background="@drawable/chat_bg_receive">
+        android:background="@drawable/chat_bg_send">
 
         <TextView
             android:id="@+id/chatRowUsername"
@@ -25,13 +25,11 @@
             android:textStyle="bold"
             tools:text="username" />
 
-        <TextView
-            android:id="@+id/chatRowMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="3dp"
-            android:paddingBottom="2dp"
-            tools:text="chat row message" />
+        <ImageView
+            android:id="@+id/vibrateIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_goat" />
 
         <TextView
             android:id="@+id/chatRowTime"
