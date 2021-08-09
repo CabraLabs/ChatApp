@@ -13,11 +13,15 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentServerConnectBinding
+import com.psandroidlabs.chatapp.models.UserType
+import com.psandroidlabs.chatapp.utils.ChatManager
+import com.psandroidlabs.chatapp.utils.toast
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import com.psandroidlabs.chatapp.viewmodels.ServerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import java.net.InetAddress
 
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
@@ -137,6 +141,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                     toast(getString(R.string.port_in_use_error))
                 }
             }
+
             changeButtons()
         }
     }
