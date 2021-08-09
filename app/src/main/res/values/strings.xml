@@ -33,10 +33,6 @@
     <string name="joined_the_room">Joined the room</string>
     <string name="created_the_room">Created the room</string>
 
-    <!-- ClientPreferences -->
-    <string name="client_user">client_user</string>
-    <string name="client_ip">client_ip</string>
-
     <!-- App Bar -->
     <string name="server_app_bar_name">Server</string>
     <string name="client_app_bar_name">Client</string>
@@ -44,7 +40,7 @@
     <string name="home_app_bar_name" translatable="false">Chat App</string>
     <string name="tic_tac_toe">Tic Tac Toe</string>
 
-<!-- TicTacToe -->
+    <!-- TicTacToe -->
     <string name="retry">RETRY</string>
     <string name="draw">DRAW</string>
     <string name="player1">Player 1</string>
@@ -54,5 +50,4 @@
     <!-- Foreground -->
     <string name="close_server">Close Server</string>
     <string name="server_running">Server is running</string>
-
 </resources>
