@@ -3,26 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="start"
+    android:gravity="center"
     android:orientation="vertical"
     android:padding="3dp"
-    android:id="@+id/rowMessageReceive">
+    android:id="@+id/rowMessageEvent">
 
     <LinearLayout
         android:id="@+id/messageBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="start"
+        android:orientation="horizontal"
+        android:gravity="center"
         android:paddingHorizontal="15dp"
-        android:background="@drawable/chat_bg_receive">
+        android:background="@drawable/chat_bg_event">
 
         <TextView
             android:id="@+id/chatRowUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
-            android:textStyle="bold"
+            android:textStyle="bold |italic"
             tools:text="username" />
 
         <TextView
@@ -31,6 +31,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
             android:paddingBottom="2dp"
+            android:textStyle="italic"
             tools:text="chat row message" />
 
         <TextView
@@ -39,8 +40,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
             android:textStyle="italic"
-            tools:ignore="SmallSp"
-            tools:text="da/ta/data"
-            tools:textSize="10sp" />
+            tools:text="da/ta/data" />
+            tools:text="da/ta/data"/>
     </LinearLayout>
 </LinearLayout>
