@@ -4,7 +4,6 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.snackbar.Snackbar
@@ -14,8 +13,7 @@ import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.models.UserType
-import com.psandroidlabs.chatapp.tictactoe.fragments.TictactoeFragment
-import com.psandroidlabs.chatapp.tictactoe.utils.TicTacToeManager
+import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -106,7 +104,7 @@ object ChatManager : CoroutineScope {
      */
 
     private fun startTicTacToe() {
-        val ticTacToeFragment = TictactoeFragment(false)
+        val ticTacToeFragment = TicTacToeFragment(false)
 
         fragmentActivity.supportFragmentManager.let {
             ticTacToeFragment.show(it, null)
