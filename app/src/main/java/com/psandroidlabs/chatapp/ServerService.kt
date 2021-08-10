@@ -5,9 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.IBinder
-import androidx.annotation.RequiresApi
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.utils.Constants
@@ -20,8 +18,7 @@ import java.util.*
 
 class ServerService : Service(), CoroutineScope {
 
-    private var SERVER_START = false
-    private var running = true
+    private var running = false
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
@@ -34,7 +31,6 @@ class ServerService : Service(), CoroutineScope {
     private lateinit var notificationManager: ChatNotificationManager
 
     private val receiver = object : BroadcastReceiver() {
-        @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == Constants.ACTION_STOP) {
                 onDestroy()
@@ -42,7 +38,6 @@ class ServerService : Service(), CoroutineScope {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
         startServer()
         forwardMessage()
@@ -50,17 +45,16 @@ class ServerService : Service(), CoroutineScope {
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, IntentFilter(Constants.ACTION_STOP))
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        notificationManager = ChatNotificationManager(applicationContext, "foreground")
+        notificationManager = ChatNotificationManager(applicationContext, Constants.FOREGROUND_CHAT_CHANNEL)
+        // TODO take the server info to be displayed on the foreground notification
         startForeground(100, notificationManager.foregroundNotification(""))
 
         return START_NOT_STICKY
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onDestroy() {
-        if (SERVER_START) {
+        if (running) {
             closeServer()
         }
 
@@ -77,7 +71,6 @@ class ServerService : Service(), CoroutineScope {
         return null
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun startServer() {
         var count = 0
         launch(Dispatchers.IO) {
@@ -89,7 +82,7 @@ class ServerService : Service(), CoroutineScope {
                     socketList.add(socket)
                     socketListen(socket)
                     count++
-                    SERVER_START = true
+                    running = true
                 } catch (e: java.net.SocketException) {
                     return@launch
                 }
@@ -102,7 +95,7 @@ class ServerService : Service(), CoroutineScope {
             val scanner = Scanner(socket.getInputStream())
 
             if (scanner.hasNext()) {
-                var message = scanner.nextLine().toByteArray(Charsets.UTF_8)
+                val message = scanner.nextLine().toByteArray(Charsets.UTF_8)
                 channelSendMessage(socket.localAddress, message)
             }
         }

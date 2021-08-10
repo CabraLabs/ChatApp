@@ -23,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import java.net.InetAddress
 
+
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private val client: ClientViewModel by activityViewModels()

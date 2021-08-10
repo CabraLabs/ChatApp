@@ -10,6 +10,7 @@ import com.psandroidlabs.chatapp.databinding.ChatRowItemSendBinding
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageType
 
+
 class ChatAdapter(private val dataSet: ArrayList<Message>) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
@@ -17,9 +18,9 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         abstract fun bind(message: Message)
     }
 
-    inner class ViewHolderSendMessage(private val binding: ChatRowItemSendBinding): ViewHolder(binding.root){
+    inner class ViewHolderSendMessage(private val binding: ChatRowItemSendBinding) : ViewHolder(binding.root) {
         override fun bind(message: Message) {
-            with(binding){
+            with(binding) {
                 chatRowUsername.text = message.username
                 chatRowMessage.text = message.message
                 chatRowTime.text = message.time
@@ -27,9 +28,9 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         }
     }
 
-    inner class ViewHolderReceiveMessage(private val binding: ChatRowItemReceiveBinding): ViewHolder(binding.root){
+    inner class ViewHolderReceiveMessage(private val binding: ChatRowItemReceiveBinding) : ViewHolder(binding.root) {
         override fun bind(message: Message) {
-            with(binding){
+            with(binding) {
                 chatRowUsername.text = message.username
                 chatRowMessage.text = message.message
                 chatRowTime.text = message.time
@@ -37,9 +38,9 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         }
     }
 
-    inner class ViewHolderEventMessage(private val binding: ChatRowItemEventBinding): ViewHolder(binding.root){
+    inner class ViewHolderEventMessage(private val binding: ChatRowItemEventBinding) : ViewHolder(binding.root) {
         override fun bind(message: Message) {
-            with(binding){
+            with(binding) {
                 chatRowUsername.text = message.username
                 chatRowMessage.text = message.message
                 chatRowTime.text = message.time
@@ -48,7 +49,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (dataSet[position].type){
+        return when (dataSet[position].type) {
             MessageType.SENT -> 1
             MessageType.RECEIVED -> 2
             else -> 3
@@ -56,7 +57,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        return when (viewType){
+        return when (viewType) {
             1 -> {
                 ViewHolderSendMessage(ChatRowItemSendBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }

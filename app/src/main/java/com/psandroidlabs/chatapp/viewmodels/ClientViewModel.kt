@@ -6,7 +6,9 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
+import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.utils.ChatManager
+import com.psandroidlabs.chatapp.utils.Constants
 import kotlinx.coroutines.*
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -20,12 +22,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     override val coroutineContext = parentJob + Dispatchers.IO
 
     private lateinit var client: Socket
-
     private lateinit var userName: String
 
-
     private val chatNotification by lazy {
-        ChatNotificationManager(applicationContext(), "0")
+        ChatNotificationManager(applicationContext(), Constants.PRIMARY_CHAT_CHANNEL)
     }
 
     private val output by lazy {
@@ -36,7 +36,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         return try {
             runBlocking {
                 launch(Dispatchers.IO) {
-                    client = Socket(ip, 1027)
+                    client = Socket(ip, Constants.CHAT_DEFAULT_PORT)
                     userName = username
                 }
             }
@@ -67,17 +67,17 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-    @RequiresApi(Build.VERSION_CODES.Q)
     fun readSocket(background: Boolean = false, activity: Activity? = null) {
         GlobalScope.launch(Dispatchers.IO) {
             val scanner = Scanner(client.getInputStream())
 
             if (scanner.hasNext()) {
-                var message = scanner.nextLine().split(";")
-                ChatManager.updateRecyclerMessages(message)
+                val message = Message(scanner.nextLine().split(";"))
+
+                ChatManager.addToAdapter(message, true)
 
                 if (background) {
-                    chatNotification.sendMessage(message[0], message[1], activity as Activity)
+                    chatNotification.sendMessage(message.username, message.message, activity as Activity)
                 }
             }
         }
@@ -89,7 +89,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         runBlocking {
             launch(Dispatchers.IO) {
                 DatagramSocket().use { socket ->
-                    socket.connect(InetAddress.getByName("8.8.8.8"), 1027)
+                    socket.connect(InetAddress.getByName("8.8.8.8"), Constants.CHAT_DEFAULT_PORT)
                     ip = socket.localAddress.hostAddress
                     socket.close()
                 }
