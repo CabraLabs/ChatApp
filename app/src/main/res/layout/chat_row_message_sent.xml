@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="end"
+    android:orientation="vertical"
+    android:padding="3dp"
+    android:id="@+id/rowMessageSend">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:paddingHorizontal="15dp"
+        android:background="@drawable/chat_bg_send">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/chatRowUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="3dp"
+                android:textStyle="bold"
+                tools:text="username" />
+
+            <TextView
+                android:id="@+id/chatRowMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="3dp"
+                android:paddingBottom="2dp"
+                tools:text="chat row message" />
+
+            <TextView
+                android:id="@+id/chatRowTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="3dp"
+                android:textStyle="italic"
+                tools:ignore="SmallSp"
+                tools:text="da/ta/data"
+                tools:textSize="10sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/userAvatar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_goat" />
+    </LinearLayout>
+</LinearLayout>

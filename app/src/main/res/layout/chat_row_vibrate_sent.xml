@@ -25,13 +25,11 @@
             android:textStyle="bold"
             tools:text="username" />
 
-        <TextView
-            android:id="@+id/chatRowMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="3dp"
-            android:paddingBottom="2dp"
-            tools:text="chat row message" />
+        <ImageView
+            android:id="@+id/vibrateIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_goat" />
 
         <TextView
             android:id="@+id/chatRowTime"
