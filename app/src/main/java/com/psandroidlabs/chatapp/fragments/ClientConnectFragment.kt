@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import java.net.Inet4Address
 
+
 class ClientConnectFragment : Fragment(), CoroutineScope {
 
     private val parentJob = Job()
