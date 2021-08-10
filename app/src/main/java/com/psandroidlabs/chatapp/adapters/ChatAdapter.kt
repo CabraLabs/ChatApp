@@ -3,11 +3,7 @@ package com.psandroidlabs.chatapp.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import androidx.recyclerview.widget.RecyclerView
-import com.psandroidlabs.chatapp.databinding.ChatRowItemEventBinding
-import com.psandroidlabs.chatapp.databinding.ChatRowItemReceiveBinding
-import com.psandroidlabs.chatapp.databinding.ChatRowItemSendBinding
 import com.psandroidlabs.chatapp.databinding.*
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageStatus
@@ -20,7 +16,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         abstract fun bind(message: Message)
     }
 
-    inner class ViewHolderSendMessage(private val binding: ChatRowMessageSentBinding): ViewHolder(binding.root){
+    inner class ViewHolderSendMessage(private val binding: ChatRowMessageSentBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
@@ -30,7 +27,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         }
     }
 
-    inner class ViewHolderReceiveMessage(private val binding: ChatRowMessageReceivedBinding): ViewHolder(binding.root){
+    inner class ViewHolderReceiveMessage(private val binding: ChatRowMessageReceivedBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
@@ -40,7 +38,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         }
     }
 
-    inner class ViewHolderEventMessage(private val binding: ChatRowJoinBinding): ViewHolder(binding.root){
+    inner class ViewHolderEventMessage(private val binding: ChatRowJoinBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
@@ -50,18 +49,20 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         }
     }
 
-    inner class ViewHolderReceivedVibrate(private val binding: ChatRowVibrateReceivedBinding): ViewHolder(binding.root){
+    inner class ViewHolderReceivedVibrate(private val binding: ChatRowVibrateReceivedBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
-            with(binding){
+            with(binding) {
                 chatRowUsername.text = message.username
                 chatRowTime.text = message.time
             }
         }
     }
 
-    inner class ViewHolderSentVibrate(private val binding: ChatRowVibrateSentBinding): ViewHolder(binding.root){
+    inner class ViewHolderSentVibrate(private val binding: ChatRowVibrateSentBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
-            with(binding){
+            with(binding) {
                 chatRowUsername.text = message.username
                 chatRowTime.text = message.time
             }
@@ -70,8 +71,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
     override fun getItemViewType(position: Int): Int {
         var number = 0
-        if (status != MessageStatus.SENT) number = 7
-        return when (type) {
+        if (dataSet[position].status != MessageStatus.SENT) number = 7
+        return when (dataSet[position].type) {
             MessageType.MESSAGE -> MessageType.MESSAGE.code + number
             MessageType.JOIN -> MessageType.JOIN.code + number
             MessageType.VIBRATE -> MessageType.VIBRATE.code + number
@@ -83,26 +84,55 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        return when (viewType){
+        return when (viewType) {
             0 -> {
-                ViewHolderSendMessage(ChatRowMessageSentBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderSendMessage(
+                    ChatRowMessageSentBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             2 -> {
-                ViewHolderSentVibrate(ChatRowVibrateSentBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderSentVibrate(
+                    ChatRowVibrateSentBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             7 -> {
-                ViewHolderReceiveMessage(ChatRowMessageReceivedBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderReceiveMessage(
+                    ChatRowMessageReceivedBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             9 -> {
-                ViewHolderReceivedVibrate(ChatRowVibrateReceivedBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderReceivedVibrate(
+                    ChatRowVibrateReceivedBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
-
             else -> {
-                ViewHolderEventMessage(ChatRowJoinBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderEventMessage(
+                    ChatRowJoinBinding.inflate(
+                        LayoutInflater.from(viewGroup.context),
+                        viewGroup,
+                        false
+                    )
+                )
             }
         }
     }
