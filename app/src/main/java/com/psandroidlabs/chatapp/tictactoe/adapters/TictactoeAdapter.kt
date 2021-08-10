@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.databinding.TableCellBinding
-import com.psandroidlabs.chatapp.tictactoe.utils.TictactoeManager
+import com.psandroidlabs.chatapp.tictactoe.utils.TicTacToeManager
 
 class TictactoeAdapter (
     private var dataSet: ArrayList<String>,
@@ -51,8 +51,8 @@ class TictactoeAdapter (
     override fun getItemCount() = dataSet.size
 
     fun reset() {
-        TictactoeManager.reset()
-        dataSet = TictactoeManager.board
+        TicTacToeManager.reset()
+        dataSet = TicTacToeManager.board
         notifyDataSetChanged()
     }
 }

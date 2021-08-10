@@ -5,7 +5,7 @@ import com.psandroidlabs.chatapp.utils.toMessageType
 
 data class Message(
     var type: MessageType,
-    val status: MessageStatus,
+    var status: MessageStatus,
     val username: String,
     val message: String,
     val time: String

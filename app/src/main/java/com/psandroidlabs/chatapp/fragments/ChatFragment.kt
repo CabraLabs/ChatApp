@@ -16,7 +16,7 @@ import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.*
-import com.psandroidlabs.chatapp.tictactoe.fragments.TictactoeFragment
+import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
@@ -108,7 +108,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 //TODO send invite to specific user and wait to start the game
 
-                val ticTacToeFragment = TictactoeFragment(true)
+                val ticTacToeFragment = TicTacToeFragment(true)
 
                 GlobalScope.launch(Dispatchers.IO) {
                     client.writeToSocket(

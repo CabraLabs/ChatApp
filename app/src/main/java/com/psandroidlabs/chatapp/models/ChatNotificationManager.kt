@@ -4,7 +4,6 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -14,16 +13,21 @@ import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.utils.Constants
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 class ChatNotificationManager(val context: Context, private val channel: String) {
 
-    private val notificationChannel: NotificationChannel = NotificationChannel(channel, context.getString(R.string.app_name), NotificationManager.IMPORTANCE_DEFAULT)
-
-    private val notificationManager: NotificationManager =
+    private val notificationManager by lazy {
         ContextCompat.getSystemService(context, NotificationManager::class.java) as NotificationManager
+    }
 
-    fun sendMessage(username: String, text: String, activity: Activity) {
-        notificationManager.createNotificationChannel(notificationChannel)
+    private fun createChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel= NotificationChannel(channel, context.getString(R.string.app_name), NotificationManager.IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+    }
+
+    fun sendMessage(username: String, message: String, activity: Activity) {
+        createChannel()
 
         val intent = Intent(activity, MainActivity::class.java)
 
@@ -35,7 +39,7 @@ class ChatNotificationManager(val context: Context, private val channel: String)
         ).apply {
             setSmallIcon(R.drawable.ic_text_message)
             setContentTitle(username)
-            setContentText(text)
+            setContentText(message)
             setContentIntent(pendingIntent)
             setAutoCancel(true)
             priority = NotificationCompat.PRIORITY_HIGH
@@ -46,7 +50,7 @@ class ChatNotificationManager(val context: Context, private val channel: String)
     }
 
     fun foregroundNotification(serverInfo: String): Notification {
-        notificationManager.createNotificationChannel(notificationChannel)
+        createChannel()
 
         val closeIntent = Intent(context, ActionManager::class.java).apply {
             action = Constants.ACTION_STOP

@@ -12,14 +12,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentTictactoeBinding
 import com.psandroidlabs.chatapp.tictactoe.adapters.TictactoeAdapter
-import com.psandroidlabs.chatapp.tictactoe.utils.TictactoeManager
+import com.psandroidlabs.chatapp.tictactoe.utils.TicTacToeManager
 import com.psandroidlabs.chatapp.viewmodels.TictactoeViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 
-class TictactoeFragment(val hostGame: Boolean) :
+class TicTacToeFragment(val hostGame: Boolean) :
     BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentTictactoeBinding
@@ -44,7 +44,7 @@ class TictactoeFragment(val hostGame: Boolean) :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.turn.text = "Player1"
-        binding.counter.text = TictactoeManager.counter.toString()
+        binding.counter.text = TicTacToeManager.counter.toString()
 
         startBoard(hostGame)
     }
@@ -65,14 +65,14 @@ class TictactoeFragment(val hostGame: Boolean) :
     }
 
     private fun startBoard(hostGame: Boolean) {
-        if(TictactoeManager.counter != 1){
-            tictactoeViewModel.updateBoard(TictactoeManager.board)
+        if(TicTacToeManager.counter != 1){
+            tictactoeViewModel.updateBoard(TicTacToeManager.board)
         }else {
-            TictactoeManager.fillBoard()
+            TicTacToeManager.fillBoard()
         }
 
         val recyclerViewList: RecyclerView = binding.tableRecycler
-        tictactoeAdapter = TictactoeAdapter(TictactoeManager.board, ::onCellClick)
+        tictactoeAdapter = TictactoeAdapter(TicTacToeManager.board, ::onCellClick)
 
         recyclerViewList.apply {
             adapter = tictactoeAdapter
@@ -82,9 +82,9 @@ class TictactoeFragment(val hostGame: Boolean) :
 
     private fun onCellClick(cell: String, pos: Int) {
 
-        TictactoeManager.markCell(pos, hostGame, tictactoeViewModel)
+        TicTacToeManager.markCell(pos, hostGame, tictactoeViewModel)
 
-        when (TictactoeManager.identifyWinner()) {
+        when (TicTacToeManager.identifyWinner()) {
             getString(R.string.draw) -> {
                 activity?.let {
                     Snackbar.make(
@@ -119,7 +119,7 @@ class TictactoeFragment(val hostGame: Boolean) :
             }
         }
 
-        binding.counter.text = TictactoeManager.counter.toString()
-        binding.turn.text = TictactoeManager.playerTurn()
+        binding.counter.text = TicTacToeManager.counter.toString()
+        binding.turn.text = TicTacToeManager.playerTurn()
     }
 }
