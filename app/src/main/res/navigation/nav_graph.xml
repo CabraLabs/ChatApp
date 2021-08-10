@@ -50,7 +50,7 @@
     </fragment>
     <fragment
         android:id="@+id/tictactoe"
-        android:name="com.psandroidlabs.chatapp.tictactoe.fragments.TictactoeFragment"
+        android:name="com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment"
         android:label="tictactoe"
         tools:layout="@layout/fragment_tictactoe">
 
