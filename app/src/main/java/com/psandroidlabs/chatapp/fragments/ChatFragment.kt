@@ -85,7 +85,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         super.onResume()
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onPause() {
         background = true
         super.onPause()
@@ -140,7 +139,6 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -148,7 +146,6 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-    @RequiresApi(Build.VERSION_CODES.Q)
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
@@ -221,7 +218,6 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-    @RequiresApi(Build.VERSION_CODES.Q)
     private fun receiveMessageListener() {
         if (background) {
             client.readSocket(true, activity)
