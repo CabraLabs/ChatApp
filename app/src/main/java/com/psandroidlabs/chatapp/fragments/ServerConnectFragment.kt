@@ -1,12 +1,10 @@
 package com.psandroidlabs.chatapp.fragments
 
 import android.app.Activity
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
@@ -38,8 +36,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         findNavController()
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onDestroy() {
 
         activity?.title = getString(R.string.home_app_bar_name)
@@ -60,7 +56,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -69,7 +64,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         initializeButtons()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun initializeButtons() {
 
         with(binding) {
@@ -124,7 +118,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun join() {
         with(binding) {
             ChatManager.delay(1000) {
@@ -177,7 +170,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun showIp() {
         binding.ipAddress.text = client.getIpAddress()
     }

@@ -1,8 +1,6 @@
 package com.psandroidlabs.chatapp.viewmodels
 
 import android.app.Activity
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
@@ -15,7 +13,6 @@ import java.net.InetAddress
 import java.net.Socket
 import java.util.*
 
-@RequiresApi(Build.VERSION_CODES.O)
 class ClientViewModel : ViewModel(), CoroutineScope {
 
     private val parentJob = Job()
