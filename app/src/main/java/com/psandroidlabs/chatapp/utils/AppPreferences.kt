@@ -7,7 +7,7 @@ import com.psandroidlabs.chatapp.R
 object AppPreferences {
 
     private fun getSharedClient(context: Context?): SharedPreferences? {
-        return context?.getSharedPreferences(context.getString(R.string.client_user), Context.MODE_PRIVATE)
+        return context?.getSharedPreferences(Constants.CLIENT_USER, Context.MODE_PRIVATE)
     }
 
     fun saveClient(clientUsername: String, clientIp: String, context: Context?){

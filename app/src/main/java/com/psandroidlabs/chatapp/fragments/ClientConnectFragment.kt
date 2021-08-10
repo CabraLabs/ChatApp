@@ -90,7 +90,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                         if (success) {
                             AppPreferences.saveClient(
                                 username,
-                                inetAddress.toString(),
+                                ipAddressField.text.toString(),
                                 context
                             )
 

@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="start"
+    android:layout_gravity="start"
+    android:paddingHorizontal="15dp"
     android:orientation="vertical"
-    android:padding="3dp"
-    android:id="@+id/rowMessageReceive">
-
-    <LinearLayout
-        android:id="@+id/messageBackground"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="start"
-        android:paddingHorizontal="15dp"
-        android:background="@drawable/chat_bg_receive">
+    android:id="@+id/rowMessageReceive"
+    android:background="@drawable/chat_bg_received">
 
         <TextView
             android:id="@+id/chatRowUsername"
@@ -27,8 +20,8 @@
 
         <ImageView
             android:id="@+id/vibrateIcon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:src="@drawable/ic_goat" />
 
         <TextView
@@ -37,8 +30,6 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
             android:textStyle="italic"
-            tools:ignore="SmallSp"
-            tools:text="da/ta/data"
-            tools:textSize="10sp" />
-    </LinearLayout>
+            tools:text="HH:mm aa"
+            tools:textSize="11sp" />
 </LinearLayout>
