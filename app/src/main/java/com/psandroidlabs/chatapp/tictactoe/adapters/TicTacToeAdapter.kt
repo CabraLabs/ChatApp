@@ -5,23 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.TableCellBinding
 import com.psandroidlabs.chatapp.tictactoe.utils.TicTacToeManager
 
-class TictactoeAdapter (
+class TicTacToeAdapter(
     private var dataSet: ArrayList<String>,
     private val onClick: (String, Int) -> Unit
 ) :
-    RecyclerView.Adapter<TictactoeAdapter.ViewHolder>() {
+    RecyclerView.Adapter<TicTacToeAdapter.ViewHolder>() {
 
     abstract class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(string: String, position: Int)
     }
 
-    inner class CellViewHolder(private val binding: TableCellBinding): ViewHolder(binding.root){
+    inner class CellViewHolder(private val binding: TableCellBinding) : ViewHolder(binding.root) {
         override fun bind(string: String, position: Int) {
 
-            with(binding){
+            with(binding) {
                 val imgRes = when (dataSet[position]) {
                     "x" -> R.drawable.ic_x
                     "o" -> R.drawable.ic_o
@@ -40,7 +41,13 @@ class TictactoeAdapter (
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        return CellViewHolder(TableCellBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+        return CellViewHolder(
+            TableCellBinding.inflate(
+                LayoutInflater.from(viewGroup.context),
+                viewGroup,
+                false
+            )
+        )
     }
 
     @SuppressLint("NotifyDataSetChanged")

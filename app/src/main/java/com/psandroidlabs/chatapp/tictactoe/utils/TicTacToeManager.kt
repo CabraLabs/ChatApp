@@ -4,7 +4,7 @@ import android.content.res.Resources
 import android.widget.Toast
 import com.psandroidlabs.chatapp.MainApplication
 import com.psandroidlabs.chatapp.R
-import com.psandroidlabs.chatapp.viewmodels.TictactoeViewModel
+import com.psandroidlabs.chatapp.viewmodels.TicTacToeViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -56,7 +56,7 @@ object TicTacToeManager {
         board = stringToBoard(string)
     }
 
-    fun markCell(position: Int, hostGame: Boolean, ticTacToeViewModel: TictactoeViewModel) {
+    fun markCell(position: Int, hostGame: Boolean, ticTacToeViewModel: TicTacToeViewModel) {
         if (!player1Win() && !player2Win()) {
             if (player1Turn && hostGame) {
                 board[position] = "x"
