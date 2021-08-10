@@ -15,7 +15,7 @@ import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.tictactoe.fragments.TictactoeFragment
-import com.psandroidlabs.chatapp.tictactoe.utils.TictactoeManager
+import com.psandroidlabs.chatapp.tictactoe.utils.TicTacToeManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -81,8 +81,13 @@ object ChatManager : CoroutineScope {
     /**
      * Add the data class Message to the Chat Adapter View.
      */
-    fun addToAdapter(message: Message) {
-        chatList.add(message)
+    fun addToAdapter(message: Message, received: Boolean = false) {
+        if (received) {
+            chatList.add(message)
+        } else {
+            message.status = MessageStatus.SENT
+            chatList.add(message)
+        }
     }
 
     /**
@@ -95,64 +100,12 @@ object ChatManager : CoroutineScope {
         return context.getString(R.string.created_the_room)
     }
 
-    // TODO Remove this function.
-    fun sendMessageToSocket(username: String, text: String): String {
-        return "${username};${text};${currentTime()};\n"
-    }
-
     /**
      * Handles the specific message types and send them to the
      * chatList for the recycler view.
      */
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun updateRecyclerMessages(message: List<String>) {
-        when {
-            //TODO change prefix code from board message changes
-            message[1] == "BOARD:" -> {
-                TictactoeManager.receiveMessageListener(message[1])
-            }
 
-            message[1] == "/TICTACTOE_INVITE" -> {
-                tictactoeListener()
-            }
-
-            message[1] == "/vibrate" -> {
-                startVibrate()
-                chatList.add(
-                    Message(
-                        MessageType.ATTENTION,
-                        message[0],
-                        message[1],
-                        message[2]
-                    )
-                )
-            }
-
-            message[3].isNotBlank() -> {
-                chatList.add(
-                    Message(
-                        MessageType.JOINED,
-                        message[0],
-                        message[1],
-                        message[2]
-                    )
-                )
-            }
-
-            else -> {
-                chatList.add(
-                    Message(
-                        MessageType.RECEIVED,
-                        message[0],
-                        message[1],
-                        message[2]
-                    )
-                )
-            }
-        }
-    }
-
-    fun startTicTacToe() {
+    private fun startTicTacToe() {
         val ticTacToeFragment = TictactoeFragment(false)
 
         fragmentActivity.supportFragmentManager.let {
@@ -160,7 +113,7 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    fun tictactoeListener() {
+    private fun ticTacToeListener() {
         fragmentActivity.let {
             Snackbar.make(
                 it.findViewById(R.id.chatLayout),
@@ -171,15 +124,18 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun startVibrate() {
-        val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java)
-        vibrator?.vibrate(
-            VibrationEffect.createOneShot(
-                1000,
-                VibrationEffect.EFFECT_HEAVY_CLICK
+    private fun startVibrate() {
+        val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            vibrator.vibrate(
+                VibrationEffect.createOneShot(
+                    1000,
+                    VibrationEffect.EFFECT_HEAVY_CLICK
+                )
             )
-        )
+        } else {
+
+        }
     }
 
     // TODO Make implementation somewhere for this function.
