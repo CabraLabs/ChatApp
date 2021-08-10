@@ -102,33 +102,33 @@ class ChatFragment : Fragment(), CoroutineScope {
         inflater.inflate(R.menu.chat_fragment_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.ticTactToe -> {
-
-                //TODO send invite to specific user and wait to start the game
-
-                val ticTacToeFragment = TicTacToeFragment(true)
-
-                GlobalScope.launch(Dispatchers.IO) {
-                    client.writeToSocket(
-                        ChatManager.sendMessageToSocket(
-                            clientUsername,
-                            "/TICTACTOE_INVITE"
-                        )
-                    )
-                }
-
-                activity?.supportFragmentManager?.let {
-                    ticTacToeFragment.show(it, null)
-                }
-
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return when (item.itemId) {
+//            R.id.ticTactToe -> {
+//
+//                //TODO send invite to specific user and wait to start the game
+//
+//                val ticTacToeFragment = TicTacToeFragment(true)
+//
+//                GlobalScope.launch(Dispatchers.IO) {
+//                    client.writeToSocket(
+//                        ChatManager.sendMessageToSocket(
+//                            clientUsername,
+//                            "/TICTACTOE_INVITE"
+//                        )
+//                    )
+//                }
+//
+//                activity?.supportFragmentManager?.let {
+//                    ticTacToeFragment.show(it, null)
+//                }
+//
+//                true
+//            }
+//
+//            else -> super.onOptionsItemSelected(item)
+//        }
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

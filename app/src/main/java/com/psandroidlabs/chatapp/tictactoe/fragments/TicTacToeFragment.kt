@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentTictactoeBinding
-import com.psandroidlabs.chatapp.tictactoe.adapters.TictactoeAdapter
+import com.psandroidlabs.chatapp.tictactoe.adapters.TicTacToeAdapter
 import com.psandroidlabs.chatapp.tictactoe.utils.TicTacToeManager
-import com.psandroidlabs.chatapp.viewmodels.TictactoeViewModel
+import com.psandroidlabs.chatapp.viewmodels.TicTacToeViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -23,13 +23,13 @@ class TicTacToeFragment(val hostGame: Boolean) :
     BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentTictactoeBinding
-    private lateinit var tictactoeAdapter: TictactoeAdapter
-    private lateinit var tictactoeViewModel: TictactoeViewModel
+    private lateinit var ticTacToeAdapter: TicTacToeAdapter
+    private lateinit var ticTacToeViewModel: TicTacToeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //TODO tictactoe viewmodel
-        tictactoeViewModel = ViewModelProvider(this).get(TictactoeViewModel::class.java)
+        ticTacToeViewModel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -66,23 +66,23 @@ class TicTacToeFragment(val hostGame: Boolean) :
 
     private fun startBoard(hostGame: Boolean) {
         if(TicTacToeManager.counter != 1){
-            tictactoeViewModel.updateBoard(TicTacToeManager.board)
+            ticTacToeViewModel.updateBoard(TicTacToeManager.board)
         }else {
             TicTacToeManager.fillBoard()
         }
 
         val recyclerViewList: RecyclerView = binding.tableRecycler
-        tictactoeAdapter = TictactoeAdapter(TicTacToeManager.board, ::onCellClick)
+        ticTacToeAdapter = TicTacToeAdapter(TicTacToeManager.board, ::onCellClick)
 
         recyclerViewList.apply {
-            adapter = tictactoeAdapter
+            adapter = ticTacToeAdapter
             layoutManager = GridLayoutManager(context, 3)
         }
     }
 
     private fun onCellClick(cell: String, pos: Int) {
 
-        TicTacToeManager.markCell(pos, hostGame, tictactoeViewModel)
+        TicTacToeManager.markCell(pos, hostGame, ticTacToeViewModel)
 
         when (TicTacToeManager.identifyWinner()) {
             getString(R.string.draw) -> {
@@ -92,7 +92,7 @@ class TicTacToeFragment(val hostGame: Boolean) :
                         getString(R.string.draw),
                         Snackbar.LENGTH_INDEFINITE
                     )
-                        .setAction(getString(R.string.retry)) { tictactoeAdapter.reset() }.show()
+                        .setAction(getString(R.string.retry)) { ticTacToeAdapter.reset() }.show()
                 }
             }
 
@@ -103,7 +103,7 @@ class TicTacToeFragment(val hostGame: Boolean) :
                         "PLAYER 1 WIN!",
                         Snackbar.LENGTH_INDEFINITE
                     )
-                        .setAction(getString(R.string.retry)) { tictactoeAdapter.reset() }.show()
+                        .setAction(getString(R.string.retry)) { ticTacToeAdapter.reset() }.show()
                 }
             }
 
@@ -114,7 +114,7 @@ class TicTacToeFragment(val hostGame: Boolean) :
                         "PLAYER 2 WIN!",
                         Snackbar.LENGTH_INDEFINITE
                     )
-                        .setAction(getString(R.string.retry)) { tictactoeAdapter.reset() }.show()
+                        .setAction(getString(R.string.retry)) { ticTacToeAdapter.reset() }.show()
                 }
             }
         }

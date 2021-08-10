@@ -42,7 +42,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:nestedScrollingEnabled="false"
-        tools:context=".tictactoe.adapters.TictactoeAdapter"
+        tools:context=".tictactoe.adapters.TicTacToeAdapter"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
