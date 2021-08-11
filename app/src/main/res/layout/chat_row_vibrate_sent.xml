@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:id="@+id/rowMessageSend"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="end"
-    android:layout_gravity="end"
-    android:orientation="vertical"
-    android:paddingHorizontal="15dp"
-    android:id="@+id/rowMessageSend"
-    android:background="@drawable/chat_bg_sent">
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="end"
+        android:paddingHorizontal="15dp"
+        android:background="@drawable/chat_bg_sent">
 
         <TextView
             android:id="@+id/chatRowUsername"
@@ -29,7 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
+            android:textSize="11sp"
             android:textStyle="italic"
-            tools:text="HH:mm aa"
-            android:textSize="11sp" />
+            tools:text="HH:mm aa" />
+    </LinearLayout>
 </LinearLayout>

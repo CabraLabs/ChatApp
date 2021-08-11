@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.snackbar.Snackbar
@@ -49,10 +50,20 @@ object ChatManager : CoroutineScope {
      * If the message starts with '/' it is probably a command.
      */
     fun determineMessageType(username: String, message: String): Message {
-        return if(message.startsWith("/")) {
-            when(message) {
-                Constants.VIBRATE_COMMAND -> createMessage(MessageType.VIBRATE, MessageStatus.RECEIVED, username, message)
-                else -> createMessage(MessageType.MESSAGE, MessageStatus.RECEIVED, username, message)
+        return if (message.startsWith("/")) {
+            when (message) {
+                Constants.VIBRATE_COMMAND -> createMessage(
+                    MessageType.VIBRATE,
+                    MessageStatus.RECEIVED,
+                    username,
+                    message
+                )
+                else -> createMessage(
+                    MessageType.MESSAGE,
+                    MessageStatus.RECEIVED,
+                    username,
+                    message
+                )
             }
         } else {
             createMessage(MessageType.MESSAGE, MessageStatus.RECEIVED, username, message)
@@ -82,9 +93,17 @@ object ChatManager : CoroutineScope {
     fun addToAdapter(message: Message, received: Boolean = false) {
         if (received) {
             chatList.add(message)
+            messageAction(message.type)
         } else {
             message.status = MessageStatus.SENT
             chatList.add(message)
+        }
+    }
+
+    private fun messageAction(messageType: MessageType) {
+        when (messageType) {
+            MessageType.VIBRATE -> startVibrate()
+            else -> return
         }
     }
 
@@ -123,7 +142,8 @@ object ChatManager : CoroutineScope {
     }
 
     private fun startVibrate() {
-        val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
+        val vibrator =
+            ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             vibrator.vibrate(
                 VibrationEffect.createOneShot(
@@ -132,14 +152,18 @@ object ChatManager : CoroutineScope {
                 )
             )
         } else {
-
+            toast("*vibrating*")
         }
     }
 
     // TODO Make implementation somewhere for this function.
     fun playSound() {
         ContextCompat.getSystemService(applicationContext(), AudioManager::class.java)?.apply {
-            setStreamVolume(AudioManager.STREAM_MUSIC, getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioManager.AUDIOFOCUS_GAIN)
+            setStreamVolume(
+                AudioManager.STREAM_MUSIC,
+                getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+                AudioManager.AUDIOFOCUS_GAIN
+            )
         }
         val mediaPlayer = MediaPlayer.create(applicationContext(), R.raw.bolso)
         mediaPlayer.start()
@@ -147,5 +171,9 @@ object ChatManager : CoroutineScope {
 
     fun delay(delay: Long = 1500, action: () -> Unit) {
         Handler(Looper.getMainLooper()).postDelayed(action, delay)
+    }
+
+    fun toast(string: String){
+        Toast.makeText(applicationContext(), string, Toast.LENGTH_SHORT).show()
     }
 }
