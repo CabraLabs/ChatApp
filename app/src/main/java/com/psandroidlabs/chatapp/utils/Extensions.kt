@@ -15,21 +15,21 @@ fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_LONG) {
 
 fun String.toMessageType(): MessageType {
     return when(this) {
-        "MessageType.MESSAGE" -> MessageType.MESSAGE
-        "MessageType.JOIN" -> MessageType.JOIN
-        "MessageType.VIBRATE" -> MessageType.VIBRATE
-        "MessageType.AUDIO" -> MessageType.AUDIO
-        "MessageType.IMAGE" -> MessageType.IMAGE
-        "MessageType.TICINVITE" -> MessageType.TICINVITE
-        "MessageType.TICPLAY" -> MessageType.TICPLAY
+        "MESSAGE" -> MessageType.MESSAGE
+        "JOIN" -> MessageType.JOIN
+        "VIBRATE" -> MessageType.VIBRATE
+        "AUDIO" -> MessageType.AUDIO
+        "IMAGE" -> MessageType.IMAGE
+        "TICINVITE" -> MessageType.TICINVITE
+        "TICPLAY" -> MessageType.TICPLAY
         else -> throw Exception("Value must be a valid MessageType")
     }
 }
 
 fun String.toMessageStatus(): MessageStatus {
     return when(this) {
-        "MessageStatus.SENT" -> MessageStatus.SENT
-        "MessageStatus.RECEIVED" -> MessageStatus.RECEIVED
+        "SENT" -> MessageStatus.SENT
+        "RECEIVED" -> MessageStatus.RECEIVED
         else -> throw Exception("Value must be a valid MessageStatus")
     }
 }
