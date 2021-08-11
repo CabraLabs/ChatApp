@@ -3,6 +3,7 @@ package com.psandroidlabs.chatapp.viewmodels
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
+import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.utils.ChatManager
@@ -27,6 +28,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     private val output by lazy {
         client.getOutputStream()
+    }
+
+    private val scanner by lazy {
+        Scanner(client.getInputStream())
     }
 
     fun startSocket(username: String, ip: InetAddress): Boolean {
@@ -64,17 +69,21 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-    fun readSocket(background: Boolean = false, activity: Activity? = null) {
+    fun readSocket(background: Boolean = false, chatAdapter: ChatAdapter) {
         GlobalScope.launch(Dispatchers.IO) {
-            val scanner = Scanner(client.getInputStream())
+            while(true) {
+                if (scanner.hasNextLine()) {
+                    val message = Message(scanner.nextLine().split(";"))
 
-            if (scanner.hasNext()) {
-                val message = Message(scanner.nextLine().split(";"))
+                    ChatManager.addToAdapter(message, true)
 
-                ChatManager.addToAdapter(message, true)
+                    withContext(Dispatchers.Main) {
+                        chatAdapter.notifyDataSetChanged()
+                    }
 
-                if (background) {
-                    chatNotification.sendMessage(message.username, message.message, activity as Activity)
+                    if (background) {
+                        chatNotification.sendMessage(message.username, message.message)
+                    }
                 }
             }
         }
@@ -95,7 +104,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
         return ip
     }
-
+    
+    fun transformIp(text: String): InetAddress = InetAddress.getByName(text)
+    
     fun closeSocket() {
         client.close()
     }
