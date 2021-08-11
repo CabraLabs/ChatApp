@@ -69,7 +69,7 @@ class ServerService : Service(), CoroutineScope {
         launch(Dispatchers.IO) {
             serverSocket = ServerSocket(Constants.CHAT_DEFAULT_PORT)
 
-            while (count <= 3) {
+            while (count <= 3 && isActive) {
                 try {
                     val socket = serverSocket.accept()
                     socketList.add(socket)
@@ -87,7 +87,7 @@ class ServerService : Service(), CoroutineScope {
         launch(Dispatchers.IO) {
             val scanner = Scanner(socket.getInputStream())
 
-            while (true) {
+            while (isActive) {
                 if (scanner.hasNextLine()) {
                     var message = scanner.nextLine()
                     val sendMessage = "$message\n"

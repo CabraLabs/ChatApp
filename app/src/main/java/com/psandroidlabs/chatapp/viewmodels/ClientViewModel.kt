@@ -1,6 +1,5 @@
 package com.psandroidlabs.chatapp.viewmodels
 
-import android.app.Activity
 import androidx.lifecycle.ViewModel
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
@@ -71,7 +70,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     @DelicateCoroutinesApi
     fun readSocket(background: Boolean = false, chatAdapter: ChatAdapter) {
         GlobalScope.launch(Dispatchers.IO) {
-            while(true) {
+            while (isActive) {
                 if (scanner.hasNextLine()) {
                     val message = Message(scanner.nextLine().split(";"))
 
@@ -104,9 +103,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
         return ip
     }
-    
+
     fun transformIp(text: String): InetAddress = InetAddress.getByName(text)
-    
+
     fun closeSocket() {
         client.close()
     }
