@@ -10,8 +10,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.utils.Constants
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
@@ -26,8 +24,6 @@ class ServerService : Service(), CoroutineScope {
     private lateinit var serverSocket: ServerSocket
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
-    private val channel = Channel<Pair<InetAddress, ByteArray>>()
-
     private lateinit var notificationManager: ChatNotificationManager
 
     private val receiver = object : BroadcastReceiver() {
@@ -39,9 +35,6 @@ class ServerService : Service(), CoroutineScope {
     }
 
     override fun onCreate() {
-        startServer()
-        forwardMessage()
-
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, IntentFilter(Constants.ACTION_STOP))
     }
 
@@ -49,6 +42,7 @@ class ServerService : Service(), CoroutineScope {
         notificationManager = ChatNotificationManager(applicationContext, Constants.FOREGROUND_CHAT_CHANNEL)
         // TODO take the server info to be displayed on the foreground notification
         startForeground(100, notificationManager.foregroundNotification(""))
+        startServer()
 
         return START_NOT_STICKY
     }
@@ -62,7 +56,6 @@ class ServerService : Service(), CoroutineScope {
         this.cancel()
         stopForeground(true)
         notificationManager.cancelNotification()
-        channel.cancel()
         running = false
         super.onDestroy()
     }
@@ -74,7 +67,7 @@ class ServerService : Service(), CoroutineScope {
     private fun startServer() {
         var count = 0
         launch(Dispatchers.IO) {
-            serverSocket = ServerSocket(1027)
+            serverSocket = ServerSocket(Constants.CHAT_DEFAULT_PORT)
 
             while (count <= 3) {
                 try {
@@ -94,36 +87,30 @@ class ServerService : Service(), CoroutineScope {
         launch(Dispatchers.IO) {
             val scanner = Scanner(socket.getInputStream())
 
-            if (scanner.hasNext()) {
-                val message = scanner.nextLine().toByteArray(Charsets.UTF_8)
-                channelSendMessage(socket.localAddress, message)
-            }
-        }
-    }
-
-    private fun forwardMessage() {
-        launch(Dispatchers.IO) {
-            while (running) {
-                val message = channel.receive()
-                socketList.forEach { socket ->
-                    if (message.first != socket?.localAddress) {
-                        try {
-                            socket?.getOutputStream()?.write(message.second)
-                        } catch (e: java.net.SocketException) {
-                            if (socket != null) {
-                                removeSocket(socket)
-                            }
-                        }
-                    }
+            while (true) {
+                if (scanner.hasNextLine()) {
+                    var message = scanner.nextLine()
+                    val sendMessage = "$message\n"
+                    forwardMessage(socket, sendMessage.toByteArray(Charsets.UTF_8))
                 }
             }
         }
     }
 
     @Synchronized
-    private fun channelSendMessage(address: InetAddress, message: ByteArray) {
+    private fun forwardMessage(socket: Socket, message: ByteArray) {
         launch(Dispatchers.IO) {
-            channel.send(Pair(address, message))
+            socketList.forEach { sock ->
+                if (sock?.inetAddress != socket.inetAddress ) {
+                    try {
+                        sock?.getOutputStream()?.write(message)
+                    } catch (e: java.net.SocketException) {
+                        if (sock != null) {
+                            removeSocket(socket)
+                        }
+                    }
+                }
+            }
         }
     }
 
