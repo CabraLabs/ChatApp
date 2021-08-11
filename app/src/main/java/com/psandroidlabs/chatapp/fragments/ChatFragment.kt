@@ -83,13 +83,13 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     override fun onResume() {
-        background = false
+        client.background(false)
         chatNotification.cancelNotification()
         super.onResume()
     }
 
     override fun onPause() {
-        background = true
+        client.background(true)
         super.onPause()
     }
 
@@ -222,11 +222,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     @DelicateCoroutinesApi
     private fun receiveMessageListener() {
-        if (background) {
-            client.readSocket(true, chatAdapter)
-        } else {
-            client.readSocket(chatAdapter = chatAdapter)
-        }
+        client.readSocket(chatAdapter)
     }
 
     private fun disableChat() {
