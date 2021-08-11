@@ -87,6 +87,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
+
+            /** Message views **/
             0 -> {
                 ViewHolderSentMessage(ChatRowMessageSentBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
@@ -95,6 +97,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                 ViewHolderReceivedMessage(ChatRowMessageReceivedBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
 
+            /** Vibrate views **/
             2 -> {
                 ViewHolderSentVibrate(ChatRowVibrateSentBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
@@ -103,6 +106,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                 ViewHolderReceivedVibrate(ChatRowVibrateReceivedBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
 
+            /** Join view **/
             else -> {
                 ViewHolderJoinMessage(ChatRowJoinBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
