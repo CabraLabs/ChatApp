@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="vertical"
+    android:layout_gravity="top | center"
+    android:orientation="horizontal"
     android:padding="3dp"
-    android:id="@+id/rowMessageEvent">
-
-    <LinearLayout
-        android:id="@+id/messageBackground"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingHorizontal="15dp"
-        android:background="@drawable/chat_bg_event">
+    android:id="@+id/rowMessageEvent"
+    android:background="@drawable/chat_bg_event">
 
         <TextView
             android:id="@+id/chatRowUsername"
@@ -40,7 +33,6 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
             android:textStyle="italic"
-            tools:text="da/ta/data" />
-        tools:text="da/ta/data"/>
-    </LinearLayout>
+            tools:text="HH:mm aa"
+            tools:textSize="11sp"/>
 </LinearLayout>
