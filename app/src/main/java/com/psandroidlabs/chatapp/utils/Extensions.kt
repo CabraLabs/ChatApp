@@ -1,5 +1,7 @@
 package com.psandroidlabs.chatapp.utils
 
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.psandroidlabs.chatapp.models.MessageStatus
@@ -10,6 +12,14 @@ import java.lang.Exception
 fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_LONG) {
     context?.let {
         Toast.makeText(it, text, duration).show()
+    }
+}
+
+fun Fragment.hideKeyboard() {
+    val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+    inputMethodManager.apply {
+        hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
     }
 }
 
