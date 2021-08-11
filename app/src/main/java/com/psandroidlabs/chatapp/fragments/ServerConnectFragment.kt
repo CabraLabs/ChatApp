@@ -7,12 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentServerConnectBinding
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.ChatManager
+import com.psandroidlabs.chatapp.utils.IP
+import com.psandroidlabs.chatapp.utils.hideKeyboard
 import com.psandroidlabs.chatapp.utils.toast
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import com.psandroidlabs.chatapp.viewmodels.ServerViewModel
@@ -37,7 +40,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     override fun onDestroy() {
-
         activity?.title = getString(R.string.home_app_bar_name)
         super.onDestroy()
     }
@@ -59,8 +61,17 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        view.setOnClickListener {
+            hideKeyboard()
+        }
+
         showIp()
-        changeButtons()
+
+        val serverObserver = Observer<Boolean> {
+            changeButtons(it)
+        }
+        server.serverRunning.observe(viewLifecycleOwner, serverObserver)
+
         initializeButtons()
     }
 
@@ -81,7 +92,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             createServer.setOnClickListener {
                 server.startServerService(activity as Activity)
                 server.updateServerState(true)
-                changeButtons()
+                changeButtons(true)
             }
 
             joinChat.setOnClickListener {
@@ -95,25 +106,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             stopServer.setOnClickListener {
                 context?.let { server.stopServer(it) }
                 server.updateServerState(false)
-                changeButtons()
-            }
-        }
-    }
-
-    private fun changeButtons() {
-        with(binding) {
-            if (server.getServerState()) {
-                createAndJoin.visibility = View.GONE
-                createServer.visibility = View.GONE
-
-                joinChat.visibility = View.VISIBLE
-                stopServer.visibility = View.VISIBLE
-            } else {
-                createAndJoin.visibility = View.VISIBLE
-                createServer.visibility = View.VISIBLE
-
-                joinChat.visibility = View.GONE
-                stopServer.visibility = View.GONE
+                changeButtons(true)
             }
         }
     }
@@ -136,7 +129,25 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 }
             }
 
-            changeButtons()
+            changeButtons(true)
+        }
+    }
+
+    private fun changeButtons(change: Boolean) {
+        with(binding) {
+            if (change) {
+                createAndJoin.visibility = View.GONE
+                createServer.visibility = View.GONE
+
+                joinChat.visibility = View.VISIBLE
+                stopServer.visibility = View.VISIBLE
+            } else {
+                createAndJoin.visibility = View.VISIBLE
+                createServer.visibility = View.VISIBLE
+
+                joinChat.visibility = View.GONE
+                stopServer.visibility = View.GONE
+            }
         }
     }
 
@@ -171,6 +182,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun showIp() {
-        binding.ipAddress.text = client.getIpAddress()
+        binding.ipAddress.text = IP.getIpAddress()
     }
 }
