@@ -84,7 +84,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     override fun onResume() {
         background = false
-        //chatNotification.cancelNotification()
+        chatNotification.cancelNotification()
         super.onResume()
     }
 
