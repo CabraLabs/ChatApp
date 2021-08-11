@@ -8,38 +8,41 @@ import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import kotlinx.coroutines.*
-import java.net.DatagramSocket
 import java.net.InetAddress
 import java.net.Socket
 import java.util.*
 
 class ClientViewModel : ViewModel(), CoroutineScope {
 
+    private var background = false
+    private var running = false
+
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
 
-    private lateinit var client: Socket
     private lateinit var userName: String
+
+    private var socketList: ArrayList<Socket?> = arrayListOf()
 
     private val chatNotification by lazy {
         ChatNotificationManager(applicationContext(), Constants.PRIMARY_CHAT_CHANNEL)
     }
 
-    private val output by lazy {
-        client.getOutputStream()
+    fun background(isBackground: Boolean) {
+        background = isBackground
     }
 
-    private val scanner by lazy {
-        Scanner(client.getInputStream())
-    }
+    fun getUsername() = userName
 
     fun startSocket(username: String, ip: InetAddress): Boolean {
         return try {
             runBlocking {
                 launch(Dispatchers.IO) {
-                    client = Socket(ip, Constants.CHAT_DEFAULT_PORT)
+                    val client = Socket(ip, Constants.CHAT_DEFAULT_PORT)
+                    socketList.add(client)
                     userName = username
                 }
+                running = true
             }
             true
         } catch (e: java.net.ConnectException) {
@@ -47,7 +50,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         }
     }
 
-    fun getUsername() = userName
+
 
     @Synchronized
     fun writeToSocket(message: String): Boolean {
@@ -57,7 +60,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
         launch(Dispatchers.IO) {
             success = try {
-                output.write(messageByte)
+                socketList[0]?.getOutputStream()?.write(messageByte)
                 true
             } catch (e: java.net.SocketException) {
                 false
@@ -68,9 +71,11 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-    fun readSocket(background: Boolean = false, chatAdapter: ChatAdapter) {
+    fun readSocket(chatAdapter: ChatAdapter) {
         GlobalScope.launch(Dispatchers.IO) {
-            while (isActive) {
+            val scanner = Scanner(socketList[0]?.getInputStream())
+
+            while (isActive && running) {
                 if (scanner.hasNextLine()) {
                     val message = Message(scanner.nextLine().split(";"))
 
@@ -88,25 +93,11 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         }
     }
 
-    fun getIpAddress(): String {
-        var ip = ""
-
-        runBlocking {
-            launch(Dispatchers.IO) {
-                DatagramSocket().use { socket ->
-                    socket.connect(InetAddress.getByName("8.8.8.8"), Constants.CHAT_DEFAULT_PORT)
-                    ip = socket.localAddress.hostAddress
-                    socket.close()
-                }
-            }
-        }
-
-        return ip
-    }
-
     fun transformIp(text: String): InetAddress = InetAddress.getByName(text)
 
     fun closeSocket() {
-        client.close()
+        running = false
+        socketList[0]?.close()
+        socketList.remove(socketList[0])
     }
 }
