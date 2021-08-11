@@ -12,6 +12,7 @@ import com.psandroidlabs.chatapp.MainActivity
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.utils.Constants
+import com.psandroidlabs.chatapp.utils.IP
 
 
 class ChatNotificationManager(val context: Context, private val channel: String) {
@@ -50,8 +51,10 @@ class ChatNotificationManager(val context: Context, private val channel: String)
         showNotification(notification = builder)
     }
 
-    fun foregroundNotification(serverInfo: String): Notification {
+    fun foregroundNotification(): Notification {
         createChannel()
+
+        val ip = applicationContext().getString(R.string.server_on_ip, IP.getIpAddress())
 
         val closeIntent = Intent(context, ActionManager::class.java).apply {
             action = Constants.ACTION_STOP
@@ -67,7 +70,7 @@ class ChatNotificationManager(val context: Context, private val channel: String)
         return NotificationCompat.Builder(context, channel)
             .setColor(context.getColor(R.color.blue))
             .setContentTitle(context.getString(R.string.server_running))
-            .setContentText(serverInfo)
+            .setContentText(ip)
             .setSmallIcon(R.drawable.ic_server_foreground)
             .addAction(closeAction)
             .build()
