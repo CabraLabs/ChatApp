@@ -11,7 +11,7 @@ data class Message(
     val time: String
 ) {
     override fun toString(): String {
-        return "${this.type};${this.status};${this.username};${this.message};${this.time}"
+        return "${this.type};${this.status};${this.username};${this.message};${this.time}\n"
     }
 
     constructor(messageList: List<String>) : this(
