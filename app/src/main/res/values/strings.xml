@@ -50,4 +50,5 @@
     <!-- Foreground -->
     <string name="close_server">Close Server</string>
     <string name="server_running">Server is running</string>
+    <string name="server_on_ip" translatable="false">IP: %s</string>
 </resources>
