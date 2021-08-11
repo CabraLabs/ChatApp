@@ -80,13 +80,13 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
                     else -> {
                         val username = userNameField.text.toString()
-                        val inetAddress = Inet4Address.getByName(ipAddressField.text.toString())
+                        val inetAddress = client.transformIp(ipAddressField.text.toString())
                         val success = client.startSocket(username, inetAddress)
 
                         if (success) {
                             AppPreferences.saveClient(
                                 username,
-                                inetAddress.toString(),
+                                ipAddressField.text.toString(),
                                 context
                             )
 
