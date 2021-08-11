@@ -117,11 +117,6 @@ object ChatManager : CoroutineScope {
         return context.getString(R.string.created_the_room)
     }
 
-    /**
-     * Handles the specific message types and send them to the
-     * chatList for the recycler view.
-     */
-
     private fun startTicTacToe() {
         val ticTacToeFragment = TicTacToeFragment(false)
 
