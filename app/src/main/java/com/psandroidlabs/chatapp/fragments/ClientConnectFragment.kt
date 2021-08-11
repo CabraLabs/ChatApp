@@ -1,11 +1,9 @@
 package com.psandroidlabs.chatapp.fragments
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
@@ -55,14 +53,12 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         initializeButtons()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun initializeButtons() {
         with(binding) {
             if (AppPreferences.getClient(context)[0].isNotBlank()) {
@@ -84,13 +80,13 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
                     else -> {
                         val username = userNameField.text.toString()
-                        val inetAddress = Inet4Address.getByName(ipAddressField.text.toString())
+                        val inetAddress = client.transformIp(ipAddressField.text.toString())
                         val success = client.startSocket(username, inetAddress)
 
                         if (success) {
                             AppPreferences.saveClient(
                                 username,
-                                inetAddress.toString(),
+                                ipAddressField.text.toString(),
                                 context
                             )
 

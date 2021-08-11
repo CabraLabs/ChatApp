@@ -9,6 +9,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.psandroidlabs.chatapp.ActionManager
 import com.psandroidlabs.chatapp.MainActivity
+import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.utils.Constants
 
@@ -26,12 +27,12 @@ class ChatNotificationManager(val context: Context, private val channel: String)
         }
     }
 
-    fun sendMessage(username: String, message: String, activity: Activity) {
+    fun sendMessage(username: String, message: String) {
         createChannel()
 
-        val intent = Intent(activity, MainActivity::class.java)
+        val intent = Intent(applicationContext(), MainActivity::class.java)
 
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(applicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val builder = NotificationCompat.Builder(
             context,
