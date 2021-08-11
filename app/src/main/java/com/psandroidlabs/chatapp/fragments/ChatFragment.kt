@@ -16,7 +16,6 @@ import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.*
-import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
@@ -35,6 +34,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private var list: ArrayList<Message> = ArrayList()
 
     private var background = false
+    private var disconnect = false
 
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -68,7 +68,10 @@ class ChatFragment : Fragment(), CoroutineScope {
         client.closeSocket()
         this.cancel()
         chatNotification.cancelNotification()
-        disconnectSnack.dismiss()
+
+        if (disconnect) {
+            disconnectSnack.dismiss()
+        }
 
         if (arg.user == UserType.SERVER) {
             activity?.title = getString(R.string.server_app_bar_name)
@@ -81,7 +84,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     override fun onResume() {
         background = false
-        chatNotification.cancelNotification()
+        //chatNotification.cancelNotification()
         super.onResume()
     }
 
@@ -169,7 +172,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
         val success = client.writeToSocket(message.toString())
 
-        if(success) {
+        if (success) {
             ChatManager.addToAdapter(message)
             notifyAdapterChange()
         } else {
@@ -220,9 +223,9 @@ class ChatFragment : Fragment(), CoroutineScope {
     @DelicateCoroutinesApi
     private fun receiveMessageListener() {
         if (background) {
-            client.readSocket(true, activity)
+            client.readSocket(true, chatAdapter)
         } else {
-            client.readSocket()
+            client.readSocket(chatAdapter = chatAdapter)
         }
     }
 
@@ -249,6 +252,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun disconnectedSnackBar() {
+        disconnect = true
         disableChat()
         disconnectSnack.show()
     }
