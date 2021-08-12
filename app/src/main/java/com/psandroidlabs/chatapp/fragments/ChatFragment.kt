@@ -176,11 +176,10 @@ class ChatFragment : Fragment(), CoroutineScope {
         val message = ChatManager.createMessage(
             type = MessageType.JOIN,
             username = clientUsername,
-            message = connectString,
-            ip = ip
+            text = connectString,
         )
 
-        val success = client.writeToSocket(ChatManager.parseToJson(message))
+        val success = client.writeToSocket(message)
 
         if (success) {
             ChatManager.addToAdapter(message)
@@ -195,11 +194,9 @@ class ChatFragment : Fragment(), CoroutineScope {
             val message = ChatManager.createMessage(
                 type = MessageType.VIBRATE,
                 username = clientUsername,
-                message = Constants.VIBRATE_COMMAND,
-                ip = ip
             )
 
-            val success = client.writeToSocket(ChatManager.parseToJson(message))
+            val success = client.writeToSocket(message)
 
             if (success) {
                 ChatManager.addToAdapter(message)
@@ -215,9 +212,9 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
-                val message = ChatManager.determineMessageType(clientUsername, getTextFieldString(), ip)
+                val message = ChatManager.parseMessageType(clientUsername, getTextFieldString())
 
-                val success = client.writeToSocket(ChatManager.parseToJson(message))
+                val success = client.writeToSocket(message)
 
                 if (success) {
                     eraseTextField()
