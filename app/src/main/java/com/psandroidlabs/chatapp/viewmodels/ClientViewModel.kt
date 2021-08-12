@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
-import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import kotlinx.coroutines.*
@@ -50,8 +49,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         }
     }
 
-
-
     @Synchronized
     fun writeToSocket(message: String): Boolean {
         var success = true
@@ -77,16 +74,20 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
             while (isActive && running) {
                 if (scanner.hasNextLine()) {
-                    val message = Message(scanner.nextLine().split(";"))
+                    val receivedJson = scanner.nextLine()
 
-                    ChatManager.addToAdapter(message, true)
+                    val message = ChatManager.serializeMessage(receivedJson)
 
-                    withContext(Dispatchers.Main) {
-                        chatAdapter.notifyDataSetChanged()
-                    }
+                    if (message != null) {
+                        ChatManager.addToAdapter(message, true)
 
-                    if (background) {
-                        chatNotification.sendMessage(message.username, message.message)
+                        withContext(Dispatchers.Main) {
+                            chatAdapter.notifyDataSetChanged()
+                        }
+
+                        if (background) {
+                            chatNotification.sendMessage(message.username, message.message)
+                        }
                     }
                 }
             }
