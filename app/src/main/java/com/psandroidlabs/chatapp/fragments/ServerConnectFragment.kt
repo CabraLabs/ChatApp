@@ -76,7 +76,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun initializeButtons() {
-
         with(binding) {
             userNameField.setText(R.string.admin)
 
