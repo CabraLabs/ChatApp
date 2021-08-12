@@ -5,7 +5,16 @@ enum class UserType {
 }
 
 enum class MessageType(val code: Int) {
-    MESSAGE(0), JOIN(1), VIBRATE(2), AUDIO(3), IMAGE(4), TICINVITE(5), TICPLAY(6), LEAVE(7)
+    MESSAGE(0),
+    JOIN(1),
+    VIBRATE(2),
+    AUDIO(3),
+    IMAGE(4),
+    TICINVITE(5),
+    TICPLAY(6),
+    LEAVE(7),
+    ACKNOWLEDGE(8),
+    REVOKED(9)
 }
 
 enum class MessageStatus(val code: Int) {
