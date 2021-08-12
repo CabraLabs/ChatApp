@@ -10,11 +10,10 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
+import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.models.Message
-import com.psandroidlabs.chatapp.models.MessageStatus
-import com.psandroidlabs.chatapp.models.MessageType
-import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,16 +31,25 @@ object ChatManager : CoroutineScope {
 
     var chatList: ArrayList<Message> = ArrayList()
 
+    private val jsonAdapter by lazy {
+        val moshi: Moshi = Moshi.Builder().build()
+        moshi.adapter(Message::class.java)
+    }
+
     fun getFragmentActivity(parameterFragmentActivity: FragmentActivity?) {
         if (parameterFragmentActivity != null) {
             fragmentActivity = parameterFragmentActivity
         }
     }
 
-    private fun currentTime(): String {
+    private fun formatTime(epoch: Long): String {
         val pattern = "HH:mm aa"
         val simpleDateFormat = SimpleDateFormat(pattern)
-        return simpleDateFormat.format(Date()).uppercase()
+        return simpleDateFormat.format(epoch).uppercase()
+    }
+
+    private fun getEpoch(): Long {
+        return Calendar.getInstance().timeInMillis
     }
 
     /**
@@ -64,111 +72,124 @@ object ChatManager : CoroutineScope {
                     username,
                     message
                 )
+            } else {
+                createMessage(type = MessageType.MESSAGE, username = username, message = message, ip = ip)
             }
-        } else {
-            createMessage(MessageType.MESSAGE, MessageStatus.RECEIVED, username, message)
         }
-    }
 
-    /**
-     * Create a Message data class and returns it.
-     */
-    fun createMessage(
-        type: MessageType,
-        status: MessageStatus,
-        username: String,
-        message: String,
-        date: String = currentTime()
-    ) = Message(
-        type,
-        status,
-        username,
-        message,
-        date
-    )
 
-    /**
-     * Add the data class Message to the Chat Adapter View.
-     */
-    fun addToAdapter(message: Message, received: Boolean = false) {
-        if (received) {
-            chatList.add(message)
-            messageAction(message.type)
-        } else {
-            message.status = MessageStatus.SENT
-            chatList.add(message)
+        /**
+         * Create a Message data class and returns it.
+         */
+        fun createMessage(
+            type: MessageType,
+            status: MessageStatus = MessageStatus.RECEIVED,
+            username: String,
+            message: String,
+            date: Long = getEpoch(),
+            ip: String,
+            avatar: String = "",
+            password: String = ""
+        ) = Message(
+            type.code,
+            status.code,
+            username,
+            message,
+            date,
+            ip,
+            Join(avatar, password)
+        )
+
+        /**
+         * Add the data class Message to the Chat Adapter View.
+         */
+        fun addToAdapter(message: Message, received: Boolean = false) {
+            if (received) {
+                chatList.add(message)
+                messageAction(message.type)
+            } else {
+                message.status = MessageStatus.SENT.code
+                chatList.add(message)
+            }
         }
-    }
 
-    private fun messageAction(messageType: MessageType) {
-        when (messageType) {
-            MessageType.VIBRATE -> startVibrate()
-            else -> return
+        private fun messageAction(messageType: MessageType) {
+            when (messageType) {
+                MessageType.VIBRATE -> startVibrate()
+                else -> return
+            }
         }
-    }
 
-    /**
-     * Returns the connect message based on the user type
-     */
-    fun connectMessage(user: UserType, context: Context): String {
-        if (user == UserType.CLIENT) {
-            return context.getString(R.string.joined_the_room)
+        /**
+         * Returns the connect message based on the user type
+         */
+        fun connectMessage(user: UserType, context: Context): String {
+            if (user == UserType.CLIENT) {
+                return context.getString(R.string.joined_the_room)
+            }
+            return context.getString(R.string.created_the_room)
         }
-        return context.getString(R.string.created_the_room)
-    }
 
-    private fun startTicTacToe() {
-        val ticTacToeFragment = TicTacToeFragment(false)
-
-        fragmentActivity.supportFragmentManager.let {
-            ticTacToeFragment.show(it, null)
+        fun serializeMessage(message: String): Message? {
+            return jsonAdapter.fromJson(message)
         }
-    }
 
-    private fun ticTacToeListener() {
-        fragmentActivity.let {
-            Snackbar.make(
-                it.findViewById(R.id.chatLayout),
-                applicationContext().getString(R.string.accept),
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction("YES") { startTicTacToe() }.show()
+        fun parseToJson(message: Message): String {
+            return jsonAdapter.toJson(message)
         }
-    }
 
-    private fun startVibrate() {
-        val vibrator =
-            ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            vibrator.vibrate(
-                VibrationEffect.createOneShot(
-                    1000,
-                    VibrationEffect.EFFECT_HEAVY_CLICK
+        private fun startTicTacToe() {
+            val ticTacToeFragment = TicTacToeFragment(false)
+
+            fragmentActivity.supportFragmentManager.let {
+                ticTacToeFragment.show(it, null)
+            }
+        }
+
+        private fun ticTacToeListener() {
+            fragmentActivity.let {
+                Snackbar.make(
+                    it.findViewById(R.id.chatLayout),
+                    applicationContext().getString(R.string.accept),
+                    Snackbar.LENGTH_INDEFINITE
                 )
-            )
-        } else {
-            toast("*vibrating*")
+                    .setAction("YES") { startTicTacToe() }.show()
+            }
+        }
+
+        private fun startVibrate() {
+            val vibrator =
+                ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        1000,
+                        VibrationEffect.EFFECT_HEAVY_CLICK
+                    )
+                )
+            } else {
+                toast("*vibrating*")
+            }
+        }
+
+        // TODO Make implementation somewhere for this function.
+        fun playSound() {
+            ContextCompat.getSystemService(applicationContext(), AudioManager::class.java)?.apply {
+                setStreamVolume(
+                    AudioManager.STREAM_MUSIC,
+                    getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+                    AudioManager.AUDIOFOCUS_GAIN
+                )
+            }
+            val mediaPlayer = MediaPlayer.create(applicationContext(), R.raw.bolso)
+            mediaPlayer.start()
+        }
+
+        fun delay(delay: Long = 1500, action: () -> Unit) {
+            Handler(Looper.getMainLooper()).postDelayed(action, delay)
+        }
+
+        fun toast(string: String) {
+            Toast.makeText(applicationContext(), string, Toast.LENGTH_SHORT).show()
         }
     }
-
-    // TODO Make implementation somewhere for this function.
-    fun playSound() {
-        ContextCompat.getSystemService(applicationContext(), AudioManager::class.java)?.apply {
-            setStreamVolume(
-                AudioManager.STREAM_MUSIC,
-                getStreamMaxVolume(AudioManager.STREAM_MUSIC),
-                AudioManager.AUDIOFOCUS_GAIN
-            )
-        }
-        val mediaPlayer = MediaPlayer.create(applicationContext(), R.raw.bolso)
-        mediaPlayer.start()
-    }
-
-    fun delay(delay: Long = 1500, action: () -> Unit) {
-        Handler(Looper.getMainLooper()).postDelayed(action, delay)
-    }
-
-    fun toast(string: String){
-        Toast.makeText(applicationContext(), string, Toast.LENGTH_SHORT).show()
-    }
-}
