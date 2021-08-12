@@ -15,15 +15,20 @@ import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
-import com.psandroidlabs.chatapp.models.*
+import com.psandroidlabs.chatapp.models.ChatNotificationManager
+import com.psandroidlabs.chatapp.models.Message
+import com.psandroidlabs.chatapp.models.MessageType
+import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
+import com.psandroidlabs.chatapp.utils.IP
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatFragment : Fragment(), CoroutineScope {
 
+    private val client: ClientViewModel by activityViewModels()
     private val arg: ChatFragmentArgs by navArgs()
     private lateinit var binding: FragmentChatBinding
     private lateinit var chatAdapter: ChatAdapter
@@ -33,7 +38,6 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private var list: ArrayList<Message> = ArrayList()
 
-    private var background = false
     private var disconnect = false
 
     private val chatNotification by lazy {
@@ -44,10 +48,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         findNavController()
     }
 
-    private val client: ClientViewModel by activityViewModels()
-
     private val clientUsername: String by lazy {
         client.getUsername()
+    }
+
+    private val ip: String by lazy {
+        IP.getIpAddress()
     }
 
     private val disconnectSnack: Snackbar by lazy {
@@ -61,7 +67,6 @@ class ChatFragment : Fragment(), CoroutineScope {
                 navController.popBackStack()
             }
     }
-
 
     // Fragment life cycle
     override fun onDestroy() {
@@ -168,9 +173,14 @@ class ChatFragment : Fragment(), CoroutineScope {
     @DelicateCoroutinesApi
     private fun connectMessage() {
         val connectString = ChatManager.connectMessage(arg.user, requireContext())
-        val message = ChatManager.createMessage(MessageType.JOIN, MessageStatus.RECEIVED, clientUsername, connectString)
+        val message = ChatManager.createMessage(
+            type = MessageType.JOIN,
+            username = clientUsername,
+            message = connectString,
+            ip = ip
+        )
 
-        val success = client.writeToSocket(message.toString())
+        val success = client.writeToSocket(ChatManager.parseToJson(message))
 
         if (success) {
             ChatManager.addToAdapter(message)
@@ -183,13 +193,13 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun vibrateListener() {
         binding.vibrateButton.setOnClickListener {
             val message = ChatManager.createMessage(
-                MessageType.VIBRATE,
-                MessageStatus.RECEIVED,
-                clientUsername,
-                Constants.VIBRATE_COMMAND
+                type = MessageType.VIBRATE,
+                username = clientUsername,
+                message = Constants.VIBRATE_COMMAND,
+                ip = ip
             )
 
-            val success = client.writeToSocket(message.toString())
+            val success = client.writeToSocket(ChatManager.parseToJson(message))
 
             if (success) {
                 ChatManager.addToAdapter(message)
@@ -205,9 +215,9 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
-                val message = ChatManager.determineMessageType(clientUsername, getTextFieldString())
+                val message = ChatManager.determineMessageType(clientUsername, getTextFieldString(), ip)
 
-                val success = client.writeToSocket(message.toString())
+                val success = client.writeToSocket(ChatManager.parseToJson(message))
 
                 if (success) {
                     eraseTextField()
