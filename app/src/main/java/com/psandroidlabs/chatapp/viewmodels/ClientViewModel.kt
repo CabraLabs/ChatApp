@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
+import com.psandroidlabs.chatapp.models.Message
+import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import kotlinx.coroutines.*
@@ -20,6 +22,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     override val coroutineContext = parentJob + Dispatchers.IO
 
     private lateinit var userName: String
+    private var id = 0
 
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
@@ -50,10 +53,11 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     @Synchronized
-    fun writeToSocket(message: String): Boolean {
+    fun writeToSocket(message: Message): Boolean {
         var success = true
 
-        val messageByte = message.toByteArray(Charsets.UTF_8)
+        message.id = id
+        val messageByte = ChatManager.parseToJson(message).toByteArray(Charsets.UTF_8)
 
         launch(Dispatchers.IO) {
             success = try {
@@ -78,15 +82,27 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                     val message = ChatManager.serializeMessage(receivedJson)
 
+                    // TODO make the exception be changed to a proper handle with a message to the user.
                     if (message != null) {
-                        ChatManager.addToAdapter(message, true)
+                        if (message.type == MessageType.ACKNOWLEDGE.code) {
+                            id = message.id ?: throw Exception("Server failed to send a verification Id")
 
-                        withContext(Dispatchers.Main) {
-                            chatAdapter.notifyDataSetChanged()
-                        }
+                        } else if (message.type == MessageType.REVOKED.code) {
+                            // TODO close connection and display message to the user
+                            closeSocket()
 
-                        if (background) {
-                            chatNotification.sendMessage(message.username, message.message)
+                        } else {
+                            ChatManager.addToAdapter(message, true)
+
+                            withContext(Dispatchers.Main) {
+                                chatAdapter.notifyDataSetChanged()
+                            }
+
+                            // TODO track this
+                            if (background) {
+                                ChatManager.playSound()
+                                chatNotification.sendMessage(message.username, message.text ?: "")
+                            }
                         }
                     }
                 }
