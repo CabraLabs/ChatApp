@@ -7,10 +7,11 @@ data class Message(
     var type: Int,
     var status: Int,
     val username: String,
-    val message: String,
+    val text: String?,
+    val base64Data: String?,
     val time: Long,
-    val ip: String,
-    val join: Join
+    var id: Int?,
+    val join: Join?
 )
 
 data class Join(val avatar: String, val password: String)
