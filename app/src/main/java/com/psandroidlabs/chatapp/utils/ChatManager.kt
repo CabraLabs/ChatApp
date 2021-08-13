@@ -41,7 +41,7 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    private fun formatTime(epoch: Long): String {
+    fun formatTime(epoch: Long): String {
         val pattern = "HH:mm aa"
         val simpleDateFormat = SimpleDateFormat(pattern)
         return simpleDateFormat.format(epoch).uppercase()

@@ -8,6 +8,7 @@ import com.psandroidlabs.chatapp.databinding.*
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
+import com.psandroidlabs.chatapp.utils.ChatManager
 
 
 class ChatAdapter(private val dataSet: ArrayList<Message>) :
@@ -21,8 +22,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                chatRowMessage.text = message.message
-                chatRowTime.text = message.time
+                chatRowMessage.text = message.text
+                chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
@@ -31,8 +32,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                chatRowMessage.text = message.message
-                chatRowTime.text = message.time
+                chatRowMessage.text = message.text
+                chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
@@ -41,8 +42,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                chatRowMessage.text = message.message
-                chatRowTime.text = message.time
+                chatRowMessage.text = message.text
+                chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
@@ -52,7 +53,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
             with(binding) {
                 chatRowUsername.text = message.username
                 //TODO set username image
-                chatRowTime.text = message.time
+                chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
@@ -62,7 +63,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
             with(binding) {
                 chatRowUsername.text = message.username
                 //TODO set username image
-                chatRowTime.text = message.time
+                chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
@@ -71,17 +72,18 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         return viewTypeTranslator(dataSet[position].type, dataSet[position].status)
     }
 
-    private fun viewTypeTranslator(type: MessageType, status: MessageStatus): Int {
+    private fun viewTypeTranslator(type: Int, status: Int): Int {
         var number = 0
-        if (status != MessageStatus.SENT) number = 7
+        if (status != MessageStatus.SENT.code) number = 7
         return when (type) {
-            MessageType.MESSAGE -> MessageType.MESSAGE.code + number
-            MessageType.JOIN -> MessageType.JOIN.code + number
-            MessageType.VIBRATE -> MessageType.VIBRATE.code + number
-            MessageType.AUDIO -> MessageType.AUDIO.code + number
-            MessageType.IMAGE -> MessageType.IMAGE.code + number
-            MessageType.TICINVITE -> MessageType.TICINVITE.code + number
-            MessageType.TICPLAY -> MessageType.TICPLAY.code + number
+            MessageType.MESSAGE.code -> MessageType.MESSAGE.code + number
+            MessageType.JOIN.code -> MessageType.JOIN.code + number
+            MessageType.VIBRATE.code -> MessageType.VIBRATE.code + number
+            MessageType.AUDIO.code -> MessageType.AUDIO.code + number
+            MessageType.IMAGE.code -> MessageType.IMAGE.code + number
+            MessageType.TICINVITE.code -> MessageType.TICINVITE.code + number
+            MessageType.TICPLAY.code -> MessageType.TICPLAY.code + number
+            else -> 110
         }
     }
 

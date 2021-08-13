@@ -30,8 +30,10 @@ class ServerViewModel : ViewModel() {
         serverRunning.value = isRunning
     }
 
-    fun startServerService(activity: Activity) {
-        val intent = Intent(activity, ServerService::class.java)
+    fun startServerService(activity: Activity, password: String = "") {
+        val intent = Intent(activity, ServerService::class.java).apply {
+            putExtra(Constants.PASSWORD, password)
+        }
         ContextCompat.startForegroundService(activity.applicationContext, intent)
 
         LocalBroadcastManager.getInstance(applicationContext()).registerReceiver(receiver, IntentFilter(Constants.ACTION_STOP))
