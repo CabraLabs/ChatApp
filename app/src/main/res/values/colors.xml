@@ -2,19 +2,15 @@
 <resources>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
+    <color name="purple_app">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="send_username">#1A58E9</color>
     <color name="red">#CA1B1B</color>
-    <color name="receive_username">#E91A1A</color>
-    <color name="event_username">#1B1B1B</color>
-    <color name="soft_red_bg">#FDE0E0</color>
-    <color name="soft_blue_bg">#E0EFFD</color>
-    <color name="soft_grey_bg">#E6E6E6</color>
-    <color name="soft_yellow">#FDF8E4</color>
+    <color name="soft_grey_1">#F2F3F8</color>
+    <color name="soft_grey_2">#EAEAEA</color>
     <color name="blue">#17B0ED</color>
     <color name="cell">#EAF0FF</color>
 </resources>
