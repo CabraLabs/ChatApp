@@ -14,4 +14,5 @@ data class Message(
     val join: Join?
 )
 
+@JsonClass(generateAdapter = true)
 data class Join(val avatar: String, val password: String)
