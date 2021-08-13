@@ -20,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
+            android:textColor="@color/white"
             android:textStyle="bold"
             tools:text="username" />
 
@@ -34,6 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="3dp"
+            android:textColor="@color/white"
             android:textStyle="italic"
             tools:text="HH:mm aa"
             tools:textSize="11sp" />

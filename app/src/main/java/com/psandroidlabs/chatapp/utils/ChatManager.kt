@@ -173,7 +173,7 @@ object ChatManager : CoroutineScope {
         Handler(Looper.getMainLooper()).postDelayed(action, delay)
     }
 
-    fun toast(string: String){
+    private fun toast(string: String){
         Toast.makeText(applicationContext(), string, Toast.LENGTH_SHORT).show()
     }
 }
