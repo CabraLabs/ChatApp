@@ -45,10 +45,49 @@
         android:id="@+id/ipAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:textAlignment="center"
         android:textSize="20sp"
         tools:text="192.168.0.1" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:checkedButton="@id/hidePassword"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/showPassword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="15dp"
+            android:text="@string/use_password" />
+
+        <RadioButton
+            android:id="@+id/hidePassword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/no_password" />
+    </RadioGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password"
+        android:visibility="gone"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/password">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -70,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:text="@string/join_chat"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/createServer"
@@ -83,9 +122,9 @@
 
         <Button
             android:id="@+id/stopServer"
-            android:backgroundTint="@color/red"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/red"
             android:text="@string/stop_server"
             android:visibility="gone" />
 

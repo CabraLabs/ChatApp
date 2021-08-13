@@ -7,12 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentServerConnectBinding
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.ChatManager
+import com.psandroidlabs.chatapp.utils.IP
+import com.psandroidlabs.chatapp.utils.hideKeyboard
 import com.psandroidlabs.chatapp.utils.toast
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import com.psandroidlabs.chatapp.viewmodels.ServerViewModel
@@ -37,7 +40,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     override fun onDestroy() {
-
         activity?.title = getString(R.string.home_app_bar_name)
         super.onDestroy()
     }
@@ -59,33 +61,58 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        view.setOnClickListener {
+            hideKeyboard()
+        }
+
         showIp()
-        changeButtons()
+
+        val serverObserver = Observer<Boolean> {
+            changeButtons(it)
+        }
+        server.serverRunning.observe(viewLifecycleOwner, serverObserver)
+
         initializeButtons()
     }
 
     private fun initializeButtons() {
-
         with(binding) {
             userNameField.setText(R.string.admin)
 
+            radioGroup.setOnCheckedChangeListener { group, _ ->
+                when (group.checkedRadioButtonId) {
+                    R.id.showPassword -> showPasswordField(true)
+                    R.id.hidePassword -> showPasswordField(false)
+                }
+            }
+
             createAndJoin.setOnClickListener {
-                if (usernameText()) {
+                if (checkFields()) {
                     loading(true)
 
-                    server.startServerService(activity as Activity)
+                    if (showPassword.isChecked) {
+                        server.startServerService(activity as Activity, passwordField.text.toString())
+                    } else {
+                        server.startServerService(activity as Activity)
+                    }
+
+                    server.updateServerState(true)
+
                     join()
                 }
             }
 
             createServer.setOnClickListener {
-                server.startServerService(activity as Activity)
-                server.updateServerState(true)
-                changeButtons()
+                if (checkPasswordField()) {
+                    server.startServerService(activity as Activity, passwordField.text.toString())
+                    changeButtons(true)
+                } else {
+                    server.startServerService(activity as Activity)
+                }
             }
 
             joinChat.setOnClickListener {
-                if (usernameText()) {
+                if (checkFields()) {
                     loading(true)
 
                     join()
@@ -95,25 +122,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             stopServer.setOnClickListener {
                 context?.let { server.stopServer(it) }
                 server.updateServerState(false)
-                changeButtons()
-            }
-        }
-    }
-
-    private fun changeButtons() {
-        with(binding) {
-            if (server.getServerState()) {
-                createAndJoin.visibility = View.GONE
-                createServer.visibility = View.GONE
-
-                joinChat.visibility = View.VISIBLE
-                stopServer.visibility = View.VISIBLE
-            } else {
-                createAndJoin.visibility = View.VISIBLE
-                createServer.visibility = View.VISIBLE
-
-                joinChat.visibility = View.GONE
-                stopServer.visibility = View.GONE
+                changeButtons(true)
             }
         }
     }
@@ -136,7 +145,50 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 }
             }
 
-            changeButtons()
+            changeButtons(true)
+        }
+    }
+
+    private fun showPasswordField(isActive: Boolean) {
+        with(binding) {
+            if (isActive) {
+                password.apply {
+                    visibility = View.VISIBLE
+                }
+            } else {
+                password.apply {
+                    visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun changeButtons(change: Boolean) {
+        with(binding) {
+            if (change) {
+                enableRadioButtons(false)
+
+                createAndJoin.visibility = View.GONE
+                createServer.visibility = View.GONE
+
+                joinChat.visibility = View.VISIBLE
+                stopServer.visibility = View.VISIBLE
+            } else {
+                enableRadioButtons(true)
+
+                createAndJoin.visibility = View.VISIBLE
+                createServer.visibility = View.VISIBLE
+
+                joinChat.visibility = View.GONE
+                stopServer.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun enableRadioButtons(isEnabled: Boolean) {
+        with(binding) {
+            showPassword.isEnabled = isEnabled
+            hidePassword.isEnabled = isEnabled
         }
     }
 
@@ -144,12 +196,14 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         with(binding) {
             if (isLoading) {
                 progressBar.visibility = View.VISIBLE
+                enableRadioButtons(false)
                 createServer.apply {
                     alpha = 0.3F
                     isClickable = false
                 }
             } else {
                 progressBar.visibility = View.GONE
+                enableRadioButtons(true)
                 createServer.apply {
                     alpha = 1F
                     isClickable = true
@@ -158,11 +212,10 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun usernameText(): Boolean {
+    private fun checkPasswordField(): Boolean {
         with(binding) {
-            return if (userNameField.text.toString() == "") {
-                toast(getString(R.string.username_missing))
-                username.error = getString(R.string.username_missing)
+            return if (showPassword.isChecked) {
+                passwordFieldError()
                 false
             } else {
                 true
@@ -170,7 +223,35 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun checkFields(): Boolean {
+        with(binding) {
+            return if (userNameField.text.toString() == "") {
+                usernameFieldError()
+                false
+            } else if (showPassword.isChecked) {
+                if (passwordField.text.toString() == "") {
+                    passwordFieldError()
+                    false
+                } else {
+                    true
+                }
+            } else {
+                true
+            }
+        }
+    }
+
+    private fun usernameFieldError() {
+        toast(getString(R.string.username_missing))
+        binding.username.error = getString(R.string.username_missing)
+    }
+
+    private fun passwordFieldError() {
+        toast(getString(R.string.password_missing))
+        binding.password.error = getString(R.string.password_missing)
+    }
+
     private fun showIp() {
-        binding.ipAddress.text = client.getIpAddress()
+        binding.ipAddress.text = IP.getIpAddress()
     }
 }

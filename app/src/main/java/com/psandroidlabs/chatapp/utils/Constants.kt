@@ -1,6 +1,8 @@
 package com.psandroidlabs.chatapp.utils
 
 object Constants {
+    const val PASSWORD = "Password"
+
     const val CHAT_DEFAULT_PORT = 1027
 
     const val ACTION_STOP = "STOP"

@@ -33,4 +33,8 @@
     <string name="accept">Aceitar convite?</string>
     <string name="close_server">Fechar servidor</string>
     <string name="server_running">O servidor está rodando</string>
+    <string name="use_password">Usar senha</string>
+    <string name="no_password">Sem senha</string>
+    <string name="password">Senha</string>
+    <string name="password_missing">Por favor insira uma senha</string>
 </resources>
