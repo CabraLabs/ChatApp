@@ -92,28 +92,6 @@ object ChatManager : CoroutineScope {
     )
 
     /**
-     * Create a Message data class and returns it.
-     */
-    fun createMessage(
-        type: MessageType,
-        status: MessageStatus = MessageStatus.RECEIVED,
-        username: String,
-        message: String,
-        date: Long = getEpoch(),
-        ip: String,
-        avatar: String = "",
-        password: String = ""
-    ) = Message(
-        type.code,
-        status.code,
-        username,
-        message,
-        date,
-        ip,
-        Join(avatar, password)
-    )
-
-    /**
      * Add the data class Message to the Chat Adapter View.
      */
     fun addToAdapter(message: Message, received: Boolean = false) {
@@ -126,9 +104,9 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    private fun messageAction(messageType: MessageType) {
+    private fun messageAction(messageType: Int) {
         when (messageType) {
-            MessageType.VIBRATE -> startVibrate()
+            MessageType.VIBRATE.code -> startVibrate()
             else -> return
         }
     }

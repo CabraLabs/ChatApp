@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import java.lang.Exception
@@ -12,7 +13,11 @@ import java.lang.Exception
 fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_LONG) {
     context?.let {
         Toast.makeText(it, text, duration).show()
-    }
+    } ?: Toast.makeText(applicationContext(), text, duration).show()
+}
+
+fun toast(text: String, duration: Int = Toast.LENGTH_LONG) {
+    Toast.makeText(applicationContext(), text, duration).show()
 }
 
 fun Fragment.hideKeyboard() {
