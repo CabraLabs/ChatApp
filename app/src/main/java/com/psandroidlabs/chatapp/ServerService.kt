@@ -16,8 +16,6 @@ import java.util.*
 
 class ServerService : Service(), CoroutineScope {
 
-    private var running = false
-
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
 
@@ -25,6 +23,7 @@ class ServerService : Service(), CoroutineScope {
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
     private lateinit var notificationManager: ChatNotificationManager
+    private var password: String? = null
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -40,23 +39,21 @@ class ServerService : Service(), CoroutineScope {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         notificationManager = ChatNotificationManager(applicationContext, Constants.FOREGROUND_CHAT_CHANNEL)
-        // TODO take the server info to be displayed on the foreground notification
-        startForeground(100, notificationManager.foregroundNotification(""))
+        startForeground(100, notificationManager.foregroundNotification())
+
+        password = intent.getStringExtra(Constants.PASSWORD)
+
         startServer()
 
         return START_NOT_STICKY
     }
 
     override fun onDestroy() {
-        if (running) {
-            closeServer()
-        }
-
+        closeServer()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
         this.cancel()
         stopForeground(true)
-        notificationManager.cancelNotification()
-        running = false
+
         super.onDestroy()
     }
 
@@ -75,7 +72,6 @@ class ServerService : Service(), CoroutineScope {
                     socketList.add(socket)
                     socketListen(socket)
                     count++
-                    running = true
                 } catch (e: java.net.SocketException) {
                     return@launch
                 }
@@ -89,7 +85,7 @@ class ServerService : Service(), CoroutineScope {
 
             while (isActive) {
                 if (scanner.hasNextLine()) {
-                    var message = scanner.nextLine()
+                    val message = scanner.nextLine()
                     val sendMessage = "$message\n"
                     forwardMessage(socket, sendMessage.toByteArray(Charsets.UTF_8))
                 }
@@ -122,9 +118,7 @@ class ServerService : Service(), CoroutineScope {
     }
 
     private fun closeServer() {
-        socketList.forEach { socket ->
-            socket?.close()
-        }
         serverSocket.close()
+        socketList.removeAll(socketList)
     }
 }

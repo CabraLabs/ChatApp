@@ -16,10 +16,14 @@
 
     <!-- FragmentServerConnect -->
     <string name="admin">Admin</string>
+    <string name="password">Password</string>
+    <string name="use_password">Use password</string>
+    <string name="no_password">No password</string>
     <string name="your_ip">Your IP Address is:</string>
     <string name="create_and_join">Create and Join</string>
     <string name="create_server">Only create</string>
     <string name="stop_server">Stop Server</string>
+    <string name="password_missing">Please insert a password</string>
     <string name="waiting_for_a_connection">Waiting for a connection</string>
     <string name="server_error">Unexpected error, couldn\'t create server</string>
     <string name="port_in_use_error">The default port is already been hosted by other server.</string>
@@ -50,4 +54,5 @@
     <!-- Foreground -->
     <string name="close_server">Close Server</string>
     <string name="server_running">Server is running</string>
+    <string name="server_on_ip" translatable="false">IP: %s</string>
 </resources>

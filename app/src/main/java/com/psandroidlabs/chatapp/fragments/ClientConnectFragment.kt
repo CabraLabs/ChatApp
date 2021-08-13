@@ -12,12 +12,12 @@ import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentClientConnectBinding
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.AppPreferences
+import com.psandroidlabs.chatapp.utils.hideKeyboard
 import com.psandroidlabs.chatapp.utils.toast
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import java.net.Inet4Address
 
 
 class ClientConnectFragment : Fragment(), CoroutineScope {
@@ -55,6 +55,10 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        view.setOnClickListener {
+            hideKeyboard()
+        }
 
         initializeButtons()
     }

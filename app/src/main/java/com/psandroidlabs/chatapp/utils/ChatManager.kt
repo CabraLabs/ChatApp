@@ -4,17 +4,15 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
+import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.models.Message
-import com.psandroidlabs.chatapp.models.MessageStatus
-import com.psandroidlabs.chatapp.models.MessageType
-import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,16 +30,25 @@ object ChatManager : CoroutineScope {
 
     var chatList: ArrayList<Message> = ArrayList()
 
+    private val jsonAdapter by lazy {
+        val moshi: Moshi = Moshi.Builder().build()
+        moshi.adapter(Message::class.java)
+    }
+
     fun getFragmentActivity(parameterFragmentActivity: FragmentActivity?) {
         if (parameterFragmentActivity != null) {
             fragmentActivity = parameterFragmentActivity
         }
     }
 
-    private fun currentTime(): String {
+    fun formatTime(epoch: Long): String {
         val pattern = "HH:mm aa"
         val simpleDateFormat = SimpleDateFormat(pattern)
-        return simpleDateFormat.format(Date()).uppercase()
+        return simpleDateFormat.format(epoch).uppercase()
+    }
+
+    private fun getEpoch(): Long {
+        return Calendar.getInstance().timeInMillis
     }
 
     /**
@@ -49,24 +56,14 @@ object ChatManager : CoroutineScope {
      *
      * If the message starts with '/' it is probably a command.
      */
-    fun determineMessageType(username: String, message: String): Message {
+    fun parseMessageType(username: String, message: String): Message {
         return if (message.startsWith("/")) {
             when (message) {
-                Constants.VIBRATE_COMMAND -> createMessage(
-                    MessageType.VIBRATE,
-                    MessageStatus.RECEIVED,
-                    username,
-                    message
-                )
-                else -> createMessage(
-                    MessageType.MESSAGE,
-                    MessageStatus.RECEIVED,
-                    username,
-                    message
-                )
+                Constants.VIBRATE_COMMAND -> createMessage(type = MessageType.VIBRATE, username = username, text = message)
+                else -> createMessage(type = MessageType.MESSAGE, username = username, text = message)
             }
         } else {
-            createMessage(MessageType.MESSAGE, MessageStatus.RECEIVED, username, message)
+            createMessage(type = MessageType.MESSAGE, username = username, text = message)
         }
     }
 
@@ -75,16 +72,23 @@ object ChatManager : CoroutineScope {
      */
     fun createMessage(
         type: MessageType,
-        status: MessageStatus,
+        status: MessageStatus = MessageStatus.RECEIVED,
         username: String,
-        message: String,
-        date: String = currentTime()
+        text: String? = null,
+        base64Data: String? = null,
+        date: Long = getEpoch(),
+        id: Int? = null,
+        avatar: String = "",
+        password: String = ""
     ) = Message(
-        type,
-        status,
+        type.code,
+        status.code,
         username,
-        message,
-        date
+        text,
+        base64Data,
+        date,
+        id,
+        Join(avatar, password)
     )
 
     /**
@@ -93,17 +97,9 @@ object ChatManager : CoroutineScope {
     fun addToAdapter(message: Message, received: Boolean = false) {
         if (received) {
             chatList.add(message)
-            messageAction(message.type)
         } else {
-            message.status = MessageStatus.SENT
+            message.status = MessageStatus.SENT.code
             chatList.add(message)
-        }
-    }
-
-    private fun messageAction(messageType: MessageType) {
-        when (messageType) {
-            MessageType.VIBRATE -> startVibrate()
-            else -> return
         }
     }
 
@@ -117,10 +113,13 @@ object ChatManager : CoroutineScope {
         return context.getString(R.string.created_the_room)
     }
 
-    /**
-     * Handles the specific message types and send them to the
-     * chatList for the recycler view.
-     */
+    fun serializeMessage(message: String): Message? {
+        return jsonAdapter.fromJson(message)
+    }
+
+    fun parseToJson(message: Message): String {
+        return jsonAdapter.toJson(message)
+    }
 
     private fun startTicTacToe() {
         val ticTacToeFragment = TicTacToeFragment(false)
@@ -142,8 +141,7 @@ object ChatManager : CoroutineScope {
     }
 
     private fun startVibrate() {
-        val vibrator =
-            ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
+        val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             vibrator.vibrate(
                 VibrationEffect.createOneShot(
@@ -152,28 +150,19 @@ object ChatManager : CoroutineScope {
                 )
             )
         } else {
-            toast("*vibrating*")
+
         }
     }
 
-    // TODO Make implementation somewhere for this function.
     fun playSound() {
         ContextCompat.getSystemService(applicationContext(), AudioManager::class.java)?.apply {
-            setStreamVolume(
-                AudioManager.STREAM_MUSIC,
-                getStreamMaxVolume(AudioManager.STREAM_MUSIC),
-                AudioManager.AUDIOFOCUS_GAIN
-            )
+            setStreamVolume(AudioManager.STREAM_MUSIC, getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioManager.AUDIOFOCUS_GAIN)
         }
-        val mediaPlayer = MediaPlayer.create(applicationContext(), R.raw.bolso)
+        val mediaPlayer = MediaPlayer.create(applicationContext(), R.raw.goat)
         mediaPlayer.start()
     }
 
     fun delay(delay: Long = 1500, action: () -> Unit) {
         Handler(Looper.getMainLooper()).postDelayed(action, delay)
-    }
-
-    private fun toast(string: String){
-        Toast.makeText(applicationContext(), string, Toast.LENGTH_SHORT).show()
     }
 }
