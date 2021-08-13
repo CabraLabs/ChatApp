@@ -23,6 +23,7 @@ class ServerService : Service(), CoroutineScope {
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
     private lateinit var notificationManager: ChatNotificationManager
+    private var password: String? = null
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -39,6 +40,9 @@ class ServerService : Service(), CoroutineScope {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         notificationManager = ChatNotificationManager(applicationContext, Constants.FOREGROUND_CHAT_CHANNEL)
         startForeground(100, notificationManager.foregroundNotification())
+
+        password = intent.getStringExtra(Constants.PASSWORD)
+
         startServer()
 
         return START_NOT_STICKY
