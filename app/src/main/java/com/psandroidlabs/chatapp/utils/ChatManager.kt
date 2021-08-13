@@ -150,7 +150,7 @@ object ChatManager : CoroutineScope {
                 )
             )
         } else {
-
+            toast("*vibrating*")
         }
     }
 

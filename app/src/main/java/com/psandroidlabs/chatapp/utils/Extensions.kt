@@ -16,7 +16,7 @@ fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_LONG) {
     } ?: Toast.makeText(applicationContext(), text, duration).show()
 }
 
-fun toast(text: String, duration: Int = Toast.LENGTH_LONG) {
+fun Any.toast(text: String, duration: Int = Toast.LENGTH_LONG) {
     Toast.makeText(applicationContext(), text, duration).show()
 }
 
