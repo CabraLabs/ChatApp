@@ -97,17 +97,9 @@ object ChatManager : CoroutineScope {
     fun addToAdapter(message: Message, received: Boolean = false) {
         if (received) {
             chatList.add(message)
-            messageAction(message.type)
         } else {
             message.status = MessageStatus.SENT.code
             chatList.add(message)
-        }
-    }
-
-    private fun messageAction(messageType: Int) {
-        when (messageType) {
-            MessageType.VIBRATE.code -> startVibrate()
-            else -> return
         }
     }
 
@@ -149,8 +141,7 @@ object ChatManager : CoroutineScope {
     }
 
     private fun startVibrate() {
-        val vibrator =
-            ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
+        val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             vibrator.vibrate(
                 VibrationEffect.createOneShot(
@@ -159,19 +150,19 @@ object ChatManager : CoroutineScope {
                 )
             )
         } else {
-            toast("*vibrating*")
+
         }
     }
 
-    fun delay(delay: Long = 1500, action: () -> Unit) {
-        Handler(Looper.getMainLooper()).postDelayed(action, delay)
-    }
-    
     fun playSound() {
         ContextCompat.getSystemService(applicationContext(), AudioManager::class.java)?.apply {
             setStreamVolume(AudioManager.STREAM_MUSIC, getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioManager.AUDIOFOCUS_GAIN)
         }
         val mediaPlayer = MediaPlayer.create(applicationContext(), R.raw.goat)
         mediaPlayer.start()
+    }
+
+    fun delay(delay: Long = 1500, action: () -> Unit) {
+        Handler(Looper.getMainLooper()).postDelayed(action, delay)
     }
 }
