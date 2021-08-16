@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 data class Message(
     var type: Int,
     var status: Int,
-    val username: String,
+    val username: String?,
     val text: String?,
     val base64Data: String?,
     val time: Long,
@@ -15,4 +15,4 @@ data class Message(
 )
 
 @JsonClass(generateAdapter = true)
-data class Join(val avatar: String, val password: String)
+data class Join(val avatar: String?, val password: String?)
