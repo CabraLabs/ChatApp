@@ -37,4 +37,7 @@
     <string name="no_password">Sem senha</string>
     <string name="password">Senha</string>
     <string name="password_missing">Por favor insira uma senha</string>
+    <string name="wrong_password">Senha incorreta</string>
+    <string name="security_kick">Por favor, não tente enganar o servidor</string>
+    <string name="admin_kick">Você foi kickado pelo servidor</string>
 </resources>
