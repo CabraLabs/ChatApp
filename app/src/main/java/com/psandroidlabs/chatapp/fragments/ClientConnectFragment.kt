@@ -6,12 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentClientConnectBinding
+import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.AppPreferences
+import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.hideKeyboard
 import com.psandroidlabs.chatapp.utils.toast
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
@@ -93,10 +96,8 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                                 ipAddressField.text.toString(),
                                 context
                             )
+                            join(username)
 
-                            val action =
-                                ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(UserType.CLIENT)
-                            navController.navigate(action)
                         } else {
                             toast(getString(R.string.connect_error))
                             ipAddress.error
@@ -104,6 +105,30 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                     }
                 }
             }
+        }
+    }
+
+    private fun join(username: String) {
+        val acceptedObserver = Observer<AcceptedStatus> {
+            parseStatus(it)
+        }
+        client.accepted.observe(viewLifecycleOwner, acceptedObserver)
+
+        client.writeToSocket(ChatManager.connectMessage(username, getString(R.string.joined_the_room)))
+        client.readSocket()
+    }
+
+    private fun parseStatus(status: AcceptedStatus) {
+        when(status) {
+            AcceptedStatus.ACCEPTED -> {
+                val action =
+                    ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(UserType.CLIENT)
+
+                navController.navigate(action)
+            }
+            AcceptedStatus.WRONG_PASSWORD -> toast(getString(R.string.wrong_password))
+            AcceptedStatus.SECURITY_KICK -> toast(getString(R.string.security_kick))
+            AcceptedStatus.ADMIN_KICK -> toast(getString(R.string.admin_kick))
         }
     }
 }

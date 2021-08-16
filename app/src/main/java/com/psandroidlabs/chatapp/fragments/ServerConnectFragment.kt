@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentServerConnectBinding
+import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.IP
@@ -91,12 +92,10 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                     loading(true)
 
                     if (showPassword.isChecked) {
-                        server.startServerService(activity as Activity, passwordField.text.toString())
+                        server.startServerService(activity as Activity, getPasswordField())
                     } else {
                         server.startServerService(activity as Activity)
                     }
-
-                    server.updateServerState(true)
 
                     join()
                 }
@@ -104,7 +103,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
             createServer.setOnClickListener {
                 if (checkPasswordField()) {
-                    server.startServerService(activity as Activity, passwordField.text.toString())
+                    server.startServerService(activity as Activity, getPasswordField())
                     changeButtons(true)
                 } else {
                     server.startServerService(activity as Activity)
@@ -134,11 +133,10 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
                 if (success) {
                     loading(false)
-
                     server.updateServerState(true)
 
-                    val action = ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(UserType.SERVER)
-                    navController.navigate(action)
+                    connect(userNameField.text.toString())
+
                 } else {
                     loading(false)
                     toast(getString(R.string.port_in_use_error))
@@ -146,6 +144,35 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             }
 
             changeButtons(true)
+        }
+    }
+
+    private fun connect(username: String) {
+        val acceptedObserver = Observer<AcceptedStatus> {
+            parseStatus(it)
+        }
+        client.accepted.observe(viewLifecycleOwner, acceptedObserver)
+
+        client.readSocket()
+
+        if(binding.showPassword.isChecked) {
+            client.writeToSocket(ChatManager.connectMessage(username, getString(R.string.created_the_room), getPasswordField()))
+        } else {
+            client.writeToSocket(ChatManager.connectMessage(username, getString(R.string.created_the_room)))
+        }
+    }
+
+    private fun parseStatus(status: AcceptedStatus) {
+        when(status) {
+            AcceptedStatus.ACCEPTED -> {
+                val action =
+                    ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(UserType.SERVER)
+
+                navController.navigate(action)
+            }
+            AcceptedStatus.WRONG_PASSWORD -> toast(getString(R.string.wrong_password))
+            AcceptedStatus.SECURITY_KICK -> toast(getString(R.string.security_kick))
+            AcceptedStatus.ADMIN_KICK -> toast(getString(R.string.admin_kick))
         }
     }
 
@@ -253,5 +280,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private fun showIp() {
         binding.ipAddress.text = IP.getIpAddress()
+    }
+
+    private fun getPasswordField(): String {
+        return binding.passwordField.text.toString()
     }
 }

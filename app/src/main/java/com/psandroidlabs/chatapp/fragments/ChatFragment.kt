@@ -154,39 +154,20 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
+
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
         chatAdapter = ChatAdapter(list)
 
-        connectMessage()
-        receiveMessageListener()
+        client.initAdapter(chatAdapter)
+
         sendMessageListener()
         vibrateListener()
 
         recyclerViewList.apply {
             adapter = chatAdapter
             layoutManager = LinearLayoutManager(context)
-        }
-    }
-
-    @DelicateCoroutinesApi
-    private fun connectMessage() {
-        val connectString = ChatManager.connectMessage(arg.user, requireContext())
-        val message = ChatManager.createMessage(
-            type = MessageType.JOIN,
-            username = clientUsername,
-            text = connectString,
-        )
-
-        val success = client.writeToSocket(message)
-
-        if (success) {
-            ChatManager.addToAdapter(message)
-            scrollChat()
-            notifyAdapterChange()
-        } else {
-            disconnectedSnackBar()
         }
     }
 
@@ -228,11 +209,6 @@ class ChatFragment : Fragment(), CoroutineScope {
                 }
             }
         }
-    }
-
-    @DelicateCoroutinesApi
-    private fun receiveMessageListener() {
-        client.gitreadSocket(chatAdapter, binding.chatRecycler)
     }
 
     private fun disableChat() {

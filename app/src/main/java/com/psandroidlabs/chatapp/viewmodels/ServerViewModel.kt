@@ -30,7 +30,7 @@ class ServerViewModel : ViewModel() {
         serverRunning.value = isRunning
     }
 
-    fun startServerService(activity: Activity, password: String = "") {
+    fun startServerService(activity: Activity, password: String? = null) {
         val intent = Intent(activity, ServerService::class.java).apply {
             putExtra(Constants.PASSWORD, password)
         }

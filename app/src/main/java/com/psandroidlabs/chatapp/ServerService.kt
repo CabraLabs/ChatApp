@@ -7,12 +7,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.psandroidlabs.chatapp.models.ChatNotificationManager
+import com.psandroidlabs.chatapp.models.*
+import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import kotlinx.coroutines.*
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
+import kotlin.random.Random
 
 class ServerService : Service(), CoroutineScope {
 
@@ -85,12 +87,58 @@ class ServerService : Service(), CoroutineScope {
 
             while (isActive) {
                 if (scanner.hasNextLine()) {
-                    val message = scanner.nextLine()
-                    val sendMessage = "$message\n"
-                    forwardMessage(socket, sendMessage.toByteArray(Charsets.UTF_8))
+                    val json = scanner.nextLine()
+
+                    val message = ChatManager.serializeMessage(json)
+
+                    if (message?.type != MessageType.JOIN.code) {
+                        forwardMessage(socket, json.toByteArray(Charsets.UTF_8))
+                    } else {
+                        authenticate(message, socket)
+                        forwardMessage(socket, json.toByteArray(Charsets.UTF_8))
+                    }
                 }
             }
         }
+    }
+
+    private fun authenticate(message: Message, socket: Socket) {
+        runBlocking {
+            launch(Dispatchers.IO) {
+                if (password != null) {
+                    if (message.join?.password == password) {
+                        accept(socket)
+                    } else {
+                        refuse(socket)
+                    }
+                } else {
+                    accept(socket)
+                }
+            }
+        }
+    }
+
+    private fun accept(socket: Socket) {
+        val json = ChatManager.parseToJson(
+            ChatManager.parseAcceptMessage(
+                AcceptedStatus.ACCEPTED, generateCode()
+            )
+        ).toByteArray(Charsets.UTF_8)
+
+        socket.getOutputStream().write(json)
+
+        forwardMessage(socket, json)
+    }
+
+    private fun refuse(socket: Socket) {
+        val json = ChatManager.parseToJson(
+            ChatManager.parseAcceptMessage(
+                AcceptedStatus.WRONG_PASSWORD, AcceptedStatus.WRONG_PASSWORD.code
+            )
+        ).toByteArray(Charsets.UTF_8)
+
+        socket.getOutputStream().write(json)
+        removeSocket(socket)
     }
 
     @Synchronized
@@ -108,6 +156,11 @@ class ServerService : Service(), CoroutineScope {
                 }
             }
         }
+    }
+
+    private fun generateCode(): Int {
+        val id = List(4) { Random.nextInt(0, 100) }
+        return id.joinToString("").toInt()
     }
 
     @Synchronized

@@ -74,13 +74,13 @@ object ChatManager : CoroutineScope {
     fun createMessage(
         type: MessageType,
         status: MessageStatus = MessageStatus.RECEIVED,
-        username: String,
+        username: String? = null,
         text: String? = null,
         base64Data: String? = null,
         date: Long = getEpoch(),
         id: Int? = null,
-        avatar: String = "",
-        password: String = ""
+        avatar: String? = null,
+        password: String? = null
     ) = Message(
         type.code,
         status.code,
@@ -91,6 +91,32 @@ object ChatManager : CoroutineScope {
         id,
         Join(avatar, password)
     )
+
+    /**
+     * Create a proper authorization connect message to the server.
+     */
+    fun connectMessage(username: String, text: String, password: String? = null) = createMessage(
+        type = MessageType.JOIN,
+        status = MessageStatus.RECEIVED,
+        username = username,
+        text = text,
+        password = password
+    )
+
+    /**
+     * Parse the message to a valid REVOKED or ACKNOWLEDGE message.
+     */
+    fun parseAcceptMessage(status: AcceptedStatus, id: Int): Message {
+        return if (status != AcceptedStatus.ACCEPTED) {
+            createMessage(
+                MessageType.REVOKED, MessageStatus.RECEIVED, id = id
+            )
+        } else {
+            createMessage(
+                MessageType.ACKNOWLEDGE, MessageStatus.RECEIVED, id = id
+            )
+        }
+    }
 
     /**
      * Add the data class Message to the Chat Adapter View.
@@ -104,22 +130,12 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    /**
-     * Returns the connect message based on the user type
-     */
-    fun connectMessage(user: UserType, context: Context): String {
-        if (user == UserType.CLIENT) {
-            return context.getString(R.string.joined_the_room)
-        }
-        return context.getString(R.string.created_the_room)
-    }
-
     fun serializeMessage(message: String): Message? {
         return jsonAdapter.fromJson(message)
     }
 
     fun parseToJson(message: Message): String {
-        return jsonAdapter.toJson(message)
+        return jsonAdapter.toJson(message) + "\n"
     }
 
     private fun startTicTacToe() {
