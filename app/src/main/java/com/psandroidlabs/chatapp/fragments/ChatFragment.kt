@@ -249,7 +249,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         chatAdapter.notifyDataSetChanged()
     }
 
-    private fun scrollChat(){
-        binding.chatRecycler.scrollToPosition(list.size -1)
+    private fun scrollChat() {
+        binding.chatRecycler.scrollToPosition(list.size - 1)
     }
 }
