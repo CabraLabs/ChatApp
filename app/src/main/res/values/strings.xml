@@ -33,6 +33,11 @@
     <string name="snack_server_disconnect">Connection lost</string>
     <string name="notification_new_message">New Message</string>
 
+    <!-- AcceptedStatus -->
+    <string name="wrong_password">Wrong password</string>
+    <string name="security_kick">Please, don\'t try to fool the server</string>
+    <string name="admin_kick">You were kicked by the Administrator</string>
+
     <!-- Adapter -->
     <string name="joined_the_room">Joined the room</string>
     <string name="created_the_room">Created the room</string>
