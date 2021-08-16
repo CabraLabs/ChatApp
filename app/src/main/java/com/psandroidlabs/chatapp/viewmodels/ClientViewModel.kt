@@ -1,9 +1,11 @@
 package com.psandroidlabs.chatapp.viewmodels
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
+import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageType
@@ -27,12 +29,26 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
+    private lateinit var chatAdapter: ChatAdapter
+
     private val chatNotification by lazy {
         ChatNotificationManager(applicationContext(), Constants.PRIMARY_CHAT_CHANNEL)
     }
 
     fun background(isBackground: Boolean) {
         background = isBackground
+    }
+
+    val accepted: MutableLiveData<AcceptedStatus> by lazy {
+        MutableLiveData<AcceptedStatus>()
+    }
+
+    private fun updateAccepted(code: AcceptedStatus) {
+        accepted.postValue(code)
+    }
+
+    fun initAdapter(adapter: ChatAdapter) {
+        chatAdapter = adapter
     }
 
     fun getUsername() = userName
@@ -58,11 +74,11 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         var success = true
 
         message.id = id
-        val messageByte = ChatManager.parseToJson(message).toByteArray(Charsets.UTF_8)
+        val messageByte = ChatManager.parseToJson(message)
 
         launch(Dispatchers.IO) {
             success = try {
-                socketList[0]?.getOutputStream()?.write(messageByte)
+                socketList[0]?.getOutputStream()?.write(messageByte.toByteArray(Charsets.UTF_8))
                 true
             } catch (e: java.net.SocketException) {
                 false
@@ -73,7 +89,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-    fun readSocket(chatAdapter: ChatAdapter, recyclerView: RecyclerView) {
+    fun readSocket(chatAdapter: ChatAdapter? = null) {
         GlobalScope.launch(Dispatchers.IO) {
             val scanner = Scanner(socketList[0]?.getInputStream())
 
@@ -86,10 +102,17 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                     // TODO make the exception be changed to a proper handle with a message to the user.
                     if (message != null) {
                         if (message.type == MessageType.ACKNOWLEDGE.code) {
+                            updateAccepted(AcceptedStatus.ACCEPTED)
+
                             id = message.id ?: throw Exception("Server failed to send a verification Id")
 
                         } else if (message.type == MessageType.REVOKED.code) {
-                            // TODO close connection and display message to the user
+                            when (message.id) {
+                                AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(AcceptedStatus.WRONG_PASSWORD)
+                                AcceptedStatus.SECURITY_KICK.code -> updateAccepted(AcceptedStatus.SECURITY_KICK)
+                                AcceptedStatus.ADMIN_KICK.code -> updateAccepted(AcceptedStatus.ADMIN_KICK)
+                            }
+
                             closeSocket()
 
                         } else {
@@ -97,13 +120,12 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                             withContext(Dispatchers.Main) {
                                 chatAdapter.notifyDataSetChanged()
-                                recyclerView.scrollToPosition(ChatManager.chatList.size -1)
                             }
 
                             // TODO track this
                             if (background) {
                                 ChatManager.playSound()
-                                chatNotification.sendMessage(message.username, message.text ?: "")
+                                chatNotification.sendMessage(message.username ?: "", message.text ?: "")
                             }
                         }
                     }
