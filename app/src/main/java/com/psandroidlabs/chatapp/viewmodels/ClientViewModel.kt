@@ -1,6 +1,7 @@
 package com.psandroidlabs.chatapp.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
@@ -72,7 +73,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-    fun readSocket(chatAdapter: ChatAdapter) {
+    fun readSocket(chatAdapter: ChatAdapter, recyclerView: RecyclerView) {
         GlobalScope.launch(Dispatchers.IO) {
             val scanner = Scanner(socketList[0]?.getInputStream())
 
@@ -96,6 +97,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                             withContext(Dispatchers.Main) {
                                 chatAdapter.notifyDataSetChanged()
+                                recyclerView.scrollToPosition(ChatManager.chatList.size -1)
                             }
 
                             // TODO track this

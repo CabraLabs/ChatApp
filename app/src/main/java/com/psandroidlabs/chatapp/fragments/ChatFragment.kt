@@ -183,6 +183,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
         if (success) {
             ChatManager.addToAdapter(message)
+            scrollChat()
             notifyAdapterChange()
         } else {
             disconnectedSnackBar()
@@ -200,6 +201,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
             if (success) {
                 ChatManager.addToAdapter(message)
+                scrollChat()
                 notifyAdapterChange()
                 disableAttention()
             } else {
@@ -219,6 +221,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 if (success) {
                     eraseTextField()
                     ChatManager.addToAdapter(message)
+                    scrollChat()
                     notifyAdapterChange()
                 } else {
                     disconnectedSnackBar()
@@ -229,7 +232,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     @DelicateCoroutinesApi
     private fun receiveMessageListener() {
-        client.readSocket(chatAdapter)
+        client.gitreadSocket(chatAdapter, binding.chatRecycler)
     }
 
     private fun disableChat() {
@@ -271,6 +274,6 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun scrollChat(){
-        binding.chatRecycler.scrollToPosition(list.size - 1)
+        binding.chatRecycler.scrollToPosition(list.size -1)
     }
 }
