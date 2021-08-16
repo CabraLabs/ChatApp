@@ -119,7 +119,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             ChatManager.addToAdapter(message, true)
 
                             withContext(Dispatchers.Main) {
-                                chatAdapter.notifyDataSetChanged()
+                                chatAdapter?.notifyDataSetChanged()
                             }
 
                             // TODO track this
