@@ -20,3 +20,7 @@ enum class MessageType(val code: Int) {
 enum class MessageStatus(val code: Int) {
     RECEIVED(0), SENT(1)
 }
+
+enum class AcceptedStatus(val code: Int) {
+    ACCEPTED(0), WRONG_PASSWORD(1), SECURITY_KICK(2), ADMIN_KICK(3)
+}
