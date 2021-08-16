@@ -14,4 +14,7 @@ object Constants {
 
     const val CLIENT_USER = "client_user"
     const val CLIENT_IP = "client_ip"
+
+    const val CAMERA_PERMISSION_CODE = 100
+    const val CHOOSE_IMAGE_PERMISSION_CODE = 1001
 }
