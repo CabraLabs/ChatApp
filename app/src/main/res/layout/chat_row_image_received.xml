@@ -46,7 +46,7 @@
                 tools:text="username" />
 
             <ImageView
-                android:id="@+id/image"
+                android:id="@+id/chatRowImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="3dp"/>

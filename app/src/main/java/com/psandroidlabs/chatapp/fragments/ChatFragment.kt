@@ -1,6 +1,6 @@
 package com.psandroidlabs.chatapp.fragments
 
-import android.content.DialogInterface
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -276,5 +276,17 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun scrollChat() {
         binding.chatRecycler.scrollToPosition(list.size - 1)
+    }
+
+    private fun shareChatLink(){
+        //TODO server IP in putExtra
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            //putExtra(Intent.EXTRA_INTENT, "http/www.chatapp.psandroidlabs.com/clientconnect/chatroomip=${client}")
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 }

@@ -40,7 +40,12 @@
     <string name="wrong_password">Senha incorreta</string>
     <string name="security_kick">Por favor, não tente enganar o servidor</string>
     <string name="admin_kick">Você foi kickado pelo servidor</string>
+<<<<<<< HEAD
     <string name="dialog_warning">Caso saia da tela, você será desconectado, deseja sair?</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
+=======
+    <string name="profile">Perfil</string>
+    <string name="save">Salvar</string>
+>>>>>>> added intent filter for deeplink in manifest and his recpective changes in MainActivity, ClientConnectFragment and navgraph. added ProfileFragment new class and chat row image itens, profile fragment and profile fragment menu views. added new icon and two new strings for profile
 </resources>
