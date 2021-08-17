@@ -25,7 +25,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     override val coroutineContext = parentJob + Dispatchers.IO
 
     private lateinit var userName: String
-    private var id = 0
+    var id = 0
 
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
