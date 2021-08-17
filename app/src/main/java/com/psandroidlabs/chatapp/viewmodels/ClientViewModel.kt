@@ -2,7 +2,6 @@ package com.psandroidlabs.chatapp.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.models.AcceptedStatus
