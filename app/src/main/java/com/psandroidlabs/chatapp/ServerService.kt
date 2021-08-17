@@ -11,6 +11,8 @@ import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
@@ -21,8 +23,11 @@ class ServerService : Service(), CoroutineScope {
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
 
+    private val mutex = Mutex()
+    private val listMutex = Mutex()
+
     private lateinit var serverSocket: ServerSocket
-    private var socketList: ArrayList<Socket?> = arrayListOf()
+    private val userList: ArrayList<User> = arrayListOf()
 
     private lateinit var notificationManager: ChatNotificationManager
     private var password: String? = null
@@ -68,11 +73,15 @@ class ServerService : Service(), CoroutineScope {
         launch(Dispatchers.IO) {
             serverSocket = ServerSocket(Constants.CHAT_DEFAULT_PORT)
 
-            while (count <= 3 && isActive) {
+            while (isActive && count <= 5) {
                 try {
                     val socket = serverSocket.accept()
-                    socketList.add(socket)
-                    socketListen(socket)
+                    val user = User(socket, null)
+
+                    userList.add(user)
+
+                    socketListen(user)
+
                     count++
                 } catch (e: java.net.SocketException) {
                     return@launch
@@ -81,9 +90,9 @@ class ServerService : Service(), CoroutineScope {
         }
     }
 
-    private fun socketListen(socket: Socket) {
+    private fun socketListen(user: User) {
         launch(Dispatchers.IO) {
-            val scanner = Scanner(socket.getInputStream())
+            val scanner = Scanner(user.socket.getInputStream())
 
             while (isActive) {
                 if (scanner.hasNextLine()) {
@@ -92,65 +101,80 @@ class ServerService : Service(), CoroutineScope {
                     val message = ChatManager.serializeMessage(json)
 
                     if (message?.type != MessageType.JOIN.code) {
-                        forwardMessage(socket, json.toByteArray(Charsets.UTF_8))
+                        if (message?.id != user.profile?.id) {
+                            removeSocket(user)
+                        } else {
+                            forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
+                        }
                     } else {
-                        authenticate(message, socket)
-                        forwardMessage(socket, json.toByteArray(Charsets.UTF_8))
+                        authenticate(message, user)
+                        forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
                     }
                 }
             }
         }
     }
 
-    private fun authenticate(message: Message, socket: Socket) {
-        runBlocking {
-            launch(Dispatchers.IO) {
+    @Synchronized
+    private fun authenticate(message: Message, user: User) {
+        launch(Dispatchers.IO) {
+            mutex.withLock {
                 if (password != null) {
-                    if (message.join?.password == password) {
-                        accept(socket)
+                    if (message.join?.password == password && !message.username.isNullOrBlank()) {
+                        accept(message, user)
                     } else {
-                        refuse(socket)
+                        refuse(user)
                     }
                 } else {
-                    accept(socket)
+                    accept(message, user)
                 }
             }
         }
     }
 
-    private fun accept(socket: Socket) {
+    private fun accept(joinMessage: Message, user: User) {
+        val id = generateCode()
+
         val json = ChatManager.parseToJson(
             ChatManager.parseAcceptMessage(
-                AcceptedStatus.ACCEPTED, generateCode()
+                AcceptedStatus.ACCEPTED, id, getProfileList()
             )
         ).toByteArray(Charsets.UTF_8)
 
-        socket.getOutputStream().write(json)
+        user.profile?.let {
+            it.id = id
+            it.photoProfile = joinMessage.base64Data
+            it.name = joinMessage.username ?: codeGenerator().toString()
+            it.scoreTicTacToe = 0
+        }
 
-        forwardMessage(socket, json)
+        user.socket.getOutputStream().write(json)
+
+        forwardMessage(user.socket, ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8))
     }
 
-    private fun refuse(socket: Socket) {
+    private fun refuse(user: User) {
         val json = ChatManager.parseToJson(
             ChatManager.parseAcceptMessage(
                 AcceptedStatus.WRONG_PASSWORD, AcceptedStatus.WRONG_PASSWORD.code
             )
         ).toByteArray(Charsets.UTF_8)
 
-        socket.getOutputStream().write(json)
-        removeSocket(socket)
+        user.socket.getOutputStream().write(json)
+
+        removeSocket(user)
     }
 
     @Synchronized
     private fun forwardMessage(socket: Socket, message: ByteArray) {
         launch(Dispatchers.IO) {
-            socketList.forEach { sock ->
-                if (sock?.inetAddress != socket.inetAddress ) {
-                    try {
-                        sock?.getOutputStream()?.write(message)
-                    } catch (e: java.net.SocketException) {
-                        if (sock != null) {
-                            removeSocket(socket)
+            listMutex.withLock {
+                userList.forEach { user ->
+                    if (user.socket.inetAddress != socket.inetAddress) {
+                        try {
+                            user.socket.getOutputStream()?.write(message)
+                        } catch (e: java.net.SocketException) {
+                            removeSocket(user)
                         }
                     }
                 }
@@ -159,19 +183,52 @@ class ServerService : Service(), CoroutineScope {
     }
 
     private fun generateCode(): Int {
-        val id = List(4) { Random.nextInt(0, 100) }
-        return id.joinToString("").toInt()
+        var id = codeGenerator()
+
+        runBlocking {
+            launch(Dispatchers.IO) {
+                listMutex.withLock {
+                    userList.forEach { user ->
+                        if (id == user.profile?.id) {
+                            id = codeGenerator()
+                        }
+                    }
+                }
+            }
+        }
+
+        return id
+    }
+
+    private fun codeGenerator(): Int {
+        return List(4) { Random.nextInt(0, 100) }.joinToString("").toInt()
+    }
+
+    private fun getProfileList(): String {
+        val profileList: ArrayList<Profile> = arrayListOf()
+
+        launch(Dispatchers.IO) {
+            listMutex.withLock {
+                userList.forEach { user ->
+                    user.profile?.let { profileList.add(it) }
+                }
+            }
+        }
+
+        return ChatManager.parseProfileList(profileList)
     }
 
     @Synchronized
-    private fun removeSocket(socket: Socket) {
+    private fun removeSocket(user: User) {
         launch(Dispatchers.IO) {
-            socketList.remove(socket)
+            listMutex.withLock {
+                userList.remove(user)
+            }
         }
     }
 
     private fun closeServer() {
         serverSocket.close()
-        socketList.removeAll(socketList)
+        userList.removeAll(userList)
     }
 }

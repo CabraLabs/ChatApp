@@ -2,7 +2,6 @@ package com.psandroidlabs.chatapp.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.models.AcceptedStatus
@@ -25,7 +24,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     override val coroutineContext = parentJob + Dispatchers.IO
 
     private lateinit var userName: String
-    private var id = 0
+    var id = 0
 
     private var socketList: ArrayList<Socket?> = arrayListOf()
 

@@ -17,7 +17,6 @@ import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
-import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
@@ -173,9 +172,9 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun vibrateListener() {
         binding.vibrateButton.setOnClickListener {
-            val message = ChatManager.createMessage(
-                type = MessageType.VIBRATE,
+            val message = ChatManager.vibrateMessage(
                 username = clientUsername,
+                id = client.id
             )
 
             val success = client.writeToSocket(message)
@@ -195,7 +194,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
-                val message = ChatManager.parseMessageType(clientUsername, getTextFieldString())
+                val message = ChatManager.parseMessageType(clientUsername, getTextFieldString(), client.id)
 
                 val success = client.writeToSocket(message)
 
