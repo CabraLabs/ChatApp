@@ -57,14 +57,14 @@ object ChatManager : CoroutineScope {
      *
      * If the message starts with '/' it is probably a command.
      */
-    fun parseMessageType(username: String, message: String): Message {
+    fun parseMessageType(username: String, message: String, id: Int): Message {
         return if (message.startsWith("/")) {
             when (message) {
-                Constants.VIBRATE_COMMAND -> createMessage(type = MessageType.VIBRATE, username = username, text = message)
-                else -> createMessage(type = MessageType.MESSAGE, username = username, text = message)
+                Constants.VIBRATE_COMMAND -> createMessage(type = MessageType.VIBRATE, username = username, text = message, id= id)
+                else -> createMessage(type = MessageType.MESSAGE, username = username, text = message, id = id)
             }
         } else {
-            createMessage(type = MessageType.MESSAGE, username = username, text = message)
+            createMessage(type = MessageType.MESSAGE, username = username, text = message, id = id)
         }
     }
 
@@ -101,6 +101,16 @@ object ChatManager : CoroutineScope {
         username = username,
         text = text,
         password = password
+    )
+
+    /**
+     * Vibrate message creator for the vibrate button.
+     */
+    fun vibrateMessage(username: String, id: Int) = createMessage(
+        type = MessageType.VIBRATE,
+        status = MessageStatus.RECEIVED,
+        username = username,
+        id = id
     )
 
     /**
