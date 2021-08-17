@@ -1,19 +1,20 @@
 package com.psandroidlabs.chatapp.utils
 
-import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,6 +35,12 @@ object ChatManager : CoroutineScope {
     private val jsonAdapter by lazy {
         val moshi: Moshi = Moshi.Builder().build()
         moshi.adapter(Message::class.java)
+    }
+
+    private val jsonProfileAdapter by lazy {
+        val listAdapter = Types.newParameterizedType(List::class.java, Profile::class.java)
+        val adapter: JsonAdapter<List<Profile>> = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter(listAdapter)
+        adapter
     }
 
     fun getFragmentActivity(parameterFragmentActivity: FragmentActivity?) {
@@ -116,14 +123,14 @@ object ChatManager : CoroutineScope {
     /**
      * Parse the message to a valid REVOKED or ACKNOWLEDGE message.
      */
-    fun parseAcceptMessage(status: AcceptedStatus, id: Int): Message {
+    fun parseAcceptMessage(status: AcceptedStatus, id: Int, profileList: String? = null): Message {
         return if (status != AcceptedStatus.ACCEPTED) {
             createMessage(
                 MessageType.REVOKED, MessageStatus.RECEIVED, id = id
             )
         } else {
             createMessage(
-                MessageType.ACKNOWLEDGE, MessageStatus.RECEIVED, id = id
+                MessageType.ACKNOWLEDGE, MessageStatus.RECEIVED, id = id, text = profileList
             )
         }
     }
@@ -146,6 +153,10 @@ object ChatManager : CoroutineScope {
 
     fun parseToJson(message: Message): String {
         return jsonAdapter.toJson(message) + "\n"
+    }
+
+    fun parseProfileList(profileList: List<Profile>): String {
+        return jsonProfileAdapter.toJson(profileList)
     }
 
     private fun startTicTacToe() {
