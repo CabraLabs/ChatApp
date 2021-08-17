@@ -173,9 +173,9 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun vibrateListener() {
         binding.vibrateButton.setOnClickListener {
-            val message = ChatManager.createMessage(
-                type = MessageType.VIBRATE,
+            val message = ChatManager.vibrateMessage(
                 username = clientUsername,
+                id = client.id
             )
 
             val success = client.writeToSocket(message)
@@ -195,7 +195,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
-                val message = ChatManager.parseMessageType(clientUsername, getTextFieldString())
+                val message = ChatManager.parseMessageType(clientUsername, getTextFieldString(), client.id)
 
                 val success = client.writeToSocket(message)
 
