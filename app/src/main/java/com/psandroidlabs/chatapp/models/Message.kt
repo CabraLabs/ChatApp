@@ -1,6 +1,7 @@
 package com.psandroidlabs.chatapp.models
 
 import com.squareup.moshi.JsonClass
+import java.net.Socket
 
 @JsonClass(generateAdapter = true)
 data class Message(
@@ -16,3 +17,16 @@ data class Message(
 
 @JsonClass(generateAdapter = true)
 data class Join(val avatar: String?, val password: String?)
+
+@JsonClass(generateAdapter = true)
+data class Profile(
+    var id : Int?,
+    var name : String,
+    var photoProfile : String?,
+    var scoreTicTacToe: Int?
+)
+
+data class User(
+    val socket: Socket,
+    var profile: Profile?,
+)
