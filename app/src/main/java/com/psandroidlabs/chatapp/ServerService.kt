@@ -11,6 +11,8 @@ import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
@@ -20,6 +22,8 @@ class ServerService : Service(), CoroutineScope {
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
+
+    private val mutex = Mutex()
 
     private lateinit var serverSocket: ServerSocket
     private var socketList: ArrayList<Socket?> = arrayListOf()
@@ -102,9 +106,10 @@ class ServerService : Service(), CoroutineScope {
         }
     }
 
+    @Synchronized
     private fun authenticate(message: Message, socket: Socket) {
-        runBlocking {
-            launch(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
+            mutex.withLock {
                 if (password != null) {
                     if (message.join?.password == password) {
                         accept(socket)
@@ -144,13 +149,15 @@ class ServerService : Service(), CoroutineScope {
     @Synchronized
     private fun forwardMessage(socket: Socket, message: ByteArray) {
         launch(Dispatchers.IO) {
-            socketList.forEach { sock ->
-                if (sock?.inetAddress != socket.inetAddress ) {
-                    try {
-                        sock?.getOutputStream()?.write(message)
-                    } catch (e: java.net.SocketException) {
-                        if (sock != null) {
-                            removeSocket(socket)
+            mutex.withLock {
+                socketList.forEach { sock ->
+                    if (sock?.inetAddress != socket.inetAddress) {
+                        try {
+                            sock?.getOutputStream()?.write(message)
+                        } catch (e: java.net.SocketException) {
+                            if (sock != null) {
+                                removeSocket(socket)
+                            }
                         }
                     }
                 }
@@ -166,7 +173,9 @@ class ServerService : Service(), CoroutineScope {
     @Synchronized
     private fun removeSocket(socket: Socket) {
         launch(Dispatchers.IO) {
-            socketList.remove(socket)
+            mutex.withLock {
+                socketList.remove(socket)
+            }
         }
     }
 
