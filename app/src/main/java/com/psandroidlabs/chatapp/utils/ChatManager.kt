@@ -78,7 +78,7 @@ object ChatManager : CoroutineScope {
     /**
      * Create a Message data class and returns it.
      */
-    fun createMessage(
+    private fun createMessage(
         type: MessageType,
         status: MessageStatus = MessageStatus.RECEIVED,
         username: String? = null,
@@ -104,7 +104,6 @@ object ChatManager : CoroutineScope {
      */
     fun connectMessage(username: String, text: String, password: String? = null) = createMessage(
         type = MessageType.JOIN,
-        status = MessageStatus.RECEIVED,
         username = username,
         text = text,
         password = password
@@ -115,7 +114,6 @@ object ChatManager : CoroutineScope {
      */
     fun vibrateMessage(username: String, id: Int) = createMessage(
         type = MessageType.VIBRATE,
-        status = MessageStatus.RECEIVED,
         username = username,
         id = id
     )
@@ -126,11 +124,11 @@ object ChatManager : CoroutineScope {
     fun parseAcceptMessage(status: AcceptedStatus, id: Int, profileList: String? = null): Message {
         return if (status != AcceptedStatus.ACCEPTED) {
             createMessage(
-                MessageType.REVOKED, MessageStatus.RECEIVED, id = id
+                MessageType.REVOKED, id = id
             )
         } else {
             createMessage(
-                MessageType.ACKNOWLEDGE, MessageStatus.RECEIVED, id = id, text = profileList
+                MessageType.ACKNOWLEDGE, id = id, text = profileList
             )
         }
     }
