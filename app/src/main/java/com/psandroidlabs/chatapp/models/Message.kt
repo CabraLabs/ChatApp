@@ -20,13 +20,13 @@ data class Join(val avatar: String?, val password: String?)
 
 @JsonClass(generateAdapter = true)
 data class Profile(
-    var id : Int?,
-    var name : String,
-    var photoProfile : String?,
-    var scoreTicTacToe: Int?
+    var id : Int? = null,
+    var name : String? = null,
+    var photoProfile : String? = null,
+    var scoreTicTacToe: Int? = null
 )
 
 data class User(
     val socket: Socket,
-    var profile: Profile?,
+    var profile: Profile,
 )

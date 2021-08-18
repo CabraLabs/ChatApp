@@ -76,7 +76,7 @@ class ServerService : Service(), CoroutineScope {
             while (isActive && count <= 5) {
                 try {
                     val socket = serverSocket.accept()
-                    val user = User(socket, null)
+                    val user = User(socket, Profile())
 
                     userList.add(user)
 
@@ -101,7 +101,7 @@ class ServerService : Service(), CoroutineScope {
                     val message = ChatManager.serializeMessage(json)
 
                     if (message?.type != MessageType.JOIN.code) {
-                        if (message?.id != user.profile?.id) {
+                        if (message?.id != user.profile.id) {
                             removeSocket(user)
                         } else {
                             forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
@@ -141,7 +141,7 @@ class ServerService : Service(), CoroutineScope {
             )
         ).toByteArray(Charsets.UTF_8)
 
-        user.profile?.let {
+        user.profile.let {
             it.id = id
             it.photoProfile = joinMessage.base64Data
             it.name = joinMessage.username ?: codeGenerator().toString()
