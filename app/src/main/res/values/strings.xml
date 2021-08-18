@@ -48,6 +48,8 @@
     <string name="chat_app_bar_name" translatable="false">Chat</string>
     <string name="home_app_bar_name" translatable="false">Chat App</string>
     <string name="tic_tac_toe">Tic Tac Toe</string>
+    <string name="share">Share</string>
+    <string name="chat_members">Chat members</string>
 
     <!-- AlertDialog -->
     <string name="dialog_warning">If you leave this screen you\'ll be disconnected from the server, do you which to leave?</string>
@@ -65,4 +67,8 @@
     <string name="close_server">Close Server</string>
     <string name="server_running">Server is running</string>
     <string name="server_on_ip" translatable="false">IP: %s</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="save">Save</string>
 </resources>

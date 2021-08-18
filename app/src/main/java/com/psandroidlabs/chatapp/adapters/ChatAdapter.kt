@@ -9,6 +9,7 @@ import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.utils.ChatManager
+import com.psandroidlabs.chatapp.utils.PictureManager
 
 
 class ChatAdapter(private val dataSet: ArrayList<Message>) :
@@ -18,7 +19,40 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         abstract fun bind(message: Message)
     }
 
-    inner class ViewHolderSentMessage(private val binding: ChatRowMessageSentBinding) : ViewHolder(binding.root) {
+    inner class ViewHolderMessageSent(private val binding: ChatRowMessageSentBinding) :
+        ViewHolder(binding.root) {
+        override fun bind(message: Message) {
+            with(binding) {
+                chatRowUsername.text = message.username
+                userAvatar.setImageBitmap(message.join?.avatar?.let {
+                    PictureManager.stringToBitmap(
+                        it
+                    )
+                })
+                chatRowMessage.text = message.text
+                chatRowTime.text = ChatManager.formatTime(message.time)
+            }
+        }
+    }
+
+    inner class ViewHolderReceivedMessage(private val binding: ChatRowMessageReceivedBinding) :
+        ViewHolder(binding.root) {
+        override fun bind(message: Message) {
+            with(binding) {
+                chatRowUsername.text = message.username
+                userAvatar.setImageBitmap(message.join?.avatar?.let {
+                    PictureManager.stringToBitmap(
+                        it
+                    )
+                })
+                chatRowMessage.text = message.text
+                chatRowTime.text = ChatManager.formatTime(message.time)
+            }
+        }
+    }
+
+    inner class ViewHolderJoinMessage(private val binding: ChatRowJoinBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
@@ -28,41 +62,55 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         }
     }
 
-    inner class ViewHolderReceivedMessage(private val binding: ChatRowMessageReceivedBinding) : ViewHolder(binding.root) {
+    inner class ViewHolderVibrateSent(private val binding: ChatRowVibrateSentBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                chatRowMessage.text = message.text
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
 
-    inner class ViewHolderJoinMessage(private val binding: ChatRowJoinBinding) : ViewHolder(binding.root) {
+    inner class ViewHolderReceivedVibrate(private val binding: ChatRowVibrateReceivedBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                chatRowMessage.text = message.text
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
 
-    inner class ViewHolderSentVibrate(private val binding: ChatRowVibrateSentBinding) : ViewHolder(binding.root) {
+    inner class ViewHolderImageSent(private val binding: ChatRowImageSentBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                //TODO set username image
+                userAvatar.setImageBitmap(message.join?.avatar?.let {
+                    PictureManager.stringToBitmap(
+                        it
+                    )
+                })
+
+                chatRowImage.setImageBitmap(message.base64Data?.let { PictureManager.stringToBitmap(it) })
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
 
-    inner class ViewHolderReceivedVibrate(private val binding: ChatRowVibrateReceivedBinding) : ViewHolder(binding.root) {
+    inner class ViewHolderReceivedImage(private val binding: ChatRowImageReceivedBinding) :
+        ViewHolder(binding.root) {
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                //TODO set username image
+                userAvatar.setImageBitmap(message.join?.avatar?.let {
+                    PictureManager.stringToBitmap(
+                        it
+                    )
+                })
+
+                chatRowImage.setImageBitmap(message.base64Data?.let { PictureManager.stringToBitmap(it) })
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
@@ -76,7 +124,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         var number = 0
         if (status != MessageStatus.SENT.code) number = 10
 
-        return when(type) {
+        return when (type) {
             MessageType.MESSAGE.code -> MessageType.MESSAGE.code + number // 0 | 8
             MessageType.JOIN.code -> MessageType.JOIN.code + number // 1 | 9
             MessageType.VIBRATE.code -> MessageType.VIBRATE.code + number  // 2 | 10
@@ -93,29 +141,65 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         return when (viewType) {
             /** Message Views **/
             0 -> {
-                ViewHolderSentMessage(ChatRowMessageSentBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderMessageSent(
+                    ChatRowMessageSentBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             8 -> {
-                ViewHolderReceivedMessage(ChatRowMessageReceivedBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderReceivedMessage(
+                    ChatRowMessageReceivedBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             /** Join Views **/
             1 -> {
-                ViewHolderJoinMessage(ChatRowJoinBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderJoinMessage(
+                    ChatRowJoinBinding.inflate(
+                        LayoutInflater.from(viewGroup.context),
+                        viewGroup,
+                        false
+                    )
+                )
             }
 
             9 -> {
-                ViewHolderJoinMessage(ChatRowJoinBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderJoinMessage(
+                    ChatRowJoinBinding.inflate(
+                        LayoutInflater.from(viewGroup.context),
+                        viewGroup,
+                        false
+                    )
+                )
             }
 
             /** Vibrate Views **/
             2 -> {
-                ViewHolderSentVibrate(ChatRowVibrateSentBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderVibrateSent(
+                    ChatRowVibrateSentBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             10 -> {
-                ViewHolderReceivedVibrate(ChatRowVibrateReceivedBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                ViewHolderReceivedVibrate(
+                    ChatRowVibrateReceivedBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             /** Audio Views **/
@@ -129,11 +213,23 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
             /** Image Views **/
             4 -> {
-                TODO()
+                ViewHolderImageSent(
+                    ChatRowImageSentBinding.inflate(
+                        LayoutInflater.from(viewGroup.context),
+                        viewGroup,
+                        false
+                    )
+                )
             }
 
             12 -> {
-                TODO()
+                ViewHolderReceivedImage(
+                    ChatRowImageReceivedBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             /** Leave Views **/

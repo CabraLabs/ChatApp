@@ -1,6 +1,5 @@
 package com.psandroidlabs.chatapp.fragments
 
-import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -135,12 +134,9 @@ class ChatFragment : Fragment(), CoroutineScope {
         inflater.inflate(R.menu.chat_fragment_menu, menu)
     }
 
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return when (item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
 //            R.id.ticTactToe -> {
-//
-//                //TODO send invite to specific user and wait to start the game
-//
 //                val ticTacToeFragment = TicTacToeFragment(true)
 //
 //                GlobalScope.launch(Dispatchers.IO) {
@@ -158,10 +154,15 @@ class ChatFragment : Fragment(), CoroutineScope {
 //
 //                true
 //            }
-//
-//            else -> super.onOptionsItemSelected(item)
-//        }
-//    }
+
+            R.id.shareLink -> {
+                client.shareChatLink(requireActivity())
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -274,7 +275,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         chatAdapter.notifyDataSetChanged()
     }
 
-    private fun scrollChat(){
-        binding.chatRecycler.scrollToPosition(list.size -1)
+    private fun scrollChat() {
+        binding.chatRecycler.scrollToPosition(list.size - 1)
     }
 }
