@@ -10,8 +10,8 @@ enum class MessageType(val code: Int) {
     VIBRATE(2),
     AUDIO(3),
     IMAGE(4),
-    TICINVITE(5),
-    TICPLAY(6),
+    TIC_INVITE(5),
+    TIC_PLAY(6),
     LEAVE(7),
     ACKNOWLEDGE(8),
     REVOKED(9)
