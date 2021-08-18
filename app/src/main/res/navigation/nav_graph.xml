@@ -18,6 +18,9 @@
             android:id="@+id/action_homeFragment_to_serverConnectFragment"
             app:destination="@id/serverConnectFragment"
             app:enterAnim="@anim/enter_from_right" />
+        <action
+            android:id="@+id/action_homeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/clientConnectFragment"
@@ -36,6 +39,9 @@
             android:name="ip"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_clientConnectFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/serverConnectFragment"
@@ -46,6 +52,9 @@
             android:id="@+id/action_serverConnectFragment_to_chatFragment"
             app:destination="@id/chatFragment"
             app:enterAnim="@anim/enter_from_right" />
+        <action
+            android:id="@+id/action_serverConnectFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"

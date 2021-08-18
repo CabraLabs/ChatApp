@@ -6,5 +6,24 @@
         android:id="@+id/ticTactToe"
         android:icon="@drawable/ic_tictactoe"
         android:title="@string/tic_tac_toe"
+        android:iconTint="@color/white"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/subMenu"
+        android:icon="@drawable/ic_more_vert"
+        app:showAsAction="always"
+        android:title="">
+        <menu>
+            <item
+                android:id="@+id/shareLink"
+                android:title="@string/share"
+                android:icon="@drawable/ic_share"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/chatMembers"
+                android:title="@string/chat_members"
+                android:icon="@drawable/ic_group"
+                app:showAsAction="ifRoom"/>
+        </menu>
+    </item>
 </menu>

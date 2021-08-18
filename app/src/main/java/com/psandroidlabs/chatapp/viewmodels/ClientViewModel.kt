@@ -1,5 +1,7 @@
 package com.psandroidlabs.chatapp.viewmodels
 
+import android.app.Activity
+import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
@@ -103,7 +105,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                         if (message.type == MessageType.ACKNOWLEDGE.code) {
                             updateAccepted(AcceptedStatus.ACCEPTED)
 
-                            id = message.id ?: throw Exception("Server failed to send a verification Id")
+                            id = message.id
+                                ?: throw Exception("Server failed to send a verification Id")
 
                         } else if (message.type == MessageType.REVOKED.code) {
                             when (message.id) {
@@ -124,7 +127,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             // TODO track this
                             if (background) {
                                 ChatManager.playSound()
-                                chatNotification.sendMessage(message.username ?: "", message.text ?: "")
+                                chatNotification.sendMessage(
+                                    message.username ?: "",
+                                    message.text ?: ""
+                                )
                             }
                         }
                     }
@@ -139,5 +145,17 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         running = false
         socketList[0]?.close()
         socketList.remove(socketList[0])
+    }
+
+    fun shareChatLink(activity: Activity) {
+        //TODO server IP in putExtra
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_INTENT, "http/www.chatapp.psandroidlabs.com/clientconnect/chatroomip=10")
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        activity.startActivity(shareIntent)
     }
 }

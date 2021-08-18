@@ -12,17 +12,28 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.databinding.FragmentProfileBinding
 import com.psandroidlabs.chatapp.utils.PictureManager
 
-class ProfileFragment: Fragment() {
+class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
+
+    private lateinit var userPhoto: Bitmap
+
+    private val navController: NavController by lazy {
+        findNavController()
+    }
 
     private val registerTakePhoto = registerForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { image: Bitmap? ->
         binding.avatar.setImageBitmap(image)
+        if(image != null){
+            userPhoto = image
+        }
     }
 
     private val registerChoosePhoto = registerForActivityResult(
@@ -34,6 +45,7 @@ class ProfileFragment: Fragment() {
                 requireContext().contentResolver
             )
         )
+        userPhoto = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
     }
 
     private val activityResultLauncher =
@@ -58,10 +70,12 @@ class ProfileFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        initializeButtons()
     }
 
-    private fun initializeButtons(){
-        with(binding){
+    private fun initializeButtons() {
+        with(binding) {
             context?.let { context ->
                 btnTakePhoto.setOnClickListener {
                     if (ContextCompat.checkSelfPermission(
@@ -86,6 +100,11 @@ class ProfileFragment: Fragment() {
                         choosePicture()
                     }
                 }
+            }
+
+            btnSave.setOnClickListener {
+                //TODO set profile changes
+                navController.popBackStack()
             }
         }
 

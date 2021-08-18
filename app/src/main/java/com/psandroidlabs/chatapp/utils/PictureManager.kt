@@ -31,14 +31,14 @@ object PictureManager {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
-    fun uriToBitmap(uri: Uri?, contentResolver: ContentResolver): Bitmap? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            uri?.let {
+    fun uriToBitmap(uri: Uri?, contentResolver: ContentResolver): Bitmap {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && uri != null) {
+            uri.let {
                 ImageDecoder.createSource(
                     contentResolver,
                     it
                 )
-            }?.let { ImageDecoder.decodeBitmap(it) }
+            }.let { ImageDecoder.decodeBitmap(it) }
         } else {
             BitmapFactory.decodeFileDescriptor(uri?.let {
                 contentResolver.openFileDescriptor(

@@ -48,6 +48,8 @@
     <string name="chat_app_bar_name" translatable="false">Chat</string>
     <string name="home_app_bar_name" translatable="false">Chat App</string>
     <string name="tic_tac_toe">Tic Tac Toe</string>
+    <string name="share">Share</string>
+    <string name="chat_members">Chat members</string>
 
     <!-- AlertDialog -->
     <string name="dialog_warning">If you leave this screen you\'ll be disconnected from the server, do you which to leave?</string>

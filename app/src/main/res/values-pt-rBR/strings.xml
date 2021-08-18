@@ -47,5 +47,10 @@
 =======
     <string name="profile">Perfil</string>
     <string name="save">Salvar</string>
+<<<<<<< HEAD
 >>>>>>> added intent filter for deeplink in manifest and his recpective changes in MainActivity, ClientConnectFragment and navgraph. added ProfileFragment new class and chat row image itens, profile fragment and profile fragment menu views. added new icon and two new strings for profile
+=======
+    <string name="share">Compartilhar</string>
+    <string name="chat_members">Membros do chat</string>
+>>>>>>> added profile menu bar in HomeFragment, ClientConnectFragment and ServerConnectFragment. added new itens in chat menu bar. added some drawables and strings. deeplink implemented
 </resources>

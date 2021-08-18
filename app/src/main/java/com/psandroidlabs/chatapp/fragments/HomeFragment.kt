@@ -17,8 +17,25 @@ class HomeFragment : Fragment() {
         findNavController()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.chat_fragment_menu, menu)
+        inflater.inflate(R.menu.profile_fragment_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId){
+            R.id.profile -> {
+                val action = HomeFragmentDirections.actionHomeFragmentToProfileFragment()
+                navController.navigate(action)
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onCreateView(
