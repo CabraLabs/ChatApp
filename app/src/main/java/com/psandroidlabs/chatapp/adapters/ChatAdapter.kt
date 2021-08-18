@@ -74,43 +74,80 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
     private fun viewTypeTranslator(type: Int, status: Int): Int {
         var number = 0
-        if (status != MessageStatus.SENT.code) number = 7
-        return when (type) {
-            MessageType.MESSAGE.code -> MessageType.MESSAGE.code + number
-            MessageType.JOIN.code -> MessageType.JOIN.code + number
-            MessageType.VIBRATE.code -> MessageType.VIBRATE.code + number
-            MessageType.AUDIO.code -> MessageType.AUDIO.code + number
-            MessageType.IMAGE.code -> MessageType.IMAGE.code + number
-            MessageType.TICINVITE.code -> MessageType.TICINVITE.code + number
-            MessageType.TICPLAY.code -> MessageType.TICPLAY.code + number
-            else -> 110
+        if (status != MessageStatus.SENT.code) number = 10
+
+        return when(type) {
+            MessageType.MESSAGE.code -> MessageType.MESSAGE.code + number // 0 | 8
+            MessageType.JOIN.code -> MessageType.JOIN.code + number // 1 | 9
+            MessageType.VIBRATE.code -> MessageType.VIBRATE.code + number  // 2 | 10
+            MessageType.AUDIO.code -> MessageType.AUDIO.code + number // 3 | 11
+            MessageType.IMAGE.code -> MessageType.IMAGE.code + number // 4 | 12
+            MessageType.TIC_INVITE.code -> MessageType.TIC_INVITE.code + number // 5 | 13
+            MessageType.TIC_PLAY.code -> MessageType.TIC_PLAY.code + number // 6 | 14
+            MessageType.LEAVE.code -> MessageType.LEAVE.code + number // 7 | 15
+            else -> 666
         }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
-
-            /** Message views **/
+            /** Message Views **/
             0 -> {
                 ViewHolderSentMessage(ChatRowMessageSentBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
 
-            7 -> {
+            8 -> {
                 ViewHolderReceivedMessage(ChatRowMessageReceivedBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
 
-            /** Vibrate views **/
+            /** Join Views **/
+            1 -> {
+                ViewHolderJoinMessage(ChatRowJoinBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+            }
+
+            9 -> {
+                ViewHolderJoinMessage(ChatRowJoinBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+            }
+
+            /** Vibrate Views **/
             2 -> {
                 ViewHolderSentVibrate(ChatRowVibrateSentBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
 
-            9 -> {
+            10 -> {
                 ViewHolderReceivedVibrate(ChatRowVibrateReceivedBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
             }
 
-            /** Join view **/
+            /** Audio Views **/
+            3 -> {
+                TODO()
+            }
+
+            11 -> {
+                TODO()
+            }
+
+            /** Image Views **/
+            4 -> {
+                TODO()
+            }
+
+            12 -> {
+                TODO()
+            }
+
+            /** Leave Views **/
+            7 -> {
+                TODO()
+            }
+
+            15 -> {
+                TODO()
+            }
+
+            /** Troll View **/
             else -> {
-                ViewHolderJoinMessage(ChatRowJoinBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+                TODO()
             }
         }
     }

@@ -40,4 +40,7 @@
     <string name="wrong_password">Senha incorreta</string>
     <string name="security_kick">Por favor, não tente enganar o servidor</string>
     <string name="admin_kick">Você foi kickado pelo servidor</string>
+    <string name="dialog_warning">Caso saia da tela, você será desconectado, deseja sair?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
 </resources>
