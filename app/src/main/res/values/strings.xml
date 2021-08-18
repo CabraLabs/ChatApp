@@ -49,6 +49,11 @@
     <string name="home_app_bar_name" translatable="false">Chat App</string>
     <string name="tic_tac_toe">Tic Tac Toe</string>
 
+    <!-- AlertDialog -->
+    <string name="dialog_warning">If you leave this screen you\'ll be disconnected from the server, do you which to leave?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
     <!-- TicTacToe -->
     <string name="retry">RETRY</string>
     <string name="draw">DRAW</string>
