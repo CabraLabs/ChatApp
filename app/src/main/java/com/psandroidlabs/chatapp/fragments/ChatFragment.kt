@@ -1,9 +1,12 @@
 package com.psandroidlabs.chatapp.fragments
 
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
@@ -103,6 +106,29 @@ class ChatFragment : Fragment(), CoroutineScope {
         setHasOptionsMenu(true)
         ChatManager.getFragmentActivity(activity)
         activity?.title = getString(R.string.chat_app_bar_name)
+
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val alertDialog: AlertDialog? = activity?.let {
+                    val builder = AlertDialog.Builder(it)
+                    builder.apply {
+                        setPositiveButton(R.string.yes) { _, _ ->
+                            navController.popBackStack()
+                        }
+                        setNegativeButton(R.string.no) { _, _ ->
+
+                        }
+                    }
+
+                    builder.setTitle(getString(R.string.dialog_warning))
+                    builder.setCancelable(true)
+
+                    builder.create()
+                }
+
+                alertDialog?.show()
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
