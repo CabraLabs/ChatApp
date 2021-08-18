@@ -34,7 +34,7 @@ object ChatManager : CoroutineScope {
 
     private val jsonAdapter by lazy {
         val moshi: Moshi = Moshi.Builder().build()
-        moshi.adapter(Message::class.java)
+        moshi.adapter(Message::class.java).lenient()
     }
 
     private val jsonProfileAdapter by lazy {
