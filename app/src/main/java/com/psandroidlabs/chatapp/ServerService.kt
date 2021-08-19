@@ -32,10 +32,12 @@ class ServerService : Service(), CoroutineScope {
     private lateinit var notificationManager: ChatNotificationManager
     private var password: String? = null
 
+    private var startId = 0
+
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == Constants.ACTION_STOP) {
-                onDestroy()
+                closeServer()
             }
         }
     }
@@ -48,20 +50,13 @@ class ServerService : Service(), CoroutineScope {
         notificationManager = ChatNotificationManager(applicationContext, Constants.FOREGROUND_CHAT_CHANNEL)
         startForeground(100, notificationManager.foregroundNotification())
 
+        this.startId = startId
+
         password = intent.getStringExtra(Constants.PASSWORD)
 
         startServer()
 
         return START_NOT_STICKY
-    }
-
-    override fun onDestroy() {
-        closeServer()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
-        this.cancel()
-        stopForeground(true)
-
-        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -189,7 +184,7 @@ class ServerService : Service(), CoroutineScope {
             launch(Dispatchers.IO) {
                 listMutex.withLock {
                     userList.forEach { user ->
-                        if (id == user.profile?.id) {
+                        if (id == user.profile.id) {
                             id = codeGenerator()
                         }
                     }
@@ -210,7 +205,7 @@ class ServerService : Service(), CoroutineScope {
         launch(Dispatchers.IO) {
             listMutex.withLock {
                 userList.forEach { user ->
-                    user.profile?.let { profileList.add(it) }
+                    user.profile.let { profileList.add(it) }
                 }
             }
         }
@@ -229,6 +224,15 @@ class ServerService : Service(), CoroutineScope {
 
     private fun closeServer() {
         serverSocket.close()
-        userList.removeAll(userList)
+
+        runBlocking {
+            listMutex.withLock {
+                userList.forEach { user ->
+                    user.socket.close()
+                }
+            }
+        }
+
+        stopSelf(startId)
     }
 }
