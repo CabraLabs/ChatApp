@@ -12,10 +12,7 @@ import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentServerConnectBinding
 import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.UserType
-import com.psandroidlabs.chatapp.utils.ChatManager
-import com.psandroidlabs.chatapp.utils.IP
-import com.psandroidlabs.chatapp.utils.hideKeyboard
-import com.psandroidlabs.chatapp.utils.toast
+import com.psandroidlabs.chatapp.utils.*
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import com.psandroidlabs.chatapp.viewmodels.ServerViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -297,6 +294,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun getPasswordField(): String {
-        return binding.passwordField.text.toString()
+        return binding.passwordField.text.toString().toSHA256()
     }
 }
