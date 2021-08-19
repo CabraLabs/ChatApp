@@ -53,7 +53,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
             R.id.profile -> {
-                val action = HomeFragmentDirections.actionHomeFragmentToProfileFragment()
+                val action = ServerConnectFragmentDirections.actionServerConnectFragmentToProfileFragment()
                 navController.navigate(action)
                 true
             }

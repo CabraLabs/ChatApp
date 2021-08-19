@@ -20,7 +20,8 @@
             app:enterAnim="@anim/enter_from_right" />
         <action
             android:id="@+id/action_homeFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
+            app:destination="@id/profileFragment"
+            app:enterAnim="@anim/enter_from_top"/>
     </fragment>
     <fragment
         android:id="@+id/clientConnectFragment"
@@ -41,7 +42,8 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_clientConnectFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
+            app:destination="@id/profileFragment"
+            app:enterAnim="@anim/enter_from_top"/>
     </fragment>
     <fragment
         android:id="@+id/serverConnectFragment"
@@ -54,7 +56,8 @@
             app:enterAnim="@anim/enter_from_right" />
         <action
             android:id="@+id/action_serverConnectFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
+            app:destination="@id/profileFragment"
+            app:enterAnim="@anim/enter_from_top"/>
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -75,4 +78,9 @@
         android:name="com.psandroidlabs.chatapp.fragments.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/chatMembersFragment"
+        android:name="com.psandroidlabs.chatapp.fragments.ChatMembersFragment"
+        android:label="Chat Members"
+        tools:layout="@layout/fragment_chat_members" />
 </navigation>

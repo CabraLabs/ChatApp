@@ -31,6 +31,7 @@ object ChatManager : CoroutineScope {
     private lateinit var fragmentActivity: FragmentActivity
 
     var chatList: ArrayList<Message> = ArrayList()
+    var chatMembersList: ArrayList<String> = ArrayList()
 
     private val jsonAdapter by lazy {
         val moshi: Moshi = Moshi.Builder().build()
