@@ -53,10 +53,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         client.getUsername()
     }
 
-    private val ip: String by lazy {
-        IP.getIpAddress()
-    }
-
     private val disconnectSnack: Snackbar by lazy {
         Snackbar.make(
             view as View,
@@ -64,7 +60,6 @@ class ChatFragment : Fragment(), CoroutineScope {
             Snackbar.LENGTH_INDEFINITE
         )
             .setAction("Exit Chat") {
-                onDestroy()
                 navController.popBackStack()
             }
     }
@@ -106,28 +101,30 @@ class ChatFragment : Fragment(), CoroutineScope {
         ChatManager.getFragmentActivity(activity)
         activity?.title = getString(R.string.chat_app_bar_name)
 
-        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val alertDialog: AlertDialog? = activity?.let {
-                    val builder = AlertDialog.Builder(it)
-                    builder.apply {
-                        setPositiveButton(R.string.yes) { _, _ ->
-                            navController.popBackStack()
-                        }
-                        setNegativeButton(R.string.no) { _, _ ->
+        if (disconnect == true) {
+            activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val alertDialog: AlertDialog? = activity?.let {
+                        val builder = AlertDialog.Builder(it)
+                        builder.apply {
+                            setPositiveButton(R.string.yes) { _, _ ->
+                                navController.popBackStack()
+                            }
+                            setNegativeButton(R.string.no) { _, _ ->
 
+                            }
                         }
+
+                        builder.setTitle(getString(R.string.dialog_warning))
+                        builder.setCancelable(true)
+
+                        builder.create()
                     }
 
-                    builder.setTitle(getString(R.string.dialog_warning))
-                    builder.setCancelable(true)
-
-                    builder.create()
+                    alertDialog?.show()
                 }
-
-                alertDialog?.show()
-            }
-        })
+            })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
