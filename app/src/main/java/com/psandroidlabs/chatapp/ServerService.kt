@@ -73,7 +73,7 @@ class ServerService : Service(), CoroutineScope {
         launch(Dispatchers.IO) {
             serverSocket = ServerSocket(Constants.CHAT_DEFAULT_PORT)
 
-            while (isActive && count <= 5) {
+            while (isActive && count <= Constants.MAX_SERVER_USERS) {
                 try {
                     val socket = serverSocket.accept()
                     val user = User(socket, Profile())
