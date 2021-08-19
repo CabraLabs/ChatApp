@@ -51,7 +51,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId){
             R.id.profile -> {
-                val action = HomeFragmentDirections.actionHomeFragmentToProfileFragment()
+                val action = ClientConnectFragmentDirections.actionClientConnectFragmentToProfileFragment()
                 navController.navigate(action)
                 true
             }
@@ -117,6 +117,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                             AppPreferences.saveClient(
                                 username,
                                 ipAddressField.text.toString(),
+                                null,
                                 context
                             )
                             join(username)
