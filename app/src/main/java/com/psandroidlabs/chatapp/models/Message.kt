@@ -1,17 +1,22 @@
 package com.psandroidlabs.chatapp.models
 
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.squareup.moshi.JsonClass
 import java.net.Socket
 
+@Entity
 @JsonClass(generateAdapter = true)
 data class Message(
+    @PrimaryKey(autoGenerate = true) val dbId: Int? = null,
     var type: Int,
     var status: Int,
     val username: String?,
     val text: String?,
     val base64Data: String?,
     val time: Long,
-    var id: Int?,
+    @Ignore var id: Int?,
     val join: Join?
 )
 
@@ -20,9 +25,9 @@ data class Join(val avatar: String?, val password: String?)
 
 @JsonClass(generateAdapter = true)
 data class Profile(
-    var id : Int? = null,
-    var name : String? = null,
-    var photoProfile : String? = null,
+    var id: Int? = null,
+    var name: String? = null,
+    var photoProfile: String? = null,
     var scoreTicTacToe: Int? = null
 )
 
