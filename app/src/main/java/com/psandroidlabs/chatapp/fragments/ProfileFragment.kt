@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.databinding.FragmentProfileBinding
+import com.psandroidlabs.chatapp.utils.AppPreferences
 import com.psandroidlabs.chatapp.utils.PictureManager
 
 class ProfileFragment : Fragment() {
@@ -31,7 +32,7 @@ class ProfileFragment : Fragment() {
         ActivityResultContracts.TakePicturePreview()
     ) { image: Bitmap? ->
         binding.avatar.setImageBitmap(image)
-        if(image != null){
+        if (image != null) {
             userPhoto = image
         }
     }
@@ -39,13 +40,15 @@ class ProfileFragment : Fragment() {
     private val registerChoosePhoto = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        binding.avatar.setImageBitmap(
-            PictureManager.uriToBitmap(
-                uri,
-                requireContext().contentResolver
+        if(uri != null){
+            binding.avatar.setImageBitmap(
+                PictureManager.uriToBitmap(
+                    uri,
+                    requireContext().contentResolver
+                )
             )
-        )
-        userPhoto = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
+            userPhoto = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
+        }
     }
 
     private val activityResultLauncher =
@@ -77,6 +80,20 @@ class ProfileFragment : Fragment() {
     private fun initializeButtons() {
         with(binding) {
             context?.let { context ->
+
+                if (AppPreferences.getClient(context)[0].isNotBlank()) {
+                    userNameField.setText(AppPreferences.getClient(context)[0])
+                    passwordField.setText(AppPreferences.getClient(context)[1])
+                    if (AppPreferences.getClient(context)[2].isNotBlank())
+                        avatar.setImageBitmap(
+                            PictureManager.stringToBitmap(
+                                AppPreferences.getClient(
+                                    context
+                                )[2]
+                            )
+                        )
+                }
+
                 btnTakePhoto.setOnClickListener {
                     if (ContextCompat.checkSelfPermission(
                             context,
@@ -103,7 +120,12 @@ class ProfileFragment : Fragment() {
             }
 
             btnSave.setOnClickListener {
-                //TODO set profile changes
+                AppPreferences.saveClient(
+                    userNameField.text.toString(),
+                    passwordField.text.toString(),
+                    PictureManager.bitmapToString(userPhoto),
+                    context
+                )
                 navController.popBackStack()
             }
         }
