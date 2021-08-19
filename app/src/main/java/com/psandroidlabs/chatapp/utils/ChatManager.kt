@@ -89,14 +89,14 @@ object ChatManager : CoroutineScope {
         avatar: String? = null,
         password: String? = null
     ) = Message(
-        type.code,
-        status.code,
-        username,
-        text,
-        base64Data,
-        date,
-        id,
-        Join(avatar, password)
+        type = type.code,
+        status = status.code,
+        username = username,
+        text = text,
+        base64Data = base64Data,
+        time = date,
+        id = id,
+        join = Join(avatar, password)
     )
 
     /**

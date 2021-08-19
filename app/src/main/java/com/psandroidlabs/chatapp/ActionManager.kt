@@ -12,7 +12,9 @@ class ActionManager : BroadcastReceiver() {
             return
         }
 
-        val broadcastIntent = Intent(Constants.ACTION_STOP)
+        val broadcastIntent = Intent(context, ServerService::class.java).apply {
+            action = Constants.ACTION_STOP
+        }
         LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent)
     }
 }

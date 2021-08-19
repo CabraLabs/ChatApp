@@ -10,6 +10,7 @@ import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.PictureManager
+import kotlin.collections.ArrayList
 
 
 class ChatAdapter(private val dataSet: ArrayList<Message>) :

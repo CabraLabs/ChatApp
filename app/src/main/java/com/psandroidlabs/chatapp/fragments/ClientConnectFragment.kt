@@ -12,13 +12,10 @@ import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentClientConnectBinding
 import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.UserType
+import com.psandroidlabs.chatapp.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import com.psandroidlabs.chatapp.utils.AppPreferences
-import com.psandroidlabs.chatapp.utils.ChatManager
-import com.psandroidlabs.chatapp.utils.hideKeyboard
-import com.psandroidlabs.chatapp.utils.toast
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 
 
@@ -147,7 +144,8 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         client.writeToSocket(
             ChatManager.connectMessage(
                 username,
-                getString(R.string.joined_the_room)
+                getString(R.string.joined_the_room),
+                getPasswordField()
             )
         )
         client.readSocket()
@@ -167,5 +165,9 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
             AcceptedStatus.SECURITY_KICK -> toast(getString(R.string.security_kick))
             AcceptedStatus.ADMIN_KICK -> toast(getString(R.string.admin_kick))
         }
+    }
+
+    private fun getPasswordField(): String {
+        return binding.passwordField.text.toString().toSHA256()
     }
 }

@@ -72,21 +72,19 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     @Synchronized
     fun writeToSocket(message: Message): Boolean {
-        var success = true
-
         message.id = id
         val messageByte = ChatManager.parseToJson(message)
 
-        launch(Dispatchers.IO) {
-            success = try {
-                socketList[0]?.getOutputStream()?.write(messageByte.toByteArray(Charsets.UTF_8))
-                true
-            } catch (e: java.net.SocketException) {
-                false
+        return try {
+            runBlocking {
+                launch(Dispatchers.IO) {
+                    socketList[0]?.getOutputStream()?.write(messageByte.toByteArray(Charsets.UTF_8))
+                }
             }
+            true
+        } catch (e: java.net.SocketException) {
+            false
         }
-
-        return success
     }
 
     @DelicateCoroutinesApi
