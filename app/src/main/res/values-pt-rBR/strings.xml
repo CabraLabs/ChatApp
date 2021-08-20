@@ -50,4 +50,5 @@
     <string name="optional">*Opcional</string>
     <string name="invalid_ip">Por favor, providencie um endereço de IP valido</string>
     <string name="ip_example">Exemplo: 192.168.x.104</string>
+    <string name="port">Porta</string>
 </resources>
