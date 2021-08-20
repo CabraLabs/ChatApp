@@ -1,20 +1,38 @@
 package com.psandroidlabs.chatapp.fragments
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatMembersBinding
 import com.psandroidlabs.chatapp.utils.ChatManager
 
-class ChatMembersFragment: Fragment() {
+class ChatMembersFragment: DialogFragment() {
 
     private lateinit var binding: FragmentChatMembersBinding
     private lateinit var chatMembersAdapter: ChatMembersAdapter
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return activity?.let {
+            val builder = AlertDialog.Builder(it)
+            builder.setMessage(R.string.chat_members)
+                .setView(binding.root)
+                .setPositiveButton(R.string.tictactoe_invite
+                ) { dialog, id ->
+                }
+                .setNegativeButton(R.string.cancel
+                ) { dialog, id ->
+                }
+            builder.create()
+        } ?: throw IllegalStateException("Activity cannot be null")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
