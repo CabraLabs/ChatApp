@@ -22,7 +22,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
 
-    private lateinit var userPhoto: Bitmap
+    private var userPhoto = PictureManager.defaultAvatar
 
     private val navController: NavController by lazy {
         findNavController()
@@ -31,8 +31,8 @@ class ProfileFragment : Fragment() {
     private val registerTakePhoto = registerForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { image: Bitmap? ->
-        binding.avatar.setImageBitmap(image)
         if (image != null) {
+            binding.avatar.setImageBitmap(image)
             userPhoto = image
         }
     }
@@ -40,7 +40,7 @@ class ProfileFragment : Fragment() {
     private val registerChoosePhoto = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if(uri != null){
+        if (uri != null) {
             binding.avatar.setImageBitmap(
                 PictureManager.uriToBitmap(
                     uri,
@@ -83,9 +83,9 @@ class ProfileFragment : Fragment() {
 
                 val preference = AppPreferences.getClient(context)
 
-                if(preference.isNotEmpty()){
+                if (preference.isNotEmpty()) {
                     userNameField.setText(AppPreferences.getClient(context)[0])
-                    if(preference[3].isNullOrBlank())
+                    if (preference[3].isNullOrBlank())
                         avatar.setImageBitmap(preference[2]?.let { PictureManager.stringToBitmap(it) })
                 }
 
@@ -120,10 +120,10 @@ class ProfileFragment : Fragment() {
                     clientAvatar = PictureManager.bitmapToString(userPhoto),
                     context = context
                 )
+
                 navController.popBackStack()
             }
         }
-
     }
 
     private fun takePhoto() {
