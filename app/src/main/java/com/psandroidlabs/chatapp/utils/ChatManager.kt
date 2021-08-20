@@ -170,7 +170,7 @@ object ChatManager : CoroutineScope {
         fragmentActivity.let {
             Snackbar.make(
                 it.findViewById(R.id.chatLayout),
-                applicationContext().getString(R.string.accept),
+                applicationContext().getString(R.string.accept_tictactoe_invite),
                 Snackbar.LENGTH_INDEFINITE
             )
                 .setAction("YES") { startTicTacToe() }.show()
