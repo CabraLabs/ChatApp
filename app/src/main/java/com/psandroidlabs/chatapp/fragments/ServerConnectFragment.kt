@@ -3,6 +3,7 @@ package com.psandroidlabs.chatapp.fragments
 import android.app.Activity
 import android.os.Bundle
 import android.view.*
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -85,9 +86,14 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         server.serverRunning.observe(viewLifecycleOwner, serverObserver)
 
         initializeButtons()
+        portNumbers()
     }
 
     private fun initializeButtons() {
+        loadPreferences()
+
+        removeErrorListener()
+
         with(binding) {
             userNameField.setText(R.string.admin)
 
@@ -103,9 +109,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                     loading(true)
 
                     if (showPassword.isChecked) {
-                        server.startServerService(activity as Activity, getPasswordField())
+                        server.startServerService(activity as Activity, getPasswordField(), getPortField())
                     } else {
-                        server.startServerService(activity as Activity)
+                        server.startServerService(activity as Activity, port = getPortField())
                     }
 
                     join()
@@ -113,11 +119,18 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             }
 
             createServer.setOnClickListener {
-                if (checkPasswordField()) {
-                    server.startServerService(activity as Activity, getPasswordField())
-                    changeButtons(true)
+                if (showPassword.isChecked) {
+                    if (checkFields()) {
+                        enableRadioButtons(false)
+                        changeButtons(true)
+                        passwordFieldEnable(false)
+
+                        server.startServerService(activity as Activity, getPasswordField(), getPortField())
+
+                        password.isEnabled = false
+                    }
                 } else {
-                    server.startServerService(activity as Activity)
+                    server.startServerService(activity as Activity, port = getPortField())
                 }
             }
 
@@ -137,10 +150,30 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun loadPreferences() {
+        val preference = AppPreferences.getClient(context)
+
+        with(binding) {
+            if (preference.isNotEmpty()) {
+
+                if (preference[3].isNullOrBlank()) {
+                    portField.setText(preference[3], false)
+                } else {
+                    portField.setText(Constants.PORT_1027.toString(), false)
+                }
+            }
+        }
+    }
+
+    private fun portNumbers() {
+        val adapter = IP.getPortList(requireContext())
+        binding.portField.setAdapter(adapter)
+    }
+
     private fun join() {
         with(binding) {
             ChatManager.delay(1000) {
-                val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ipAddress.text.toString()))
+                val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ipAddress.text.toString()), getPortField())
 
                 if (success) {
                     loading(false)
@@ -205,6 +238,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         with(binding) {
             if (change) {
                 enableRadioButtons(false)
+                passwordFieldEnable(false)
 
                 createAndJoin.visibility = View.GONE
                 createServer.visibility = View.GONE
@@ -213,6 +247,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 stopServer.visibility = View.VISIBLE
             } else {
                 enableRadioButtons(true)
+                passwordFieldEnable(true)
 
                 createAndJoin.visibility = View.VISIBLE
                 createServer.visibility = View.VISIBLE
@@ -250,17 +285,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun checkPasswordField(): Boolean {
-        with(binding) {
-            return if (showPassword.isChecked) {
-                passwordFieldError()
-                false
-            } else {
-                true
-            }
-        }
-    }
-
     private fun checkFields(): Boolean {
         with(binding) {
             return if (userNameField.text.toString() == "") {
@@ -279,13 +303,31 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun removeErrorListener() {
+        with(binding) {
+            userNameField.setOnClickListener {
+                if (username.error != null) {
+                    username.error = null
+                }
+            }
+
+            passwordField.setOnClickListener {
+                if (password.error != null) {
+                    password.error = null
+                }
+            }
+        }
+    }
+
+    private fun passwordFieldEnable(isActive: Boolean) {
+        binding.password.isEnabled = isActive
+    }
+
     private fun usernameFieldError() {
-        toast(getString(R.string.username_missing))
         binding.username.error = getString(R.string.username_missing)
     }
 
     private fun passwordFieldError() {
-        toast(getString(R.string.password_missing))
         binding.password.error = getString(R.string.password_missing)
     }
 
@@ -295,5 +337,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private fun getPasswordField(): String {
         return binding.passwordField.text.toString().toSHA256()
+    }
+
+    private fun getPortField(): Int {
+        return binding.portField.text.toString().toInt()
     }
 }

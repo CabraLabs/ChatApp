@@ -2,6 +2,7 @@ package com.psandroidlabs.chatapp.fragments
 
 import android.os.Bundle
 import android.view.*
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -13,10 +14,10 @@ import com.psandroidlabs.chatapp.databinding.FragmentClientConnectBinding
 import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.*
+import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 
 
 class ClientConnectFragment : Fragment(), CoroutineScope {
@@ -49,7 +50,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId){
+        return when (item.itemId) {
             R.id.profile -> {
                 val action = ClientConnectFragmentDirections.actionClientConnectFragmentToProfileFragment()
                 navController.navigate(action)
@@ -62,8 +63,8 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
     override fun onResume() {
         super.onResume()
-        if(args.ip != null){
-            with(binding){
+        if (args.ip != null) {
+            with(binding) {
                 ipAddressField.setText(args.ip)
             }
         }
@@ -85,63 +86,89 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
             hideKeyboard()
         }
 
+        val acceptedObserver = Observer<AcceptedStatus> {
+            parseStatus(it)
+        }
+        client.accepted.observe(viewLifecycleOwner, acceptedObserver)
+
         initializeButtons()
+        portNumbers()
     }
 
     private fun initializeButtons() {
         //TODO args treatment
         with(binding) {
-            if (AppPreferences.getClient(context)[0].isNotBlank()) {
-                userNameField.setText(AppPreferences.getClient(context)[0])
-                ipAddressField.setText(AppPreferences.getClient(context)[1])
-            }
+            loadPreferences()
 
-            joinChat.setOnClickListener {
+            removeErrorListener()
+
+             joinChat.setOnClickListener {
                 when {
                     userNameField.text.toString() == "" -> {
-                        toast(getString(R.string.username_missing))
                         username.error = getString(R.string.username_missing)
                     }
 
                     ipAddressField.text.toString() == "" -> {
-                        toast(getString(R.string.ip_missing))
                         ipAddress.error = getString(R.string.ip_missing)
                     }
 
                     else -> {
-                        val username = userNameField.text.toString()
-                        val inetAddress = client.transformIp(ipAddressField.text.toString())
-                        val success = client.startSocket(username, inetAddress)
-
-                        if (success) {
-                            AppPreferences.saveClient(
-                                username,
-                                ipAddressField.text.toString(),
-                                null,
-                                context
-                            )
-                            join(username)
-                            val action =
-                                ClientConnectFragmentDirections.actionClientConnectFragmentToChatFragment(
-                                    UserType.CLIENT
-                                )
-                            navController.navigate(action)
-                        } else {
-                            toast(getString(R.string.connect_error))
-                            ipAddress.error
-                        }
+                        removeErrorListener()
+                        validate()
                     }
                 }
             }
         }
     }
 
-    private fun join(username: String) {
-        val acceptedObserver = Observer<AcceptedStatus> {
-            parseStatus(it)
-        }
-        client.accepted.observe(viewLifecycleOwner, acceptedObserver)
+    private fun loadPreferences() {
+        val preference = AppPreferences.getClient(context)
 
+        with(binding) {
+            if (preference.isNotEmpty()) {
+                userNameField.setText(AppPreferences.getClient(context)[0])
+                ipAddressField.setText(AppPreferences.getClient(context)[1])
+
+                if (preference[3].isNullOrBlank()) {
+                    portField.setText(preference[3], false)
+                } else {
+                    portField.setText(Constants.PORT_1027.toString(), false)
+                }
+            }
+        }
+    }
+
+    private fun portNumbers() {
+        val adapter = IP.getPortList(requireContext())
+        binding.portField.setAdapter(adapter)
+    }
+
+    private fun validate() {
+        if (!client.validateIp(getIpAddressField())) {
+            binding.ipAddress.error = getString(R.string.invalid_ip)
+            return
+        } else {
+            val username = binding.userNameField.text.toString()
+            val inetAddress = client.transformIp(getIpAddressField())
+            val success = client.startSocket(username, inetAddress, getPortField())
+
+            if (success) {
+                AppPreferences.saveClient(
+                    username,
+                    getIpAddressField(),
+                    getPortField().toString(),
+                    null,
+                    context
+                )
+
+                join(username)
+            } else {
+                toast(getString(R.string.connect_error))
+            }
+        }
+    }
+
+    private fun join(username: String) {
         client.writeToSocket(
             ChatManager.connectMessage(
                 username,
@@ -149,6 +176,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                 getPasswordField()
             )
         )
+
         client.readSocket()
     }
 
@@ -168,7 +196,31 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun removeErrorListener() {
+        with(binding) {
+            userNameField.setOnClickListener {
+                if (username.error != null) {
+                    username.error = null
+                }
+            }
+
+            ipAddressField.setOnClickListener {
+                if (ipAddress.error != null) {
+                    ipAddress.error = null
+                }
+            }
+        }
+    }
+
     private fun getPasswordField(): String {
         return binding.passwordField.text.toString().toSHA256()
+    }
+
+    private fun getIpAddressField(): String {
+        return binding.ipAddressField.text.toString()
+    }
+
+    private fun getPortField(): Int {
+        return binding.portField.text.toString().toInt()
     }
 }

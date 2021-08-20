@@ -2,8 +2,11 @@ package com.psandroidlabs.chatapp.utils
 
 object Constants {
     const val PASSWORD = "Password"
+    const val PORT = "Port"
 
-    const val CHAT_DEFAULT_PORT = 1027
+    const val PORT_1027 = 1027
+    const val PORT_1028 = 1028
+    const val PORT_1029 = 1029
 
     const val ACTION_STOP = "STOP"
 
@@ -17,4 +20,5 @@ object Constants {
     const val CLIENT_USER = "client_user"
     const val CLIENT_IP = "client_ip"
     const val CLIENT_AVATAR = "client_avatar"
+    const val CLIENT_PORT = "client_port"
 }

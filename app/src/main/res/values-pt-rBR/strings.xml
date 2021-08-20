@@ -5,7 +5,7 @@
     <string name="connect">Conectar a um chat</string>
     <string name="host">Hostear um chat</string>
     <string name="username_hint">Nome de usuário</string>
-    <string name="ip_hint">Endereço de IP</string>
+    <string name="server_address_hint">Endereço do servidor</string>
     <string name="join_chat">Entrar no Chat</string>
     <string name="username_missing">Por favor, insira seu nome de usuário</string>
     <string name="ip_missing">Por favor, providencie o endereço de IP</string>
@@ -21,8 +21,8 @@
     <string name="insert_message">Insira sua mensagem…</string>
     <string name="snack_server_disconnect">Conexão perdida</string>
     <string name="notification_new_message">Nova Mensagem</string>
-    <string name="joined_the_room">Entrar na sala</string>
-    <string name="created_the_room">Criou a sala</string>
+    <string name="joined_the_room">entrar na sala</string>
+    <string name="created_the_room">criou a sala</string>
     <string name="server_app_bar_name">Servidor</string>
     <string name="client_app_bar_name">Cliente</string>
     <string name="tic_tac_toe">Jogo da Velha</string>
@@ -47,4 +47,8 @@
     <string name="save">Salvar</string>
     <string name="share">Compartilhar</string>
     <string name="chat_members">Membros do chat</string>
+    <string name="optional">*Opcional</string>
+    <string name="invalid_ip">Por favor, providencie um endereço de IP valido</string>
+    <string name="ip_example">Exemplo: 192.168.x.104</string>
+    <string name="port">Porta</string>
 </resources>

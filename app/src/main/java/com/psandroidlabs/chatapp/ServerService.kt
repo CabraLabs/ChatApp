@@ -6,10 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
+import com.squareup.moshi.JsonDataException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -53,8 +55,9 @@ class ServerService : Service(), CoroutineScope {
         this.startId = startId
 
         password = intent.getStringExtra(Constants.PASSWORD)
+        val port = intent.getIntExtra(Constants.PORT, Constants.PORT_1027)
 
-        startServer()
+        startServer(port)
 
         return START_NOT_STICKY
     }
@@ -63,10 +66,10 @@ class ServerService : Service(), CoroutineScope {
         return null
     }
 
-    private fun startServer() {
+    private fun startServer(port: Int) {
         var count = 0
         launch(Dispatchers.IO) {
-            serverSocket = ServerSocket(Constants.CHAT_DEFAULT_PORT)
+            serverSocket = ServerSocket(port)
 
             while (isActive && count <= Constants.MAX_SERVER_USERS) {
                 try {
@@ -93,17 +96,21 @@ class ServerService : Service(), CoroutineScope {
                 if (scanner.hasNextLine()) {
                     val json = scanner.nextLine()
 
-                    val message = ChatManager.serializeMessage(json)
+                    try {
+                        val message = ChatManager.serializeMessage(json)
 
-                    if (message?.type != MessageType.JOIN.code) {
-                        if (message?.id != user.profile.id) {
-                            removeSocket(user)
+                        if (message?.type != MessageType.JOIN.code) {
+                            if (message?.id != user.profile.id) {
+                                removeSocket(user)
+                            } else {
+                                forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
+                            }
                         } else {
+                            authenticate(message, user)
                             forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
                         }
-                    } else {
-                        authenticate(message, user)
-                        forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
+                    } catch (e: JsonDataException) {
+                        Log.e("ServerService", "Received a message that can't be parsed to json: $json")
                     }
                 }
             }
