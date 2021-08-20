@@ -22,7 +22,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
 
-    private lateinit var userPhoto: Bitmap
+    private var userPhoto = PictureManager.defaultAvatar
 
     private val navController: NavController by lazy {
         findNavController()
@@ -31,8 +31,8 @@ class ProfileFragment : Fragment() {
     private val registerTakePhoto = registerForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { image: Bitmap? ->
-        binding.avatar.setImageBitmap(image)
         if (image != null) {
+            binding.avatar.setImageBitmap(image)
             userPhoto = image
         }
     }
@@ -40,7 +40,7 @@ class ProfileFragment : Fragment() {
     private val registerChoosePhoto = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if(uri != null){
+        if (uri != null) {
             binding.avatar.setImageBitmap(
                 PictureManager.uriToBitmap(
                     uri,
@@ -81,17 +81,12 @@ class ProfileFragment : Fragment() {
         with(binding) {
             context?.let { context ->
 
-                if (AppPreferences.getClient(context)[0].isNotBlank()) {
+                val preference = AppPreferences.getClient(context)
+
+                if (preference.isNotEmpty()) {
                     userNameField.setText(AppPreferences.getClient(context)[0])
-                    passwordField.setText(AppPreferences.getClient(context)[1])
-                    if (AppPreferences.getClient(context)[2].isNotBlank())
-                        avatar.setImageBitmap(
-                            PictureManager.stringToBitmap(
-                                AppPreferences.getClient(
-                                    context
-                                )[2]
-                            )
-                        )
+                    if (preference[3].isNullOrBlank())
+                        avatar.setImageBitmap(preference[2]?.let { PictureManager.stringToBitmap(it) })
                 }
 
                 btnTakePhoto.setOnClickListener {
@@ -122,14 +117,13 @@ class ProfileFragment : Fragment() {
             btnSave.setOnClickListener {
                 AppPreferences.saveClient(
                     userNameField.text.toString(),
-                    passwordField.text.toString(),
-                    PictureManager.bitmapToString(userPhoto),
-                    context
+                    clientAvatar = userPhoto?.let { it1 -> PictureManager.bitmapToString(it1) },
+                    context = context
                 )
+
                 navController.popBackStack()
             }
         }
-
     }
 
     private fun takePhoto() {

@@ -30,7 +30,7 @@
     <string name="draw">EMPATE</string>
     <string name="player1">Jogador 1</string>
     <string name="player2">Jogador 2</string>
-    <string name="accept">Aceitar convite?</string>
+    <string name="accept_tictactoe_invite">Aceitar convite?</string>
     <string name="close_server">Fechar servidor</string>
     <string name="server_running">O servidor está rodando</string>
     <string name="use_password">Usar senha</string>
@@ -51,4 +51,7 @@
     <string name="invalid_ip">Por favor, providencie um endereço de IP valido</string>
     <string name="ip_example">Exemplo: 192.168.x.104</string>
     <string name="port">Porta</string>
+    <string name="tictactoe_invite">Convidar para TicTacToe</string>
+    <string name="cancel">Cancelar</string>
+    <string name="score">Pontuação</string>
 </resources>
