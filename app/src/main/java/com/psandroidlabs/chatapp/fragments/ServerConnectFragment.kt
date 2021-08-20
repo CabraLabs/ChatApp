@@ -88,6 +88,8 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun initializeButtons() {
+        removeErrorListener()
+
         with(binding) {
             userNameField.setText(R.string.admin)
 
@@ -113,9 +115,16 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             }
 
             createServer.setOnClickListener {
-                if (checkPasswordField()) {
-                    server.startServerService(activity as Activity, getPasswordField())
-                    changeButtons(true)
+                if (showPassword.isChecked) {
+                    if (checkFields()) {
+                        enableRadioButtons(false)
+                        changeButtons(true)
+                        passwordFieldEnable(false)
+
+                        server.startServerService(activity as Activity, getPasswordField())
+
+                        password.isEnabled = false
+                    }
                 } else {
                     server.startServerService(activity as Activity)
                 }
@@ -205,6 +214,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         with(binding) {
             if (change) {
                 enableRadioButtons(false)
+                passwordFieldEnable(false)
 
                 createAndJoin.visibility = View.GONE
                 createServer.visibility = View.GONE
@@ -213,6 +223,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 stopServer.visibility = View.VISIBLE
             } else {
                 enableRadioButtons(true)
+                passwordFieldEnable(true)
 
                 createAndJoin.visibility = View.VISIBLE
                 createServer.visibility = View.VISIBLE
@@ -250,17 +261,6 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun checkPasswordField(): Boolean {
-        with(binding) {
-            return if (showPassword.isChecked) {
-                passwordFieldError()
-                false
-            } else {
-                true
-            }
-        }
-    }
-
     private fun checkFields(): Boolean {
         with(binding) {
             return if (userNameField.text.toString() == "") {
@@ -279,13 +279,31 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun removeErrorListener() {
+        with(binding) {
+            userNameField.setOnClickListener {
+                if (username.error != null) {
+                    username.error = null
+                }
+            }
+
+            passwordField.setOnClickListener {
+                if (password.error != null) {
+                    password.error = null
+                }
+            }
+        }
+    }
+
+    private fun passwordFieldEnable(isActive: Boolean) {
+        binding.password.isEnabled = isActive
+    }
+
     private fun usernameFieldError() {
-        toast(getString(R.string.username_missing))
         binding.username.error = getString(R.string.username_missing)
     }
 
     private fun passwordFieldError() {
-        toast(getString(R.string.password_missing))
         binding.password.error = getString(R.string.password_missing)
     }
 
