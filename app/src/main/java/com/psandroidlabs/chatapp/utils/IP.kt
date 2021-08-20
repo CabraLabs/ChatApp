@@ -17,7 +17,7 @@ object IP : CoroutineScope {
         runBlocking {
             launch(Dispatchers.IO) {
                 DatagramSocket().use { socket ->
-                    socket.connect(InetAddress.getByName("8.8.8.8"), Constants.CHAT_DEFAULT_PORT)
+                    socket.connect(InetAddress.getByName("8.8.8.8"), Constants.PORT_1027)
                     ip = socket.localAddress.hostAddress
                     socket.close()
                 }
