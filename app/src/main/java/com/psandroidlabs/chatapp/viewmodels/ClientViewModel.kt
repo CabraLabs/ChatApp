@@ -55,11 +55,11 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     fun getUsername() = userName
 
-    fun startSocket(username: String, ip: InetAddress): Boolean {
+    fun startSocket(username: String, ip: InetAddress, port: Int): Boolean {
         return try {
             runBlocking {
                 launch(Dispatchers.IO) {
-                    val client = Socket(ip, Constants.CHAT_DEFAULT_PORT)
+                    val client = Socket(ip, port)
                     socketList.add(client)
                     userName = username
                 }
