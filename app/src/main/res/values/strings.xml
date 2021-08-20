@@ -8,10 +8,12 @@
 
     <!-- FragmentClientConnect -->
     <string name="username_hint">Username</string>
-    <string name="ip_hint">IP Address</string>
+    <string name="server_address_hint">Server Address</string>
     <string name="join_chat">Join Chat</string>
     <string name="username_missing">Please insert your username</string>
+    <string name="invalid_ip">Please provide a valid IP Address</string>
     <string name="ip_missing">Please provide the IP Address</string>
+    <string name="ip_example">Example: 192.168.x.104</string>
     <string name="connect_error">IP Address doesn\'t have a chat server</string>
 
     <!-- FragmentServerConnect -->
@@ -39,8 +41,8 @@
     <string name="admin_kick">You were kicked by the Administrator</string>
 
     <!-- Adapter -->
-    <string name="joined_the_room">Joined the room</string>
-    <string name="created_the_room">Created the room</string>
+    <string name="joined_the_room">joined the room</string>
+    <string name="created_the_room">created the room</string>
 
     <!-- App Bar -->
     <string name="server_app_bar_name">Server</string>
@@ -67,6 +69,9 @@
     <string name="close_server">Close Server</string>
     <string name="server_running">Server is running</string>
     <string name="server_on_ip" translatable="false">IP: %s</string>
+
+    <!-- HelperText -->
+    <string name="optional">*Optional</string>
 
     <!-- Profile -->
     <string name="profile">Profile</string>
