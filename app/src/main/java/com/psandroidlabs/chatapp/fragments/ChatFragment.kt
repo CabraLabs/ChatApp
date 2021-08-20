@@ -22,7 +22,6 @@ import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
-import com.psandroidlabs.chatapp.utils.IP
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.*
 
@@ -154,6 +153,12 @@ class ChatFragment : Fragment(), CoroutineScope {
 
             R.id.shareLink -> {
                 client.shareChatLink(requireActivity())
+                true
+            }
+
+            R.id.chatMembers -> {
+                //TODO call chat members dialog
+                client.showChatMembers(requireActivity())
                 true
             }
 
