@@ -64,8 +64,10 @@
     <string name="draw">DRAW</string>
     <string name="player1">Player 1</string>
     <string name="player2">Player 2</string>
-    <string name="accept">Accept Invite?</string>
-
+    <string name="accept_tictactoe_invite">Accept Invite?</string>
+    <string name="tictactoe_invite">Invite to TicTacToe</string>
+    <string name="cancel">Cancel</string>
+    <string name="score">Score</string>
     <!-- Foreground -->
     <string name="close_server">Close Server</string>
     <string name="server_running">Server is running</string>
