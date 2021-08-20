@@ -3,6 +3,7 @@ package com.psandroidlabs.chatapp.fragments
 import android.app.Activity
 import android.os.Bundle
 import android.view.*
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -85,9 +86,12 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         server.serverRunning.observe(viewLifecycleOwner, serverObserver)
 
         initializeButtons()
+        portNumbers()
     }
 
     private fun initializeButtons() {
+        loadPreferences()
+
         removeErrorListener()
 
         with(binding) {
@@ -105,9 +109,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                     loading(true)
 
                     if (showPassword.isChecked) {
-                        server.startServerService(activity as Activity, getPasswordField())
+                        server.startServerService(activity as Activity, getPasswordField(), getPortField())
                     } else {
-                        server.startServerService(activity as Activity)
+                        server.startServerService(activity as Activity, port = getPortField())
                     }
 
                     join()
@@ -121,12 +125,12 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                         changeButtons(true)
                         passwordFieldEnable(false)
 
-                        server.startServerService(activity as Activity, getPasswordField())
+                        server.startServerService(activity as Activity, getPasswordField(), getPortField())
 
                         password.isEnabled = false
                     }
                 } else {
-                    server.startServerService(activity as Activity)
+                    server.startServerService(activity as Activity, port = getPortField())
                 }
             }
 
@@ -146,10 +150,31 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun loadPreferences() {
+        val preference = AppPreferences.getClient(context)
+
+        with(binding) {
+            if (preference.isNotEmpty()) {
+
+                if (preference[3].isNullOrBlank()) {
+                    portField.setText(preference[3], false)
+                } else {
+                    portField.setText(Constants.PORT_1027.toString(), false)
+                }
+            }
+        }
+    }
+
+    private fun portNumbers() {
+        val items = listOf(Constants.PORT_1027, Constants.PORT_1028, Constants.PORT_1029)
+        val adapter = ArrayAdapter(requireContext(), R.layout.list_item, items)
+        binding.portField.setAdapter(adapter)
+    }
+
     private fun join() {
         with(binding) {
             ChatManager.delay(1000) {
-                val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ipAddress.text.toString()))
+                val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ipAddress.text.toString()), getPortField())
 
                 if (success) {
                     loading(false)
@@ -313,5 +338,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private fun getPasswordField(): String {
         return binding.passwordField.text.toString().toSHA256()
+    }
+
+    private fun getPortField(): Int {
+        return binding.portField.text.toString().toInt()
     }
 }
