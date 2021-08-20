@@ -2,6 +2,7 @@ package com.psandroidlabs.chatapp.fragments
 
 import android.os.Bundle
 import android.view.*
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -91,15 +92,13 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         client.accepted.observe(viewLifecycleOwner, acceptedObserver)
 
         initializeButtons()
+        portNumbers()
     }
 
     private fun initializeButtons() {
         //TODO args treatment
         with(binding) {
-            if (AppPreferences.getClient(context)[0].isNotBlank()) {
-                userNameField.setText(AppPreferences.getClient(context)[0])
-                ipAddressField.setText(AppPreferences.getClient(context)[1])
-            }
+            loadPreferences()
 
             removeErrorListener()
 
@@ -122,6 +121,29 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun loadPreferences() {
+        val preference = AppPreferences.getClient(context)
+
+        with(binding) {
+            if (preference.isNotEmpty()) {
+                userNameField.setText(AppPreferences.getClient(context)[0])
+                ipAddressField.setText(AppPreferences.getClient(context)[1])
+
+                if (preference[3].isNullOrBlank()) {
+                    portField.setText(preference[3], false)
+                } else {
+                    portField.setText(Constants.PORT_1027.toString(), false)
+                }
+            }
+        }
+    }
+
+    private fun portNumbers() {
+        val items = listOf(Constants.PORT_1027, Constants.PORT_1028, Constants.PORT_1029)
+        val adapter = ArrayAdapter(requireContext(), R.layout.list_item, items)
+        binding.portField.setAdapter(adapter)
+    }
+
     private fun validate() {
         if (!client.validateIp(getIpAddressField())) {
             binding.ipAddress.error = getString(R.string.invalid_ip)
@@ -129,12 +151,13 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         } else {
             val username = binding.userNameField.text.toString()
             val inetAddress = client.transformIp(getIpAddressField())
-            val success = client.startSocket(username, inetAddress)
+            val success = client.startSocket(username, inetAddress, getPortField())
 
             if (success) {
                 AppPreferences.saveClient(
                     username,
                     getIpAddressField(),
+                    getPortField().toString(),
                     null,
                     context
                 )
@@ -154,6 +177,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                 getPasswordField()
             )
         )
+
         client.readSocket()
     }
 
@@ -195,5 +219,9 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
     private fun getIpAddressField(): String {
         return binding.ipAddressField.text.toString()
+    }
+
+    private fun getPortField(): Int {
+        return binding.portField.text.toString().toInt()
     }
 }
