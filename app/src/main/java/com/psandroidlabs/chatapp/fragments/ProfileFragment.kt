@@ -117,7 +117,7 @@ class ProfileFragment : Fragment() {
             btnSave.setOnClickListener {
                 AppPreferences.saveClient(
                     userNameField.text.toString(),
-                    clientAvatar = PictureManager.bitmapToString(userPhoto),
+                    clientAvatar = userPhoto?.let { it1 -> PictureManager.bitmapToString(it1) },
                     context = context
                 )
 
