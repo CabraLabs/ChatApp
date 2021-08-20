@@ -1,5 +1,8 @@
 package com.psandroidlabs.chatapp.utils
 
+import android.content.Context
+import android.widget.ArrayAdapter
+import com.psandroidlabs.chatapp.R
 import kotlinx.coroutines.*
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -25,5 +28,10 @@ object IP : CoroutineScope {
         }
 
         return ip
+    }
+
+    fun getPortList(context: Context): ArrayAdapter<Int> {
+        val items = listOf(Constants.PORT_1027, Constants.PORT_1028, Constants.PORT_1029)
+        return ArrayAdapter(context, R.layout.list_item, items)
     }
 }

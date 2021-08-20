@@ -139,8 +139,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun portNumbers() {
-        val items = listOf(Constants.PORT_1027, Constants.PORT_1028, Constants.PORT_1029)
-        val adapter = ArrayAdapter(requireContext(), R.layout.list_item, items)
+        val adapter = IP.getPortList(requireContext())
         binding.portField.setAdapter(adapter)
     }
 
