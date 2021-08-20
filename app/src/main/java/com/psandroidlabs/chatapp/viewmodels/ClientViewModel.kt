@@ -4,8 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
+import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
+import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
+import com.psandroidlabs.chatapp.fragments.ChatMembersFragment
 import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
@@ -152,14 +157,23 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     fun shareChatLink(activity: Activity) {
-        //TODO server IP in putExtra
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_INTENT, "http/www.chatapp.psandroidlabs.com/clientconnect/chatroomip=10")
+            putExtra(Intent.EXTRA_TEXT, "http/www.chatapp.psandroidlabs.com/clientconnect/chatroomip=${socketList[0]?.localAddress}")
             type = "text/plain"
         }
 
         val shareIntent = Intent.createChooser(sendIntent, null)
         activity.startActivity(shareIntent)
+    }
+
+    fun showChatMembers(activity: Activity) {
+//        val dialogBox = ChatMembersFragment()
+//        val membersAdapter = ChatMembersAdapter()
+//        dialogBox.setContentView(R.layout.fragment_chat_members)
+//        val membersRecyclerView: RecyclerView = dialogBox.findViewById(R.id.membersRecycler)
+//        membersRecyclerView.layoutManager = LinearLayoutManager(context)
+//        membersRecyclerView.adapter = membersAdapter
+//        dialogBox.show()
     }
 }
