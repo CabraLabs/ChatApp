@@ -81,17 +81,12 @@ class ProfileFragment : Fragment() {
         with(binding) {
             context?.let { context ->
 
-                if (AppPreferences.getClient(context)[0].isNotBlank()) {
+                val preference = AppPreferences.getClient(context)
+
+                if(preference.isNotEmpty()){
                     userNameField.setText(AppPreferences.getClient(context)[0])
-                    passwordField.setText(AppPreferences.getClient(context)[1])
-                    if (AppPreferences.getClient(context)[2].isNotBlank())
-                        avatar.setImageBitmap(
-                            PictureManager.stringToBitmap(
-                                AppPreferences.getClient(
-                                    context
-                                )[2]
-                            )
-                        )
+                    if(preference[3].isNullOrBlank())
+                        avatar.setImageBitmap(preference[2]?.let { PictureManager.stringToBitmap(it) })
                 }
 
                 btnTakePhoto.setOnClickListener {
@@ -122,9 +117,8 @@ class ProfileFragment : Fragment() {
             btnSave.setOnClickListener {
                 AppPreferences.saveClient(
                     userNameField.text.toString(),
-                    passwordField.text.toString(),
-                    PictureManager.bitmapToString(userPhoto),
-                    context
+                    clientAvatar = PictureManager.bitmapToString(userPhoto),
+                    context = context
                 )
                 navController.popBackStack()
             }

@@ -9,7 +9,7 @@ object AppPreferences {
         return context?.getSharedPreferences(Constants.CLIENT_USER, Context.MODE_PRIVATE)
     }
 
-    fun saveClient(clientUsername: String, clientIp: String, clientPort: String?, clientAvatar: String?,  context: Context?) {
+    fun saveClient(clientUsername: String, clientIp: String? = null, clientPort: String? = null, clientAvatar: String? = null,  context: Context?) {
         val sharedClient = getSharedClient(context) ?: return
 
         with(sharedClient.edit()) {

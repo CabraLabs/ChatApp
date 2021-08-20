@@ -32,7 +32,7 @@ class ChatMembersFragment: Fragment() {
     }
 
     private fun initializeList(){
-        val recyclerViewList: RecyclerView = binding.tableRecycler
+        val recyclerViewList: RecyclerView = binding.membersRecycler
         chatMembersAdapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onCellClick)
 
         recyclerViewList.apply {
