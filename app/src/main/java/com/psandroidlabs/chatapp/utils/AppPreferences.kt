@@ -31,7 +31,7 @@ object AppPreferences {
             (sharedClient?.getString(Constants.CLIENT_USER, "")).toString(),
             (sharedClient?.getString(Constants.CLIENT_IP, "")).toString(),
             (sharedClient?.getString(Constants.CLIENT_AVATAR, "")).toString(),
-            (sharedClient?.getString(Constants.CLIENT_PORT, "")).toString()
+            (sharedClient?.getString(Constants.CLIENT_PORT, null)).toString()
         )
     }
 }
