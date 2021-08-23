@@ -13,6 +13,7 @@ import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.ServerService
 import com.psandroidlabs.chatapp.utils.Constants
 
+
 class ServerViewModel : ViewModel() {
     val serverRunning: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
@@ -43,5 +44,11 @@ class ServerViewModel : ViewModel() {
     fun stopServer(context: Context) {
         val broadcastIntent = Intent(Constants.ACTION_STOP)
         LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent)
+    }
+
+    fun isServerServiceRunning() {
+        if (ServerService.running) {
+            updateServerState(true)
+        }
     }
 }
