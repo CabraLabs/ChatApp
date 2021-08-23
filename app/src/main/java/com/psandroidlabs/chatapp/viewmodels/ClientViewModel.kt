@@ -46,11 +46,11 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         background = isBackground
     }
 
-    val accepted: MutableLiveData<AcceptedStatus> by lazy {
-        MutableLiveData<AcceptedStatus>()
+    val accepted: MutableLiveData<AcceptedStatus?> by lazy {
+        MutableLiveData<AcceptedStatus?>()
     }
 
-    private fun updateAccepted(code: AcceptedStatus) {
+    fun updateAccepted(code: AcceptedStatus?) {
         accepted.postValue(code)
     }
 
@@ -111,7 +111,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                             id = message.id
                                 ?: throw Exception("Server failed to send a verification Id")
-
                         } else if (message.type == MessageType.REVOKED.code) {
                             when (message.id) {
                                 AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(AcceptedStatus.WRONG_PASSWORD)
@@ -120,7 +119,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             }
 
                             closeSocket()
-
                         } else {
                             ChatManager.addToAdapter(message, true)
 
