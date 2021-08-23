@@ -3,6 +3,7 @@ package com.psandroidlabs.chatapp.utils
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.FragmentActivity
@@ -181,11 +182,11 @@ object ChatManager : CoroutineScope {
 
     fun startVibrate() {
         val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(
                 VibrationEffect.createOneShot(
                     1000,
-                    VibrationEffect.EFFECT_HEAVY_CLICK
+                    VibrationEffect.DEFAULT_AMPLITUDE
                 )
             )
         } else {
