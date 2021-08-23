@@ -148,6 +148,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                         MessageType.VIBRATE.code -> {
                                             ChatManager.startVibrate()
                                         }
+
+                                        MessageType.JOIN.code -> {
+                                            //TODO add profile to ChatMenager.chatMembersList
+                                        }
                                     }
 
                                     if (background) {

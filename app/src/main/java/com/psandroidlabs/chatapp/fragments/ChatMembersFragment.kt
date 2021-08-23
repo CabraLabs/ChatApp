@@ -51,7 +51,7 @@ class ChatMembersFragment: DialogFragment() {
 
     private fun initializeList(){
         val recyclerViewList: RecyclerView = binding.membersRecycler
-        chatMembersAdapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onCellClick)
+        chatMembersAdapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
 
         recyclerViewList.apply {
             adapter = chatMembersAdapter
@@ -59,7 +59,7 @@ class ChatMembersFragment: DialogFragment() {
         }
     }
 
-    private fun onCellClick(pos: Int) {
+    private fun onClick(pos: Int) {
         //TODO send tictactoe invite
     }
 }
