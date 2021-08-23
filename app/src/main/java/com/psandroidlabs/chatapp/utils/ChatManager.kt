@@ -4,7 +4,6 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
 import androidx.core.content.ContextCompat
-import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -160,6 +159,10 @@ object ChatManager : CoroutineScope {
         return jsonProfileAdapter.toJson(profileList)
     }
 
+    fun serializeProfiles(profileList: String): List<Profile>? {
+        return jsonProfileAdapter.fromJson(profileList)
+    }
+
     private fun startTicTacToe() {
         val ticTacToeFragment = TicTacToeFragment(false)
 
@@ -181,11 +184,11 @@ object ChatManager : CoroutineScope {
 
     fun startVibrate() {
         val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(
                 VibrationEffect.createOneShot(
                     1000,
-                    VibrationEffect.EFFECT_HEAVY_CLICK
+                    VibrationEffect.DEFAULT_AMPLITUDE
                 )
             )
         } else {
@@ -207,9 +210,5 @@ object ChatManager : CoroutineScope {
 
     fun scrollChat(recyclerView: RecyclerView) {
         recyclerView.scrollToPosition(chatList.size - 1)
-    }
-
-    fun parseProfile(profileList: String): Profile{
-        TODO()
     }
 }
