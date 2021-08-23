@@ -2,6 +2,7 @@ package com.psandroidlabs.chatapp.viewmodels
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
+import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
 import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
@@ -25,6 +27,7 @@ import java.net.InetAddress
 import java.net.Socket
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.collections.ArrayList
 
 class ClientViewModel : ViewModel(), CoroutineScope {
 
@@ -59,7 +62,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         accepted.postValue(code)
     }
 
-    fun initeChatRecyclerView(recyclerView: RecyclerView) {
+    fun initializeChatRecyclerView(recyclerView: RecyclerView) {
         chatRecyclerView = recyclerView
     }
 
@@ -111,34 +114,46 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                     // TODO make the exception be changed to a proper handle with a message to the user.
                     if (message != null) {
-                        if (message.type == MessageType.ACKNOWLEDGE.code) {
-                            updateAccepted(AcceptedStatus.ACCEPTED)
+                        when(message.type){
+                            MessageType.ACKNOWLEDGE.code -> {
+                                updateAccepted(AcceptedStatus.ACCEPTED)
+                                message.username?.let { ChatManager.chatMembersList.add(it) }
 
-                            id = message.id ?: throw Exception("Server failed to send a verification Id")
-                        } else if (message.type == MessageType.REVOKED.code) {
-                            when (message.id) {
-                                AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(AcceptedStatus.WRONG_PASSWORD)
-                                AcceptedStatus.SECURITY_KICK.code -> updateAccepted(AcceptedStatus.SECURITY_KICK)
-                                AcceptedStatus.ADMIN_KICK.code -> updateAccepted(AcceptedStatus.ADMIN_KICK)
+                                id = message.id
+                                    ?: throw Exception("Server failed to send a verification Id")
                             }
 
-                            closeSocket()
-                        } else {
-                            ChatManager.addToAdapter(message, true)
-
-                            withContext(Dispatchers.Main) {
-                                if (accepted.value == AcceptedStatus.ACCEPTED) {
-                                    ChatManager.scrollChat(chatRecyclerView)
-                                    chatAdapter?.notifyDataSetChanged()
+                            MessageType.REVOKED.code -> {
+                                when (message.id) {
+                                    AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(AcceptedStatus.WRONG_PASSWORD)
+                                    AcceptedStatus.SECURITY_KICK.code -> updateAccepted(AcceptedStatus.SECURITY_KICK)
+                                    AcceptedStatus.ADMIN_KICK.code -> updateAccepted(AcceptedStatus.ADMIN_KICK)
                                 }
 
-                                // TODO track this
-                                if (background) {
-                                    ChatManager.playSound()
-                                    chatNotification.sendMessage(
-                                        message.username ?: "",
-                                        message.text ?: ""
-                                    )
+                                closeSocket()
+                            }
+
+                            else -> {
+                                ChatManager.addToAdapter(message, true)
+
+                                withContext(Dispatchers.Main) {
+                                    if (accepted.value == AcceptedStatus.ACCEPTED) {
+                                        ChatManager.scrollChat(chatRecyclerView)
+                                        chatAdapter?.notifyDataSetChanged()
+                                    }
+
+                                    when(message.type) {
+                                        MessageType.VIBRATE.code -> {
+                                            ChatManager.startVibrate()
+                                        }
+                                    }
+
+                                    if (background) {
+                                        chatNotification.sendMessage(
+                                            message.username ?: "",
+                                            message.text ?: ""
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -164,7 +179,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     fun shareChatLink(activity: Activity) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, "http/www.chatapp.psandroidlabs.com/clientconnect/chatroomip=${socketList[0]?.localAddress}")
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "http/www.chatapp.psandroidlabs.com/clientconnect/chatroomip=${socketList[0]?.localAddress}"
+            )
             type = "text/plain"
         }
 
@@ -172,22 +190,36 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         activity.startActivity(shareIntent)
     }
 
-    fun showChatMembers(activity: Activity) {
-        val dialogBox = Dialog(activity.applicationContext)
-        dialogBox.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialogBox.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        dialogBox.setContentView(R.layout.fragment_chat_members)
-        dialogBox.setCanceledOnTouchOutside(true)
-        dialogBox.setCancelable(true)
-        dialogBox.show()
+    fun showChatMembers(context: Context?) {
+        if(context != null){
+            val dialogBox = Dialog(context)
+            dialogBox.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialogBox.window?.setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            dialogBox.setContentView(R.layout.fragment_chat_members)
+            dialogBox.setCanceledOnTouchOutside(true)
+            dialogBox.setCancelable(true)
+            dialogBox.show()
 
-        val recyclerView: RecyclerView = dialogBox.findViewById(R.id.membersRecycler)
-        recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = LinearLayoutManager(activity.applicationContext)
-        recyclerView.addItemDecoration(DividerItemDecoration(activity.applicationContext, DividerItemDecoration.VERTICAL))
+            val recyclerView: RecyclerView = dialogBox.findViewById(R.id.membersRecycler)
+            recyclerView.setHasFixedSize(true)
+            recyclerView.layoutManager = LinearLayoutManager(context)
+            recyclerView.addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
 
-//        val adapter = ChatMembersAdapter()
-//        recyclerView.adapter = adapter
+            val adapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
+            recyclerView.adapter = adapter
+        }
+    }
+
+    private fun onClick(pos: Int){
+        TODO()
     }
 
 }
