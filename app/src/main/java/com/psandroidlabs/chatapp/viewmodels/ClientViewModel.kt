@@ -109,8 +109,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                         if (message.type == MessageType.ACKNOWLEDGE.code) {
                             updateAccepted(AcceptedStatus.ACCEPTED)
 
-                            id = message.id
-                                ?: throw Exception("Server failed to send a verification Id")
+                            id = message.id ?: throw Exception("Server failed to send a verification Id")
                         } else if (message.type == MessageType.REVOKED.code) {
                             when (message.id) {
                                 AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(AcceptedStatus.WRONG_PASSWORD)
