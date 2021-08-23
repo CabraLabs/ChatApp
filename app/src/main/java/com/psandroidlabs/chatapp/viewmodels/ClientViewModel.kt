@@ -42,6 +42,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
     lateinit var chatAdapter: ChatAdapter
+    lateinit var chatRecyclerView: RecyclerView
+
 
     private val chatNotification by lazy {
         ChatNotificationManager(applicationContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -59,8 +61,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         accepted.postValue(code)
     }
 
-    fun initAdapter(adapter: ChatAdapter) {
-        chatAdapter = adapter
+    fun initeChatRecyclerView(recyclerView: RecyclerView) {
+        chatRecyclerView = recyclerView
     }
 
     fun getUsername() = userName
@@ -128,8 +130,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                             withContext(Dispatchers.Main) {
                                 if (accepted.value == AcceptedStatus.ACCEPTED) {
-                                    chatAdapter?.notifyDataSetChanged()
-                                }
+                                ChatManager.scrollChat(chatRecyclerView)
+                                chatAdapter?.notifyDataSetChanged()
                             }
 
                             // TODO track this
