@@ -85,6 +85,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         }
         server.serverRunning.observe(viewLifecycleOwner, serverObserver)
 
+        server.isServerServiceRunning()
         initializeButtons()
         portNumbers()
     }
@@ -145,7 +146,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             stopServer.setOnClickListener {
                 context?.let { server.stopServer(it) }
                 server.updateServerState(false)
-                changeButtons(true)
+                changeButtons(false)
             }
         }
     }
