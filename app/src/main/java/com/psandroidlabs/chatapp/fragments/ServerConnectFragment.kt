@@ -192,8 +192,10 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun connect(username: String) {
-        val acceptedObserver = Observer<AcceptedStatus> {
-            parseStatus(it)
+        val acceptedObserver = Observer<AcceptedStatus?> {
+            if (it != null) {
+                parseStatus(it)
+            }
         }
         client.accepted.observe(viewLifecycleOwner, acceptedObserver)
 
