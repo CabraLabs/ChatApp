@@ -70,6 +70,7 @@ class ServerService : Service(), CoroutineScope {
         var count = 0
         launch(Dispatchers.IO) {
             serverSocket = ServerSocket(port)
+            running = true
 
             while (isActive && count <= Constants.MAX_SERVER_USERS) {
                 try {
@@ -232,6 +233,8 @@ class ServerService : Service(), CoroutineScope {
     }
 
     private fun closeServer() {
+        running = false
+        stopForeground(true)
         serverSocket.close()
 
         runBlocking {
@@ -243,5 +246,9 @@ class ServerService : Service(), CoroutineScope {
         }
 
         stopSelf(startId)
+    }
+
+    companion object {
+        var running = false
     }
 }
