@@ -189,8 +189,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         val recyclerViewList: RecyclerView = binding.chatRecycler
         client.chatAdapter = ChatAdapter(list)
 
-        client.initAdapter(client.chatAdapter)
-
         sendMessageListener()
         vibrateListener()
 
@@ -198,6 +196,8 @@ class ChatFragment : Fragment(), CoroutineScope {
             adapter = client.chatAdapter
             layoutManager = LinearLayoutManager(context)
         }
+
+        client.initeChatRecyclerView(recyclerViewList)
     }
 
     private fun vibrateListener() {

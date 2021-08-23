@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.*
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageStatus
@@ -80,6 +81,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
+            ChatManager.startVibrate()
         }
     }
 

@@ -5,9 +5,11 @@ import android.media.MediaPlayer
 import android.os.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
+import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
@@ -177,7 +179,7 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    private fun startVibrate() {
+    fun startVibrate() {
         val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             vibrator.vibrate(
@@ -189,6 +191,7 @@ object ChatManager : CoroutineScope {
         } else {
             toast("*vibrating*")
         }
+        playSound()
     }
 
     fun playSound() {
@@ -201,5 +204,9 @@ object ChatManager : CoroutineScope {
 
     fun delay(delay: Long = 1500, action: () -> Unit) {
         Handler(Looper.getMainLooper()).postDelayed(action, delay)
+    }
+
+    fun scrollChat(recyclerView: RecyclerView) {
+        recyclerView.scrollToPosition(chatList.size - 1)
     }
 }

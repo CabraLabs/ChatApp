@@ -1,9 +1,14 @@
 package com.psandroidlabs.chatapp.viewmodels
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
@@ -37,6 +42,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
     lateinit var chatAdapter: ChatAdapter
+    lateinit var chatRecyclerView: RecyclerView
+
 
     private val chatNotification by lazy {
         ChatNotificationManager(applicationContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -54,8 +61,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         accepted.postValue(code)
     }
 
-    fun initAdapter(adapter: ChatAdapter) {
-        chatAdapter = adapter
+    fun initeChatRecyclerView(recyclerView: RecyclerView) {
+        chatRecyclerView = recyclerView
     }
 
     fun getUsername() = userName
@@ -123,8 +130,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                             withContext(Dispatchers.Main) {
                                 if (accepted.value == AcceptedStatus.ACCEPTED) {
-                                    chatAdapter?.notifyDataSetChanged()
-                                }
+                                ChatManager.scrollChat(chatRecyclerView)
+                                chatAdapter?.notifyDataSetChanged()
                             }
 
                             // TODO track this
@@ -167,12 +174,20 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     fun showChatMembers(activity: Activity) {
-//        val dialogBox = ChatMembersFragment()
-//        val membersAdapter = ChatMembersAdapter()
-//        dialogBox.setContentView(R.layout.fragment_chat_members)
-//        val membersRecyclerView: RecyclerView = dialogBox.findViewById(R.id.membersRecycler)
-//        membersRecyclerView.layoutManager = LinearLayoutManager(context)
-//        membersRecyclerView.adapter = membersAdapter
-//        dialogBox.show()
+        val dialogBox = Dialog(activity.applicationContext)
+        dialogBox.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogBox.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialogBox.setContentView(R.layout.fragment_chat_members)
+        dialogBox.setCanceledOnTouchOutside(true)
+        dialogBox.setCancelable(true)
+        dialogBox.show()
+
+        val recyclerView: RecyclerView = dialogBox.findViewById(R.id.membersRecycler)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(activity.applicationContext)
+        recyclerView.addItemDecoration(DividerItemDecoration(activity.applicationContext, DividerItemDecoration.VERTICAL))
+
+//        val adapter = ChatMembersAdapter()
+//        recyclerView.adapter = adapter
     }
 }
