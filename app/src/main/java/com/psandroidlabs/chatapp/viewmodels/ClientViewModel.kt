@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
-import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
-import com.psandroidlabs.chatapp.fragments.ChatMembersFragment
 import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
@@ -130,17 +128,18 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                             withContext(Dispatchers.Main) {
                                 if (accepted.value == AcceptedStatus.ACCEPTED) {
-                                ChatManager.scrollChat(chatRecyclerView)
-                                chatAdapter?.notifyDataSetChanged()
-                            }
+                                    ChatManager.scrollChat(chatRecyclerView)
+                                    chatAdapter?.notifyDataSetChanged()
+                                }
 
-                            // TODO track this
-                            if (background) {
-                                ChatManager.playSound()
-                                chatNotification.sendMessage(
-                                    message.username ?: "",
-                                    message.text ?: ""
-                                )
+                                // TODO track this
+                                if (background) {
+                                    ChatManager.playSound()
+                                    chatNotification.sendMessage(
+                                        message.username ?: "",
+                                        message.text ?: ""
+                                    )
+                                }
                             }
                         }
                     }
@@ -190,4 +189,5 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 //        val adapter = ChatMembersAdapter()
 //        recyclerView.adapter = adapter
     }
+
 }

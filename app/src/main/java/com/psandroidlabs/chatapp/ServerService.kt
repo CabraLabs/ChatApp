@@ -137,18 +137,18 @@ class ServerService : Service(), CoroutineScope {
     private fun accept(joinMessage: Message, user: User) {
         val id = generateCode()
 
-        val json = ChatManager.parseToJson(
-            ChatManager.parseAcceptMessage(
-                AcceptedStatus.ACCEPTED, id, getProfileList()
-            )
-        ).toByteArray(Charsets.UTF_8)
-
         user.profile.let {
             it.id = id
             it.photoProfile = joinMessage.base64Data
             it.name = joinMessage.username ?: codeGenerator().toString()
             it.scoreTicTacToe = 0
         }
+
+        val json = ChatManager.parseToJson(
+            ChatManager.parseAcceptMessage(
+                AcceptedStatus.ACCEPTED, id, getProfileList()
+            )
+        ).toByteArray(Charsets.UTF_8)
 
         user.socket.getOutputStream().write(json)
 
@@ -209,10 +209,12 @@ class ServerService : Service(), CoroutineScope {
     private fun getProfileList(): String {
         val profileList: ArrayList<Profile> = arrayListOf()
 
-        launch(Dispatchers.IO) {
-            listMutex.withLock {
-                userList.forEach { user ->
-                    user.profile.let { profileList.add(it) }
+        runBlocking {
+            launch(Dispatchers.IO) {
+                listMutex.withLock {
+                    userList.forEach { user ->
+                        user.profile.let { profileList.add(it) }
+                    }
                 }
             }
         }
