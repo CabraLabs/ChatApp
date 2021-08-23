@@ -21,6 +21,8 @@ class ChatMembersAdapter(
 
             with(binding) {
 
+                chatMembersUsername.text = dataSet[position]
+
                 btnChatMember.setOnClickListener {
                     onClick.invoke(position)
                     notifyDataSetChanged()
