@@ -3,9 +3,7 @@ package com.psandroidlabs.chatapp.utils
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -212,9 +210,5 @@ object ChatManager : CoroutineScope {
 
     fun scrollChat(recyclerView: RecyclerView) {
         recyclerView.scrollToPosition(chatList.size - 1)
-    }
-
-    fun parseProfile(profileList: String): Profile{
-        TODO()
     }
 }
