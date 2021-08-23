@@ -81,6 +81,7 @@ class ChatNotificationManager(val context: Context, private val channel: String)
         with(NotificationManagerCompat.from(context)) {
             notify(channel, notification.build())
         }
+
         ChatManager.playSound()
     }
 

@@ -4,6 +4,7 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
 import androidx.core.content.ContextCompat
+import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -32,7 +33,7 @@ object ChatManager : CoroutineScope {
     private lateinit var fragmentActivity: FragmentActivity
 
     var chatList: ArrayList<Message> = ArrayList()
-    var chatMembersList: ArrayList<String> = ArrayList()
+    var chatMembersList: ArrayList<Profile> = ArrayList()
 
     private val jsonAdapter by lazy {
         val moshi: Moshi = Moshi.Builder().build()
@@ -190,7 +191,6 @@ object ChatManager : CoroutineScope {
         } else {
             toast("*vibrating*")
         }
-        playSound()
     }
 
     fun playSound() {
@@ -207,5 +207,9 @@ object ChatManager : CoroutineScope {
 
     fun scrollChat(recyclerView: RecyclerView) {
         recyclerView.scrollToPosition(chatList.size - 1)
+    }
+
+    fun parseProfile(profileList: String): Profile{
+        TODO()
     }
 }

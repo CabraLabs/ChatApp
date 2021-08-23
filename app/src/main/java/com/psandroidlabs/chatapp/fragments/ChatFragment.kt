@@ -159,7 +159,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
             R.id.chatMembers -> {
                 //TODO call chat members dialog
-                client.showChatMembers(requireActivity())
+                client.showChatMembers(context)
                 true
             }
 
@@ -197,7 +197,7 @@ class ChatFragment : Fragment(), CoroutineScope {
             layoutManager = LinearLayoutManager(context)
         }
 
-        client.initeChatRecyclerView(recyclerViewList)
+        client.initializeChatRecyclerView(recyclerViewList)
     }
 
     private fun vibrateListener() {
