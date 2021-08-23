@@ -161,6 +161,10 @@ object ChatManager : CoroutineScope {
         return jsonProfileAdapter.toJson(profileList)
     }
 
+    fun serializeProfiles(profileList: String): List<Profile>? {
+        return jsonProfileAdapter.fromJson(profileList)
+    }
+
     private fun startTicTacToe() {
         val ticTacToeFragment = TicTacToeFragment(false)
 
