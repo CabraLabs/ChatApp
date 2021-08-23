@@ -119,15 +119,15 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             }
 
             createServer.setOnClickListener {
+                enableRadioButtons(false)
+                changeButtons(true)
+                passwordFieldEnable(false)
+
+                password.isEnabled = false
+
                 if (showPassword.isChecked) {
                     if (checkFields()) {
-                        enableRadioButtons(false)
-                        changeButtons(true)
-                        passwordFieldEnable(false)
-
                         server.startServerService(activity as Activity, getPasswordField(), getPortField())
-
-                        password.isEnabled = false
                     }
                 } else {
                     server.startServerService(activity as Activity, port = getPortField())
