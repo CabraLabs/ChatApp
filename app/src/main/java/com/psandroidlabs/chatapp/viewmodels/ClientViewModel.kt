@@ -16,10 +16,7 @@ import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
-import com.psandroidlabs.chatapp.models.AcceptedStatus
-import com.psandroidlabs.chatapp.models.ChatNotificationManager
-import com.psandroidlabs.chatapp.models.Message
-import com.psandroidlabs.chatapp.models.MessageType
+import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.utils.toast
@@ -119,6 +116,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             MessageType.ACKNOWLEDGE.code -> {
                                 updateAccepted(AcceptedStatus.ACCEPTED)
 
+                                //TODO add a Profile from message.text to ChatManager.chatMembersList
+
                                 id = message.id
                                     ?: throw Exception("Server failed to send a verification Id")
                             }
@@ -213,8 +212,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                 )
             )
 
-//            val adapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
-//            recyclerView.adapter = adapter
+            val adapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
+            recyclerView.adapter = adapter
         }
     }
 
