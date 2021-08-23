@@ -190,7 +190,6 @@ object ChatManager : CoroutineScope {
         } else {
             toast("*vibrating*")
         }
-        playSound()
     }
 
     fun playSound() {
