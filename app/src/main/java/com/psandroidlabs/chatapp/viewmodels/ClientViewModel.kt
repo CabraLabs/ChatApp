@@ -116,7 +116,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             MessageType.ACKNOWLEDGE.code -> {
                                 updateAccepted(AcceptedStatus.ACCEPTED)
 
-                                //TODO add a Profile from message.text to ChatManager.chatMembersList
+                                // TODO handle exception when the server doesn't send anybody on the list.
+                                if (message.text != null) {
+                                    ChatManager.chatMembersList = ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
+                                }
 
                                 id = message.id
                                     ?: throw Exception("Server failed to send a verification Id")
