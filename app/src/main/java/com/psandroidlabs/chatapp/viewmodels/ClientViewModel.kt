@@ -22,6 +22,7 @@ import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
+import com.psandroidlabs.chatapp.utils.toast
 import kotlinx.coroutines.*
 import java.net.InetAddress
 import java.net.Socket
@@ -117,7 +118,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                         when(message.type){
                             MessageType.ACKNOWLEDGE.code -> {
                                 updateAccepted(AcceptedStatus.ACCEPTED)
-                                message.username?.let { ChatManager.chatMembersList.add(it) }
 
                                 id = message.id
                                     ?: throw Exception("Server failed to send a verification Id")
@@ -213,8 +213,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                 )
             )
 
-            val adapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
-            recyclerView.adapter = adapter
+//            val adapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
+//            recyclerView.adapter = adapter
         }
     }
 
