@@ -13,7 +13,7 @@
     <string name="username_missing">Please insert your username</string>
     <string name="invalid_ip">Please provide a valid IP Address</string>
     <string name="ip_missing">Please provide the IP Address</string>
-    <string name="ip_example">Example: 192.168.x.104</string>
+    <string name="ip_example">192.168.x.104</string>
     <string name="port">Port</string>
     <string name="connect_error">IP Address doesn\'t have a chat server</string>
 
