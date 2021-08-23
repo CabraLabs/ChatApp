@@ -36,7 +36,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
-    private lateinit var chatAdapter: ChatAdapter
+    lateinit var chatAdapter: ChatAdapter
 
     private val chatNotification by lazy {
         ChatNotificationManager(applicationContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -94,7 +94,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-    fun readSocket(chatAdapter: ChatAdapter? = null) {
+    fun readSocket() {
         GlobalScope.launch(Dispatchers.IO) {
             val scanner = Scanner(socketList[0]?.getInputStream())
 
@@ -123,7 +123,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             ChatManager.addToAdapter(message, true)
 
                             withContext(Dispatchers.Main) {
-                                chatAdapter?.notifyDataSetChanged()
+                                if (accepted.value == AcceptedStatus.ACCEPTED) {
+                                    chatAdapter?.notifyDataSetChanged()
+                                }
                             }
 
                             // TODO track this

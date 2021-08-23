@@ -31,7 +31,6 @@ class ChatFragment : Fragment(), CoroutineScope {
     private val client: ClientViewModel by activityViewModels()
     private val arg: ChatFragmentArgs by navArgs()
     private lateinit var binding: FragmentChatBinding
-    private lateinit var chatAdapter: ChatAdapter
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
@@ -188,15 +187,15 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
-        chatAdapter = ChatAdapter(list)
+        client.chatAdapter = ChatAdapter(list)
 
-        client.initAdapter(chatAdapter)
+        client.initAdapter(client.chatAdapter)
 
         sendMessageListener()
         vibrateListener()
 
         recyclerViewList.apply {
-            adapter = chatAdapter
+            adapter = client.chatAdapter
             layoutManager = LinearLayoutManager(context)
         }
     }
@@ -276,7 +275,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun notifyAdapterChange() {
-        chatAdapter.notifyDataSetChanged()
+        client.chatAdapter.notifyDataSetChanged()
     }
 
     private fun scrollChat() {
