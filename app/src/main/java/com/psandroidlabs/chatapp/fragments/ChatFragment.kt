@@ -59,6 +59,7 @@ class ChatFragment : Fragment(), CoroutineScope {
             Snackbar.LENGTH_INDEFINITE
         )
             .setAction("Exit Chat") {
+                client.updateAccepted(null)
                 navController.popBackStack()
             }
     }
@@ -100,13 +101,14 @@ class ChatFragment : Fragment(), CoroutineScope {
         ChatManager.getFragmentActivity(activity)
         activity?.title = getString(R.string.chat_app_bar_name)
 
-        if (disconnect == true) {
+        if (!disconnect) {
             activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     val alertDialog: AlertDialog? = activity?.let {
                         val builder = AlertDialog.Builder(it)
                         builder.apply {
                             setPositiveButton(R.string.yes) { _, _ ->
+                                client.updateAccepted(null)
                                 navController.popBackStack()
                             }
                             setNegativeButton(R.string.no) { _, _ ->

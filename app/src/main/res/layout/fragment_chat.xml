@@ -73,21 +73,27 @@
             android:layout_marginHorizontal="6dp"
             android:hint="@string/insert_message"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/sendImageButton"
+            app:layout_constraintEnd_toStartOf="@id/guideline3"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/guideline1"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
         <ImageView
             android:id="@+id/sendImageButton"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginEnd="3dp"
             android:src="@drawable/ic_upload_image"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/messageField"
             app:layout_constraintRight_toLeftOf="@id/guideline2"
+            app:layout_constraintLeft_toRightOf="@id/guideline3"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.Guideline

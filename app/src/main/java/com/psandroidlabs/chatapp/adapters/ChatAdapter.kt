@@ -123,7 +123,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
     private fun viewTypeTranslator(type: Int, status: Int): Int {
         var number = 0
-        if (status != MessageStatus.SENT.code) number = 10
+        if (status != MessageStatus.SENT.code) number = 8
 
         return when (type) {
             MessageType.MESSAGE.code -> MessageType.MESSAGE.code + number // 0 | 8

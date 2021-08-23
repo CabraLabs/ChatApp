@@ -86,8 +86,10 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
             hideKeyboard()
         }
 
-        val acceptedObserver = Observer<AcceptedStatus> {
-            parseStatus(it)
+        val acceptedObserver = Observer<AcceptedStatus?> {
+            if (it != null) {
+                parseStatus(it)
+            }
         }
         client.accepted.observe(viewLifecycleOwner, acceptedObserver)
 
