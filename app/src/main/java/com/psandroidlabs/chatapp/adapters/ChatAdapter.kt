@@ -81,6 +81,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
+            ChatManager.startVibrate()
         }
     }
 
