@@ -49,13 +49,13 @@ class ServerService : Service(), CoroutineScope {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        notificationManager = ChatNotificationManager(applicationContext, Constants.FOREGROUND_CHAT_CHANNEL)
-        startForeground(100, notificationManager.foregroundNotification())
-
         this.startId = startId
 
         password = intent.getStringExtra(Constants.PASSWORD)
         val port = intent.getIntExtra(Constants.PORT, Constants.PORT_1027)
+
+        notificationManager = ChatNotificationManager(applicationContext, Constants.FOREGROUND_CHAT_CHANNEL)
+        startForeground(100, notificationManager.foregroundNotification(port))
 
         startServer(port)
 

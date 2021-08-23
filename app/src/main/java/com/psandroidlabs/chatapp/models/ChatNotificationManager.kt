@@ -52,10 +52,10 @@ class ChatNotificationManager(val context: Context, private val channel: String)
         showNotification(notification = builder)
     }
 
-    fun foregroundNotification(): Notification {
+    fun foregroundNotification(port: Int): Notification {
         createChannel()
 
-        val ip = applicationContext().getString(R.string.server_on_ip, IP.getIpAddress())
+        val ip = applicationContext().getString(R.string.server_on_ip, IP.getIpAddress(), port.toString())
 
         val closeIntent = Intent(context, ActionManager::class.java).apply {
             action = Constants.ACTION_STOP
