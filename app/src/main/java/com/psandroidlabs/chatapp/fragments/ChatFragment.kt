@@ -196,7 +196,7 @@ class ChatFragment : Fragment(), CoroutineScope {
             adapter = client.chatAdapter
             layoutManager = LinearLayoutManager(context)
         }
-
+        
         client.initializeChatRecyclerView(recyclerViewList)
     }
 
