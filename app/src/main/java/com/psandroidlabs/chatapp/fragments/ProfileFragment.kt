@@ -81,6 +81,8 @@ class ProfileFragment : Fragment() {
         with(binding) {
             context?.let { context ->
 
+                avatar.setImageBitmap(PictureManager.defaultAvatar)
+
                 val preference = AppPreferences.getClient(context)
 
                 if (preference.isNotEmpty()) {

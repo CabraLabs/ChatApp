@@ -18,7 +18,7 @@ class ChatMembersAdapter(
     }
 
     inner class CellViewHolder(private val binding: ChatMembersRowBinding) : ViewHolder(binding.root) {
-        override fun bind(string: Profile, position: Int) {
+        override fun bind(profile: Profile, position: Int) {
 
             with(binding) {
 
