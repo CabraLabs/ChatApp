@@ -1,7 +1,9 @@
 package com.psandroidlabs.chatapp.utils
 
+import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.os.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -19,6 +21,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -62,6 +65,19 @@ object ChatManager : CoroutineScope {
     }
 
     /**
+     * Create and return a MediaRecorder to record audio messages.
+     */
+    fun createAudioRecorder(context: Context) = MediaRecorder().apply {
+        setAudioSource(MediaRecorder.AudioSource.MIC)
+        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+        setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            setOutputFile(File(context.getExternalFilesDir(Constants.AUDIO_DIR), getEpoch().toString()))
+        }
+    }
+
+    /**
      * Determines the message type based on the beginning of the string.
      *
      * If the message starts with '/' it is probably a command.
@@ -89,7 +105,8 @@ object ChatManager : CoroutineScope {
         date: Long = getEpoch(),
         id: Int? = null,
         avatar: String? = null,
-        password: String? = null
+        password: String? = null,
+        isAdmin: Boolean? = null
     ) = Message(
         type = type.code,
         status = status.code,
@@ -98,7 +115,7 @@ object ChatManager : CoroutineScope {
         base64Data = base64Data,
         time = date,
         id = id,
-        join = Join(avatar, password)
+        join = Join(avatar, password, isAdmin)
     )
 
     /**
