@@ -153,7 +153,12 @@ class ServerService : Service(), CoroutineScope {
 
         user.socket.getOutputStream().write(json)
 
-        forwardMessage(user.socket, ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8))
+        if (user.socket.inetAddress == serverSocket.inetAddress) {
+            joinMessage.join?.isAdmin = true
+            forwardMessage(user.socket, ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8))
+        } else {
+            forwardMessage(user.socket, ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8))
+        }
     }
 
     private fun refuse(user: User) {
