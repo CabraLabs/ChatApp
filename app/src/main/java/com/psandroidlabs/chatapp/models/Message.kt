@@ -21,7 +21,7 @@ data class Message(
 )
 
 @JsonClass(generateAdapter = true)
-data class Join(val avatar: String?, val password: String?)
+data class Join(val avatar: String?, val password: String?, var isAdmin: Boolean?)
 
 @JsonClass(generateAdapter = true)
 data class Profile(
