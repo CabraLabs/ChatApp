@@ -34,16 +34,19 @@
             app:enterAnim="@anim/enter_from_right" />
         <deepLink
             android:id="@+id/deepLink"
-            app:uri="http/www.chatapp.psandroidlabs.com/clientconnect/chatroomip={ip}">
-        </deepLink>
+            app:uri="http://www.chatapp.psandroidlabs.com/clientconnect/args={ip}:{port}" />
         <argument
             android:name="ip"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="port"
             app:argType="string"
             app:nullable="true" />
         <action
             android:id="@+id/action_clientConnectFragment_to_profileFragment"
             app:destination="@id/profileFragment"
-            app:enterAnim="@anim/enter_from_top"/>
+            app:enterAnim="@anim/enter_from_top" />
     </fragment>
     <fragment
         android:id="@+id/serverConnectFragment"
