@@ -2,15 +2,14 @@ package com.psandroidlabs.chatapp.utils
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.os.Build
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
-import java.io.IOException
 import java.security.MessageDigest
-import java.util.Collections.min
 import kotlin.math.min
+import java.util.*
 
 
 fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_LONG) {
@@ -49,4 +48,13 @@ fun Bitmap.toSquare():Bitmap?{
         side,
         side
     )
+}
+
+fun String.toBase64(): String {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Base64.getEncoder().encodeToString(this.toByteArray())
+    } else {
+        // TODO find version
+        ""
+    }
 }
