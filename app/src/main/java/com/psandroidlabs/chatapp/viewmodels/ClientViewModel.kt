@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,12 +20,12 @@ import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
-import com.psandroidlabs.chatapp.utils.toast
+import com.squareup.moshi.JsonDataException
 import kotlinx.coroutines.*
+import java.lang.ref.WeakReference
 import java.net.InetAddress
 import java.net.Socket
 import java.util.*
-import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 
 class ClientViewModel : ViewModel(), CoroutineScope {
@@ -40,10 +41,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     private var socketList: ArrayList<Socket?> = arrayListOf()
 
-    lateinit var chatAdapter: ChatAdapter
-    lateinit var chatRecyclerView: RecyclerView
-
-
     private val chatNotification by lazy {
         ChatNotificationManager(applicationContext(), Constants.PRIMARY_CHAT_CHANNEL)
     }
@@ -56,12 +53,16 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         MutableLiveData<AcceptedStatus?>()
     }
 
-    fun updateAccepted(code: AcceptedStatus?) {
-        accepted.postValue(code)
+    val newMessage: MutableLiveData<Message> by lazy {
+        MutableLiveData<Message>()
     }
 
-    fun initializeChatRecyclerView(recyclerView: RecyclerView) {
-        chatRecyclerView = recyclerView
+    private fun updateMessage(message: Message) {
+        newMessage.postValue(message)
+    }
+
+    fun updateAccepted(code: AcceptedStatus?) {
+        accepted.postValue(code)
     }
 
     fun getUsername() = userName
@@ -108,61 +109,62 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                 if (scanner.hasNextLine()) {
                     val receivedJson = scanner.nextLine()
 
-                    val message = ChatManager.serializeMessage(receivedJson)
+                    try {
+                        val message = ChatManager.serializeMessage(receivedJson)
 
-                    // TODO make the exception be changed to a proper handle with a message to the user.
-                    if (message != null) {
-                        when(message.type){
-                            MessageType.ACKNOWLEDGE.code -> {
-                                updateAccepted(AcceptedStatus.ACCEPTED)
+                        // TODO make the exception be changed to a proper handle with a message to the user.
+                        if (message != null) {
+                            when(message.type) {
+                                MessageType.ACKNOWLEDGE.code -> {
+                                    updateAccepted(AcceptedStatus.ACCEPTED)
 
-                                // TODO handle exception when the server doesn't send anybody on the list.
-                                if (message.text != null) {
-                                    ChatManager.chatMembersList = ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
+                                    // TODO handle exception when the server doesn't send anybody on the list.
+                                    if (message.text != null) {
+                                        ChatManager.chatMembersList = ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
+                                    }
+
+                                    id = message.id
+                                        ?: throw Exception("Server failed to send a verification Id")
                                 }
 
-                                id = message.id
-                                    ?: throw Exception("Server failed to send a verification Id")
-                            }
+                                MessageType.REVOKED.code -> {
+                                    when (message.id) {
+                                        AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(AcceptedStatus.WRONG_PASSWORD)
+                                        AcceptedStatus.SECURITY_KICK.code -> updateAccepted(AcceptedStatus.SECURITY_KICK)
+                                        AcceptedStatus.ADMIN_KICK.code -> updateAccepted(AcceptedStatus.ADMIN_KICK)
+                                    }
 
-                            MessageType.REVOKED.code -> {
-                                when (message.id) {
-                                    AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(AcceptedStatus.WRONG_PASSWORD)
-                                    AcceptedStatus.SECURITY_KICK.code -> updateAccepted(AcceptedStatus.SECURITY_KICK)
-                                    AcceptedStatus.ADMIN_KICK.code -> updateAccepted(AcceptedStatus.ADMIN_KICK)
+                                    closeSocket()
                                 }
 
-                                closeSocket()
-                            }
-
-                            else -> {
-                                ChatManager.addToAdapter(message, true)
-
-                                withContext(Dispatchers.Main) {
+                                else -> {
                                     if (accepted.value == AcceptedStatus.ACCEPTED) {
-                                        ChatManager.scrollChat(chatRecyclerView)
-                                        chatAdapter?.notifyDataSetChanged()
-                                    }
+                                        ChatManager.addToAdapter(message, true)
 
-                                    when(message.type) {
-                                        MessageType.VIBRATE.code -> {
-                                            ChatManager.startVibrate()
+                                        when(message.type) {
+                                            MessageType.VIBRATE.code -> {
+                                                ChatManager.startVibrate()
+                                            }
+
+                                            MessageType.JOIN.code -> {
+                                                //TODO add profile to ChatManager.chatMembersList
+                                            }
                                         }
 
-                                        MessageType.JOIN.code -> {
-                                            //TODO add profile to ChatMenager.chatMembersList
+                                        if (background) {
+                                            chatNotification.sendMessage(
+                                                message.username ?: "",
+                                                message.text ?: ""
+                                            )
                                         }
                                     }
 
-                                    if (background) {
-                                        chatNotification.sendMessage(
-                                            message.username ?: "",
-                                            message.text ?: ""
-                                        )
-                                    }
+                                    updateMessage(message)
                                 }
                             }
                         }
+                    } catch (e: JsonDataException) {
+                        Log.e("ClientViewModel", receivedJson)
                     }
                 }
             }
@@ -170,11 +172,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     fun transformIp(text: String): InetAddress = InetAddress.getByName(text)
-
-    fun validateIp(text: String): Boolean {
-        val ipRegex = "^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){4}$";
-        return Pattern.matches(ipRegex, text)
-    }
 
     fun closeSocket() {
         running = false
