@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:gravity="start"
         android:paddingHorizontal="15dp"
-        android:background="@drawable/chat_bg_received">
+        android:background="@drawable/chat_received_bg">
 
         <TextView
             android:id="@+id/chatRowUsername"
@@ -35,6 +35,7 @@
             android:id="@+id/chatRowTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:paddingHorizontal="3dp"
             android:textColor="@color/white"
             android:textStyle="italic"
