@@ -8,7 +8,10 @@ object Constants {
     const val PORT_1028 = 1028
     const val PORT_1029 = 1029
 
+    const val AUDIO_DIR = "audio"
     const val IMAGE_DIR = "image"
+
+    const val RECORD_PERMISSION = 1
 
     const val ACTION_STOP = "STOP"
 

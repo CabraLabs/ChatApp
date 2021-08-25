@@ -100,15 +100,23 @@ class ServerService : Service(), CoroutineScope {
                     try {
                         val message = ChatManager.serializeMessage(json)
 
-                        if (message?.type != MessageType.JOIN.code) {
-                            if (message?.id != user.profile.id) {
+                        when(message?.type) {
+                            MessageType.JOIN.code -> {
+                                authenticate(message, user)
+                            }
+
+                            MessageType.LEAVE.code -> {
                                 removeSocket(user)
-                            } else {
                                 forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
                             }
-                        } else {
-                            authenticate(message, user)
-                            forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
+
+                            else -> {
+                                if (message?.id != user.profile.id) {
+                                    removeSocket(user)
+                                } else {
+                                    forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
+                                }
+                            }
                         }
                     } catch (e: JsonDataException) {
                         Log.e("ServerService", "Received a message that can't be parsed to json: $json")
@@ -153,7 +161,12 @@ class ServerService : Service(), CoroutineScope {
 
         user.socket.getOutputStream().write(json)
 
-        forwardMessage(user.socket, ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8))
+        if (user.socket.inetAddress == serverSocket.inetAddress) {
+            joinMessage.join?.isAdmin = true
+            forwardMessage(user.socket, ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8))
+        } else {
+            forwardMessage(user.socket, ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8))
+        }
     }
 
     private fun refuse(user: User) {

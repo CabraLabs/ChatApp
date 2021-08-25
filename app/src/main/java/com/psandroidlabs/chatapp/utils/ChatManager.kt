@@ -1,7 +1,9 @@
 package com.psandroidlabs.chatapp.utils
 
+import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.os.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -19,6 +21,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -62,6 +65,23 @@ object ChatManager : CoroutineScope {
     }
 
     /**
+     * Create and return a MediaRecorder to record audio messages.
+     */
+    fun createAudioRecorder(context: Context, audioName: String?) = MediaRecorder().apply {
+        setAudioSource(MediaRecorder.AudioSource.MIC)
+        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+        setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            setOutputFile(File(context.getExternalFilesDir(Constants.AUDIO_DIR), audioName ?: nameAudio()))
+        }
+    }
+
+    fun nameAudio(): String {
+        return getEpoch().toString() + ".mp3"
+    }
+
+    /**
      * Determines the message type based on the beginning of the string.
      *
      * If the message starts with '/' it is probably a command.
@@ -89,7 +109,8 @@ object ChatManager : CoroutineScope {
         date: Long = getEpoch(),
         id: Int? = null,
         avatar: String? = null,
-        password: String? = null
+        password: String? = null,
+        isAdmin: Boolean? = null
     ) = Message(
         type = type.code,
         status = status.code,
@@ -98,8 +119,26 @@ object ChatManager : CoroutineScope {
         base64Data = base64Data,
         time = date,
         id = id,
-        join = Join(avatar, password)
+        join = Join(avatar, password, isAdmin)
     )
+
+    /**
+     * Creates an audio message and manipulate it's text and base64Data to be correctly
+     * sent to the user and the server.
+     */
+    fun audioMessage(username: String, audioPath: String?): Message {
+        val audioMessage = createMessage(
+            type = MessageType.AUDIO,
+            username = username,
+            text = audioPath ?: throw Exception("Audio message needs to have a full path.")
+        )
+
+        addToAdapter(audioMessage)
+
+        return audioMessage.apply {
+            base64Data = text?.toBase64()
+        }
+    }
 
     /**
      * Create a proper authorization connect message to the server.
@@ -109,6 +148,14 @@ object ChatManager : CoroutineScope {
         username = username,
         text = text,
         password = password
+    )
+
+    /**
+     * Leave message to properly inform users of a disconnection.
+     */
+    fun leaveMessage(username: String) = createMessage(
+        type = MessageType.LEAVE,
+        username = username,
     )
 
     /**
@@ -140,6 +187,7 @@ object ChatManager : CoroutineScope {
      */
     fun addToAdapter(message: Message, received: Boolean = false) {
         if (received) {
+            message.status = MessageStatus.RECEIVED.code
             chatList.add(message)
         } else {
             message.status = MessageStatus.SENT.code
@@ -206,9 +254,5 @@ object ChatManager : CoroutineScope {
 
     fun delay(delay: Long = 1500, action: () -> Unit) {
         Handler(Looper.getMainLooper()).postDelayed(action, delay)
-    }
-
-    fun scrollChat(recyclerView: RecyclerView) {
-        recyclerView.scrollToPosition(chatList.size - 1)
     }
 }

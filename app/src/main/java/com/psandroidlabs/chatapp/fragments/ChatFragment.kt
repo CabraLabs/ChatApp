@@ -1,13 +1,18 @@
 package com.psandroidlabs.chatapp.fragments
 
-import android.os.Build
+import android.Manifest.permission.RECORD_AUDIO
+import android.content.pm.PackageManager
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.view.*
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -17,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
+import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
@@ -25,19 +31,25 @@ import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.*
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 class ChatFragment : Fragment(), CoroutineScope {
 
     private val client: ClientViewModel by activityViewModels()
     private val arg: ChatFragmentArgs by navArgs()
     private lateinit var binding: FragmentChatBinding
 
+    private lateinit var chatAdapter: ChatAdapter
+
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
     private var list: ArrayList<Message> = ArrayList()
 
+    private var recording = false
     private var disconnect = false
+
+    private var recorder: MediaRecorder? = null
+    private var audioName: String? = null
 
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -89,6 +101,13 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     override fun onPause() {
+        recorder?.let {
+            it.stop()
+            it.release()
+        }
+
+        recorder = null
+
         client.background(true)
         super.onPause()
     }
@@ -107,9 +126,15 @@ class ChatFragment : Fragment(), CoroutineScope {
                         val builder = AlertDialog.Builder(it)
                         builder.apply {
                             setPositiveButton(R.string.yes) { _, _ ->
+                                val message = ChatManager.leaveMessage(clientUsername)
+
+                                client.writeToSocket(ChatManager.leaveMessage(clientUsername))
+                                ChatManager.addToAdapter(message)
+
                                 client.updateAccepted(null)
                                 navController.popBackStack()
                             }
+
                             setNegativeButton(R.string.no) { _, _ ->
 
                             }
@@ -183,22 +208,100 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     @DelicateCoroutinesApi
-
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
-        client.chatAdapter = ChatAdapter(list)
+        chatAdapter = ChatAdapter(list)
 
+        notifyAdapterChange()
+        changeSendButton()
         sendMessageListener()
+        recordAudioListener()
         vibrateListener()
 
+        val messageObserver = Observer<Message> {
+            notifyAdapterChange()
+        }
+        client.newMessage.observe(viewLifecycleOwner, messageObserver)
+
         recyclerViewList.apply {
-            adapter = client.chatAdapter
+            adapter = chatAdapter
             layoutManager = LinearLayoutManager(context)
         }
-
-        client.initializeChatRecyclerView(recyclerViewList)
     }
+
+    private fun changeSendButton() {
+        with(binding) {
+            sendButton.visibility = View.GONE
+            recordAudio.visibility = View.VISIBLE
+
+            binding.messageField.doAfterTextChanged {
+                if (it.toString().isNotEmpty()) {
+                    sendButton.visibility = View.VISIBLE
+                    recordAudio.visibility = View.GONE
+                } else {
+                    sendButton.visibility = View.GONE
+                    recordAudio.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private fun recordAudioListener() {
+        binding.recordAudio.setOnClickListener {
+            requestPermission()
+        }
+    }
+
+    private fun recordButton() {
+        with(binding) {
+            recording = !recording
+
+            if (recording) {
+                recordAudio.setBackgroundColor(requireContext().getColor(R.color.red))
+
+                audioName = ChatManager.nameAudio()
+                recorder = ChatManager.createAudioRecorder(requireContext(), audioName)
+
+                recorder?.prepare()
+                recorder?.start()
+                disableChat(true)
+            } else {
+                recordAudio.setBackgroundColor(requireContext().getColor(R.color.black))
+
+                recorder?.apply {
+                    stop()
+                    release()
+                }
+
+                val message = ChatManager.audioMessage(clientUsername, audioName)
+                val success = client.writeToSocket(message)
+
+                checkDisconnected(success)
+
+                audioName = null
+                recorder = null
+                disableChat(false)
+            }
+        }
+    }
+
+    private fun requestPermission() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                RECORD_AUDIO
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(RECORD_AUDIO),
+                Constants.RECORD_PERMISSION
+            )
+        } else {
+            recordButton()
+        }
+    }
+
 
     private fun vibrateListener() {
         binding.vibrateButton.setOnClickListener {
@@ -206,17 +309,11 @@ class ChatFragment : Fragment(), CoroutineScope {
                 username = clientUsername,
                 id = client.id
             )
-
             val success = client.writeToSocket(message)
 
-            if (success) {
-                ChatManager.addToAdapter(message)
-                scrollChat()
-                notifyAdapterChange()
-                disableAttention()
-            } else {
-                disconnectedSnackBar()
-            }
+            disableAttention()
+
+            checkDisconnected(success, message)
         }
     }
 
@@ -225,30 +322,33 @@ class ChatFragment : Fragment(), CoroutineScope {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
                 val message = ChatManager.parseMessageType(clientUsername, getTextFieldString(), client.id)
-
                 val success = client.writeToSocket(message)
 
-                if (success) {
-                    eraseTextField()
-                    ChatManager.addToAdapter(message)
-                    scrollChat()
-                    notifyAdapterChange()
-                } else {
-                    disconnectedSnackBar()
-                }
+                checkDisconnected(success, message)
             }
         }
     }
 
-    private fun disableChat() {
+    private fun checkDisconnected(success: Boolean, message: Message? = null) {
+        if (success) {
+            if (message != null) {
+                ChatManager.addToAdapter(message)
+            }
+
+            eraseTextField()
+            notifyAdapterChange()
+        } else {
+            disconnectedSnackBar()
+        }
+    }
+
+    private fun disableChat(isDisabled: Boolean) {
         binding.messageField.apply {
-            alpha = 0.3F
-            isClickable = false
+            isClickable = isDisabled
         }
     }
 
     private fun disableAttention() {
-        // TODO CHECK IF DISABLE CHAT DISABLES THIS
         with(binding) {
             vibrateButton.apply {
                 alpha = 0.2F
@@ -264,7 +364,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private fun disconnectedSnackBar() {
         disconnect = true
-        disableChat()
+        disableChat(true)
         disconnectSnack.show()
     }
 
@@ -275,10 +375,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun notifyAdapterChange() {
-        client.chatAdapter.notifyDataSetChanged()
-    }
-
-    private fun scrollChat() {
+        chatAdapter.notifyDataSetChanged()
         binding.chatRecycler.scrollToPosition(list.size - 1)
     }
 }

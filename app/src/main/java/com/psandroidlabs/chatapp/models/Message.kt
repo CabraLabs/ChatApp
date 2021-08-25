@@ -14,14 +14,14 @@ data class Message(
     var status: Int,
     val username: String?,
     val text: String?,
-    val base64Data: String?,
+    var base64Data: String?,
     val time: Long,
     @Ignore var id: Int?,
     val join: Join?
 )
 
 @JsonClass(generateAdapter = true)
-data class Join(val avatar: String?, val password: String?)
+data class Join(val avatar: String?, val password: String?, var isAdmin: Boolean?)
 
 @JsonClass(generateAdapter = true)
 data class Profile(
