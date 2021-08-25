@@ -2,7 +2,6 @@ package com.psandroidlabs.chatapp.fragments
 
 import android.os.Bundle
 import android.view.*
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -147,7 +146,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun validate() {
-        if (!client.validateIp(getIpAddressField())) {
+        if (!IP.validateIp(getIpAddressField())) {
             binding.ipAddress.error = getString(R.string.invalid_ip)
             return
         } else {
