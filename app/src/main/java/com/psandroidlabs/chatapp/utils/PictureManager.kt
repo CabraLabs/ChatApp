@@ -1,32 +1,44 @@
 package com.psandroidlabs.chatapp.utils
 
+import android.app.Dialog
 import android.content.ContentResolver
 import android.content.Context
-import android.content.ContextWrapper
+import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
-import androidx.core.graphics.drawable.toDrawable
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.util.*
 import android.provider.MediaStore.Images
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.view.Window
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toDrawable
 import com.psandroidlabs.chatapp.MainApplication
 import com.psandroidlabs.chatapp.R
+import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.*
+import android.widget.RelativeLayout
+
+import android.content.DialogInterface
+import android.graphics.Color
+
+import android.graphics.drawable.ColorDrawable
+import android.view.WindowManager
 
 
 object PictureManager {
 
     val defaultAvatar by lazy {
-        MainApplication.applicationContext().let { ContextCompat.getDrawable(it, R.drawable.ic_goat)?.toBitmap(200, 200) }
+        MainApplication.applicationContext()
+            .let { ContextCompat.getDrawable(it, R.drawable.ic_goat)?.toBitmap(200, 200) }
     }
 
     private fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
@@ -54,14 +66,15 @@ object PictureManager {
                     contentResolver,
                     it
                 )
-            }.let { ImageDecoder.decodeBitmap(it) }
-        } else {
+            }.let { ImageDecoder.decodeBitmap(it) }.also { toast(">= P") }
+
+        } else { //TODO fix else treatment
             BitmapFactory.decodeFileDescriptor(uri?.let {
                 contentResolver.openFileDescriptor(
                     it,
                     "r"
                 )?.fileDescriptor
-            })
+            }).also { toast("< P") }
         }
     }
 
@@ -89,20 +102,47 @@ object PictureManager {
     }
 
     fun bitmapToFile(context: Context?, bitmap: Bitmap): Uri {
-        val wrapper = ContextWrapper(MainApplication.applicationContext())
-
-        var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
-        file = File(file, "${UUID.randomUUID()}.jpg")
+        val file = File(context?.getExternalFilesDir(Constants.IMAGE_DIR), "${UUID.randomUUID()}.jpg")
 
         try {
             val stream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100, stream)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
             stream.flush()
             stream.close()
-        } catch (e: IOException){
+        } catch (e: IOException) {
             e.printStackTrace()
         }
 
         return Uri.parse(file.absolutePath)
+    }
+
+    fun fileToBitmap(path: String): Bitmap?{
+        return if (File(path).exists()){
+            return BitmapFactory.decodeFile(File(path).absolutePath)
+        } else {
+            null
+        }
+    }
+
+    fun dialogImage(context: Context?, bitmap: Bitmap){
+        if(context != null){
+            val builder = Dialog(context, android.R.style.Theme_Light)
+            builder.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            builder.window!!.setBackgroundDrawable(
+                ColorDrawable(Color.TRANSPARENT)
+            )
+
+            //TODO make dismiss
+
+            val imageView = ImageView(context)
+            imageView.setImageBitmap(bitmap)
+            builder.addContentView(
+                imageView, RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
+            builder.show()
+        }
     }
 }
