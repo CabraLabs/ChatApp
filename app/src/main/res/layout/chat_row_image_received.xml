@@ -13,22 +13,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:background="@drawable/chat_bg_received"
+        android:background="@drawable/chat_received_bg"
         android:paddingHorizontal="15dp">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            app:cardCornerRadius="250dp">
-
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/userAvatar"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_goat" />
-        </androidx.cardview.widget.CardView>
+                android:src="@drawable/ic_goat"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/white"
+                app:shapeAppearanceOverlay="@style/RoundedShape50"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -46,15 +42,19 @@
                 tools:text="username" />
 
             <ImageView
-                android:id="@+id/chatRowImage"
+                android:id="@+id/btnChatRowImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:adjustViewBounds="true"
                 android:paddingHorizontal="3dp"/>
 
             <TextView
                 android:id="@+id/chatRowTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:paddingHorizontal="3dp"
                 android:textColor="@color/white"
                 android:textStyle="italic"

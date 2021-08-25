@@ -66,6 +66,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         if (args.ip != null) {
             with(binding) {
                 ipAddressField.setText(args.ip)
+                portField.setText(args.port)
             }
         }
     }

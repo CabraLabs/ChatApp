@@ -8,6 +8,8 @@ object Constants {
     const val PORT_1028 = 1028
     const val PORT_1029 = 1029
 
+    const val IMAGE_DIR = "image"
+
     const val ACTION_STOP = "STOP"
 
     const val MAX_SERVER_USERS = 5

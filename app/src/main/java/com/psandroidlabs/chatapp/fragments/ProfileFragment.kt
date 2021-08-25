@@ -17,12 +17,15 @@ import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.databinding.FragmentProfileBinding
 import com.psandroidlabs.chatapp.utils.AppPreferences
 import com.psandroidlabs.chatapp.utils.PictureManager
+import com.psandroidlabs.chatapp.utils.toSquare
+import com.psandroidlabs.chatapp.R
+
 
 class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
 
-    private var userPhoto = PictureManager.defaultAvatar
+    private lateinit var userPhoto: Bitmap
 
     private val navController: NavController by lazy {
         findNavController()
@@ -32,22 +35,18 @@ class ProfileFragment : Fragment() {
         ActivityResultContracts.TakePicturePreview()
     ) { image: Bitmap? ->
         if (image != null) {
-            binding.avatar.setImageBitmap(image)
-            userPhoto = image
+            userPhoto = image.toSquare()!!
+            binding.avatar.setImageBitmap(userPhoto)
         }
     }
 
     private val registerChoosePhoto = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (uri != null) {
-            binding.avatar.setImageBitmap(
-                PictureManager.uriToBitmap(
-                    uri,
-                    requireContext().contentResolver
-                )
-            )
-            userPhoto = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
+        val square = PictureManager.uriToBitmap(uri, requireContext().contentResolver).toSquare()
+        if (uri != null && square != null) {
+            userPhoto = square
+            binding.avatar.setImageBitmap(userPhoto)
         }
     }
 
@@ -81,14 +80,28 @@ class ProfileFragment : Fragment() {
         with(binding) {
             context?.let { context ->
 
-                avatar.setImageBitmap(PictureManager.defaultAvatar)
-
                 val preference = AppPreferences.getClient(context)
 
                 if (preference.isNotEmpty()) {
                     userNameField.setText(AppPreferences.getClient(context)[0])
-                    if (preference[3].isNullOrBlank())
-                        avatar.setImageBitmap(preference[2]?.let { PictureManager.stringToBitmap(it) })
+                    if (!preference[3].isNullOrBlank()) {
+                        val bitmap = preference[2]?.let { PictureManager.fileToBitmap(it) }
+                        if(bitmap != null){
+                            avatar.setImageBitmap(bitmap)
+                            userPhoto = bitmap
+                        }
+                    } else {
+                        avatar.setImageDrawable(
+                            ContextCompat.getDrawable(
+                                context,
+                                R.drawable.ic_goat
+                            )
+                        )
+                    }
+                }
+
+                avatar.setOnClickListener {
+                    PictureManager.dialogImage(context, userPhoto)
                 }
 
                 btnTakePhoto.setOnClickListener {
@@ -117,9 +130,10 @@ class ProfileFragment : Fragment() {
             }
 
             btnSave.setOnClickListener {
+                val uri = userPhoto.let { bitmap -> PictureManager.bitmapToFile(context, bitmap) }
                 AppPreferences.saveClient(
                     userNameField.text.toString(),
-                    clientAvatar = userPhoto?.let { it1 -> PictureManager.bitmapToString(it1) },
+                    clientAvatar = uri.path,
                     context = context
                 )
 

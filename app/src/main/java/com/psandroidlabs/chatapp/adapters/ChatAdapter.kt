@@ -4,13 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.psandroidlabs.chatapp.MainApplication
 import com.psandroidlabs.chatapp.databinding.*
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.PictureManager
-import kotlin.collections.ArrayList
 
 
 class ChatAdapter(private val dataSet: ArrayList<Message>) :
@@ -88,13 +88,31 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                userAvatar.setImageBitmap(message.join?.avatar?.let {
+
+                if (message.base64Data.isNullOrBlank()) {
+                    userAvatar.setImageBitmap(PictureManager.defaultAvatar)
+                } else {
+                    userAvatar.setImageBitmap(message.join?.avatar?.let {
+                        PictureManager.stringToBitmap(
+                            it
+                        )
+                    })
+                }
+
+                btnChatRowImage.setImageBitmap(message.base64Data?.let {
                     PictureManager.stringToBitmap(
                         it
                     )
                 })
+                btnChatRowImage.setOnClickListener {
+                    message.base64Data?.let { PictureManager.stringToBitmap(it) }?.let { it1 ->
+                        PictureManager.dialogImage(
+                            MainApplication.applicationContext(),
+                            it1
+                        )
+                    }
+                }
 
-                chatRowImage.setImageBitmap(message.base64Data?.let { PictureManager.stringToBitmap(it) })
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
@@ -105,13 +123,31 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                userAvatar.setImageBitmap(message.join?.avatar?.let {
+
+                if (message.base64Data.isNullOrBlank()) {
+                    userAvatar.setImageBitmap(PictureManager.defaultAvatar)
+                } else {
+                    userAvatar.setImageBitmap(message.join?.avatar?.let {
+                        PictureManager.stringToBitmap(
+                            it
+                        )
+                    })
+                }
+
+                btnChatRowImage.setImageBitmap(message.base64Data?.let {
                     PictureManager.stringToBitmap(
                         it
                     )
                 })
+                btnChatRowImage.setOnClickListener {
+                    message.base64Data?.let { PictureManager.stringToBitmap(it) }?.let { it1 ->
+                        PictureManager.dialogImage(
+                            MainApplication.applicationContext(),
+                            it1
+                        )
+                    }
+                }
 
-                chatRowImage.setImageBitmap(message.base64Data?.let { PictureManager.stringToBitmap(it) })
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
