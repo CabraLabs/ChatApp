@@ -56,7 +56,7 @@ class HomeFragment : Fragment() {
     private fun initializeButtons() {
         with(binding) {
             clientButton.setOnClickListener {
-                val action = HomeFragmentDirections.actionHomeFragmentToClientConnectFragment(null)
+                val action = HomeFragmentDirections.actionHomeFragmentToClientConnectFragment(null, null)
                 navController.navigate(action)
             }
 
