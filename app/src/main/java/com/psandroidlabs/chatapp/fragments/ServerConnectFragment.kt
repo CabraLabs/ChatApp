@@ -257,6 +257,8 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
                 joinChat.visibility = View.GONE
                 stopServer.visibility = View.GONE
+
+                portNumbers()
             }
         }
     }
