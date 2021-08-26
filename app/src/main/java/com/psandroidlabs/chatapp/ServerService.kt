@@ -20,6 +20,7 @@ import java.net.Socket
 import java.util.*
 import kotlin.random.Random
 
+
 class ServerService : Service(), CoroutineScope {
 
     private val parentJob = Job()
@@ -100,7 +101,7 @@ class ServerService : Service(), CoroutineScope {
                     try {
                         val message = ChatManager.serializeMessage(json)
 
-                        when(message?.type) {
+                        when (message?.type) {
                             MessageType.JOIN.code -> {
                                 authenticate(message, user)
                             }

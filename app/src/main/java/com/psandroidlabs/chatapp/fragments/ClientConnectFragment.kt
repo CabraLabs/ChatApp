@@ -98,13 +98,13 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun initializeButtons() {
-        //TODO args treatment
+        //TODO args treatment deeplink
         with(binding) {
             loadPreferences()
 
             removeErrorListener()
 
-             joinChat.setOnClickListener {
+            joinChat.setOnClickListener {
                 when {
                     userNameField.text.toString() == "" -> {
                         username.error = getString(R.string.username_missing)

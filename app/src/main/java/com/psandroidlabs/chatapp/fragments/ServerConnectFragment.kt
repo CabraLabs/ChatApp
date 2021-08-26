@@ -3,7 +3,6 @@ package com.psandroidlabs.chatapp.fragments
 import android.app.Activity
 import android.os.Bundle
 import android.view.*
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -52,7 +51,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId){
+        return when (item.itemId) {
             R.id.profile -> {
                 val action = ServerConnectFragmentDirections.actionServerConnectFragmentToProfileFragment()
                 navController.navigate(action)
@@ -202,7 +201,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
         client.readSocket()
 
-        if(binding.showPassword.isChecked) {
+        if (binding.showPassword.isChecked) {
             client.writeToSocket(ChatManager.connectMessage(username, getString(R.string.created_the_room), getPasswordField()))
         } else {
             client.writeToSocket(ChatManager.connectMessage(username, getString(R.string.created_the_room)))
@@ -210,7 +209,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun parseStatus(status: AcceptedStatus) {
-        when(status) {
+        when (status) {
             AcceptedStatus.ACCEPTED -> {
                 val action =
                     ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(UserType.SERVER)

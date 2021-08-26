@@ -14,11 +14,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentProfileBinding
 import com.psandroidlabs.chatapp.utils.AppPreferences
 import com.psandroidlabs.chatapp.utils.PictureManager
 import com.psandroidlabs.chatapp.utils.toSquare
-import com.psandroidlabs.chatapp.R
 
 
 class ProfileFragment : Fragment() {
@@ -86,7 +86,7 @@ class ProfileFragment : Fragment() {
                     userNameField.setText(AppPreferences.getClient(context)[0])
                     if (!preference[3].isNullOrBlank()) {
                         val bitmap = preference[2]?.let { PictureManager.fileToBitmap(it) }
-                        if(bitmap != null){
+                        if (bitmap != null) {
                             avatar.setImageBitmap(bitmap)
                             userPhoto = bitmap
                         }

@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.databinding.ChatMembersRowBinding
 import com.psandroidlabs.chatapp.models.Profile
 
+
 class ChatMembersAdapter(
     private var dataSet: ArrayList<Profile>,
     private val onClick: (Int) -> Unit
-) :
-    RecyclerView.Adapter<ChatMembersAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ChatMembersAdapter.ViewHolder>() {
 
     abstract class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(profile: Profile, position: Int)
@@ -19,9 +19,7 @@ class ChatMembersAdapter(
 
     inner class CellViewHolder(private val binding: ChatMembersRowBinding) : ViewHolder(binding.root) {
         override fun bind(profile: Profile, position: Int) {
-
             with(binding) {
-
                 chatMembersUsername.text = dataSet[position].name
 
                 btnChatMember.setOnClickListener {
@@ -30,7 +28,6 @@ class ChatMembersAdapter(
                 }
             }
         }
-
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {

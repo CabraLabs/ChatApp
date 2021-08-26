@@ -3,18 +3,19 @@ package com.psandroidlabs.chatapp.utils
 import android.app.Dialog
 import android.content.ContentResolver
 import android.content.Context
-import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.ImageDecoder
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore.Images
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
@@ -25,13 +26,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
-import android.widget.RelativeLayout
-
-import android.content.DialogInterface
-import android.graphics.Color
-
-import android.graphics.drawable.ColorDrawable
-import android.view.WindowManager
 
 
 object PictureManager {
@@ -116,16 +110,16 @@ object PictureManager {
         return Uri.parse(file.absolutePath)
     }
 
-    fun fileToBitmap(path: String): Bitmap?{
-        return if (File(path).exists()){
+    fun fileToBitmap(path: String): Bitmap? {
+        return if (File(path).exists()) {
             return BitmapFactory.decodeFile(File(path).absolutePath)
         } else {
             null
         }
     }
 
-    fun dialogImage(context: Context?, bitmap: Bitmap){
-        if(context != null){
+    fun dialogImage(context: Context?, bitmap: Bitmap) {
+        if (context != null) {
             val builder = Dialog(context, android.R.style.Theme_Light)
             builder.requestWindowFeature(Window.FEATURE_NO_TITLE)
             builder.window!!.setBackgroundDrawable(
@@ -142,6 +136,7 @@ object PictureManager {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
+
             builder.show()
         }
     }
