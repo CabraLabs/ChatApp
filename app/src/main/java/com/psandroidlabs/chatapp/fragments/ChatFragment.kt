@@ -22,7 +22,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
-import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
@@ -220,7 +219,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         vibrateListener()
 
         val messageObserver = Observer<Message> {
-            notifyAdapterChange()
+            notifyAdapterChange(it, true)
         }
         client.newMessage.observe(viewLifecycleOwner, messageObserver)
 
@@ -332,11 +331,9 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun checkDisconnected(success: Boolean, message: Message? = null) {
         if (success) {
             if (message != null) {
-                ChatManager.addToAdapter(message)
+                eraseTextField()
+                notifyAdapterChange(message)
             }
-
-            eraseTextField()
-            notifyAdapterChange()
         } else {
             disconnectedSnackBar()
         }
@@ -374,8 +371,16 @@ class ChatFragment : Fragment(), CoroutineScope {
         binding.messageField.setText("")
     }
 
-    private fun notifyAdapterChange() {
-        chatAdapter.notifyDataSetChanged()
+    private fun notifyAdapterChange(message: Message? = null, received: Boolean = false) {
+        if (message != null) {
+            if (received) {
+                ChatManager.addToAdapter(message, received)
+            } else {
+                ChatManager.addToAdapter(message)
+            }
+        }
+
         binding.chatRecycler.scrollToPosition(list.size - 1)
+        chatAdapter.notifyDataSetChanged()
     }
 }

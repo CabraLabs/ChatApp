@@ -15,18 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
-import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.squareup.moshi.JsonDataException
 import kotlinx.coroutines.*
-import java.lang.ref.WeakReference
 import java.net.InetAddress
 import java.net.Socket
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class ClientViewModel : ViewModel(), CoroutineScope {
 
@@ -114,7 +112,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                         // TODO make the exception be changed to a proper handle with a message to the user.
                         if (message != null) {
-                            when(message.type) {
+                            when (message.type) {
                                 MessageType.ACKNOWLEDGE.code -> {
                                     updateAccepted(AcceptedStatus.ACCEPTED)
 
@@ -139,9 +137,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                                 else -> {
                                     if (accepted.value == AcceptedStatus.ACCEPTED) {
-                                        ChatManager.addToAdapter(message, true)
-
-                                        when(message.type) {
+                                        when (message.type) {
                                             MessageType.VIBRATE.code -> {
                                                 ChatManager.startVibrate()
                                             }
@@ -194,34 +190,38 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     fun showChatMembers(context: Context?) {
-        if(context != null){
-            val dialogBox = Dialog(context)
-            dialogBox.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            dialogBox.window?.setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            dialogBox.setContentView(R.layout.fragment_chat_members)
-            dialogBox.setCanceledOnTouchOutside(true)
-            dialogBox.setCancelable(true)
-            dialogBox.show()
+        if (context != null) {
+            val dialogBox = Dialog(context).apply {
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                window?.setLayout(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+
+                setContentView(R.layout.fragment_chat_members)
+                setCanceledOnTouchOutside(true)
+                setCancelable(true)
+                show()
+            }
 
             val recyclerView: RecyclerView = dialogBox.findViewById(R.id.membersRecycler)
-            recyclerView.setHasFixedSize(true)
-            recyclerView.layoutManager = LinearLayoutManager(context)
-            recyclerView.addItemDecoration(
-                DividerItemDecoration(
-                    context,
-                    DividerItemDecoration.VERTICAL
+            recyclerView.apply {
+                setHasFixedSize(true)
+                layoutManager = LinearLayoutManager(context)
+                addItemDecoration(
+                    DividerItemDecoration(
+                        context,
+                        DividerItemDecoration.VERTICAL
+                    )
                 )
-            )
+            }
 
             val adapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
             recyclerView.adapter = adapter
         }
     }
 
-    private fun onClick(pos: Int){
+    private fun onClick(pos: Int) {
         TODO()
     }
 
