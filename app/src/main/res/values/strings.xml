@@ -42,8 +42,9 @@
     <string name="admin_kick">You were kicked by the Administrator</string>
 
     <!-- Adapter -->
-    <string name="joined_the_room">joined the room</string>
-    <string name="created_the_room">created the room</string>
+    <string name="joined_the_room">joined the room:</string>
+    <string name="created_the_room">created the room:</string>
+    <string name="leaved_the_room">leaved the room:</string>
 
     <!-- App Bar -->
     <string name="server_app_bar_name">Server</string>
