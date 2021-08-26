@@ -122,19 +122,27 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                     try {
                         val message = ChatManager.serializeMessage(receivedJson)
 
-                        // TODO make the exception be changed to a proper handle with a message to the user.
                         if (message != null) {
                             when (message.type) {
                                 MessageType.ACKNOWLEDGE.code -> {
-                                    updateAccepted(AcceptedStatus.ACCEPTED)
-
-                                    // TODO handle exception when the server doesn't send anybody on the list.
                                     if (message.text != null) {
-                                        ChatManager.chatMembersList = ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
+                                        try {
+                                            ChatManager.chatMembersList = ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
+                                        } catch (e: JsonDataException) {
+                                            Log.e("ClientViewModel", "Server sent an incorrect profile list: ${message.text}")
+                                        }
                                     }
 
-                                    id = message.id
-                                        ?: throw Exception("Server failed to send a verification Id")
+                                    if (message.id != null) {
+                                        updateAccepted(AcceptedStatus.ACCEPTED)
+
+                                        id = message.id
+                                            ?: throw Exception(
+                                                "id cannot be changed to null, it is useful to have it as nullable but changing it's value to null is a mistake."
+                                            )
+                                    } else {
+                                        updateAccepted(AcceptedStatus.MISSING_ID)
+                                    }
                                 }
 
                                 MessageType.REVOKED.code -> {
@@ -236,5 +244,4 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     private fun onClick(pos: Int) {
         TODO()
     }
-
 }
