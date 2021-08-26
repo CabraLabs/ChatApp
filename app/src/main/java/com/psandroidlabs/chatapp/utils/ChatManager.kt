@@ -1,24 +1,17 @@
 package com.psandroidlabs.chatapp.utils
 
-import android.Manifest
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.*
-import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.snackbar.Snackbar
-import com.psandroidlabs.chatapp.MainApplication
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.models.*
@@ -166,7 +159,7 @@ object ChatManager : CoroutineScope {
     fun leaveMessage(username: String) = createMessage(
         type = MessageType.LEAVE,
         username = username,
-        text = applicationContext().getString(R.string.leaved_the_room)
+        text = applicationContext().getString(R.string.left_the_room)
     )
 
     /**
