@@ -242,6 +242,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 enableRadioButtons(false)
                 passwordFieldEnable(false)
 
+                port.isEnabled = false
+                username.isEnabled = false
+
                 createAndJoin.visibility = View.GONE
                 createServer.visibility = View.GONE
 
@@ -250,6 +253,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             } else {
                 enableRadioButtons(true)
                 passwordFieldEnable(true)
+
+                port.isEnabled = true
+                username.isEnabled = true
 
                 createAndJoin.visibility = View.VISIBLE
                 createServer.visibility = View.VISIBLE
