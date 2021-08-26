@@ -258,7 +258,7 @@ object ChatManager : CoroutineScope {
                 )
             )
         } else {
-            toast("*vibrating*")
+            vibrator.vibrate(1000)
         }
     }
 
