@@ -25,11 +25,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                userAvatar.setImageBitmap(message.join?.avatar?.let {
-                    PictureManager.stringToBitmap(
-                        it
-                    )
-                })
+                if(PictureManager.loadAvatar() != null)
+                    userAvatar.setImageBitmap(PictureManager.loadAvatar())
                 chatRowMessage.text = message.text
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
@@ -41,18 +38,15 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                userAvatar.setImageBitmap(message.join?.avatar?.let {
-                    PictureManager.stringToBitmap(
-                        it
-                    )
-                })
+                if(PictureManager.loadAvatar() != null)
+                    userAvatar.setImageBitmap(PictureManager.loadAvatar())
                 chatRowMessage.text = message.text
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
 
-    inner class ViewHolderJoinMessage(private val binding: ChatRowJoinBinding) :
+    inner class ViewHolderEventMessage(private val binding: ChatRowJoinBinding) :
         ViewHolder(binding.root) {
         override fun bind(message: Message) {
             with(binding) {
@@ -89,6 +83,9 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
             with(binding) {
                 chatRowUsername.text = message.username
 
+                if(PictureManager.loadAvatar() != null)
+                    userAvatar.setImageBitmap(PictureManager.loadAvatar())
+
                 if (message.base64Data.isNullOrBlank()) {
                     userAvatar.setImageBitmap(PictureManager.defaultAvatar)
                 } else {
@@ -99,11 +96,6 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
                     })
                 }
 
-                btnChatRowImage.setImageBitmap(message.base64Data?.let {
-                    PictureManager.stringToBitmap(
-                        it
-                    )
-                })
                 btnChatRowImage.setOnClickListener {
                     message.base64Data?.let { PictureManager.stringToBitmap(it) }?.let { it1 ->
                         PictureManager.dialogImage(
@@ -123,6 +115,9 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
+
+                if(PictureManager.loadAvatar() != null)
+                    userAvatar.setImageBitmap(PictureManager.loadAvatar())
 
                 if (message.base64Data.isNullOrBlank()) {
                     userAvatar.setImageBitmap(PictureManager.defaultAvatar)
@@ -199,7 +194,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
             /** Join Views **/
             1 -> {
-                ViewHolderJoinMessage(
+                ViewHolderEventMessage(
                     ChatRowJoinBinding.inflate(
                         LayoutInflater.from(viewGroup.context),
                         viewGroup,
@@ -209,7 +204,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
             }
 
             9 -> {
-                ViewHolderJoinMessage(
+                ViewHolderEventMessage(
                     ChatRowJoinBinding.inflate(
                         LayoutInflater.from(viewGroup.context),
                         viewGroup,
@@ -271,11 +266,23 @@ class ChatAdapter(private val dataSet: ArrayList<Message>) :
 
             /** Leave Views **/
             7 -> {
-                TODO()
+                ViewHolderEventMessage(
+                    ChatRowJoinBinding.inflate(
+                        LayoutInflater.from(viewGroup.context),
+                        viewGroup,
+                        false
+                    )
+                )
             }
 
             15 -> {
-                TODO()
+                ViewHolderEventMessage(
+                    ChatRowJoinBinding.inflate(
+                        LayoutInflater.from(viewGroup.context),
+                        viewGroup,
+                        false
+                    )
+                )
             }
 
             /** Troll View **/
