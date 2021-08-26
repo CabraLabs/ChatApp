@@ -30,7 +30,7 @@ import com.psandroidlabs.chatapp.utils.PictureManager
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.*
 
-
+@DelicateCoroutinesApi
 class ChatFragment : Fragment(), CoroutineScope {
 
     private val client: ClientViewModel by activityViewModels()
@@ -226,14 +226,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         return binding.root
     }
 
-    @DelicateCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         startChat()
     }
 
-    @DelicateCoroutinesApi
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
@@ -364,7 +362,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    @DelicateCoroutinesApi
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
