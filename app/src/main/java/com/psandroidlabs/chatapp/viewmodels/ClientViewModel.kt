@@ -73,7 +73,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                 launch(Dispatchers.IO) {
                     withTimeout(2000) {
                         val client = Socket()
-                        client.connect(InetSocketAddress(ip, port), 5_000)
+                        client.connect(InetSocketAddress(ip, port), 2_500)
 
                         socketList.add(client)
                         userName = username
