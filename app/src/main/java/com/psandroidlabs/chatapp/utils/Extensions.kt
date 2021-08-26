@@ -8,8 +8,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import java.security.MessageDigest
-import kotlin.math.min
 import java.util.*
+import kotlin.math.min
 
 
 fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_LONG) {
@@ -35,11 +35,11 @@ fun String.toSHA256(): String {
     return messageDigest.fold("", { str, it -> str + "%02x".format(it) })
 }
 
-fun Bitmap.toSquare():Bitmap?{
-    val side = min(width,height)
+fun Bitmap.toSquare(): Bitmap? {
+    val side = min(width, height)
 
-    val xOffset = (width - side) /2
-    val yOffset = (height - side)/2
+    val xOffset = (width - side) / 2
+    val yOffset = (height - side) / 2
 
     return Bitmap.createBitmap(
         this,

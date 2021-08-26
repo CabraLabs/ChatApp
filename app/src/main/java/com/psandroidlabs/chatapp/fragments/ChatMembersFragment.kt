@@ -14,7 +14,8 @@ import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatMembersBinding
 import com.psandroidlabs.chatapp.utils.ChatManager
 
-class ChatMembersFragment: DialogFragment() {
+
+class ChatMembersFragment : DialogFragment() {
 
     private lateinit var binding: FragmentChatMembersBinding
     private lateinit var chatMembersAdapter: ChatMembersAdapter
@@ -24,10 +25,12 @@ class ChatMembersFragment: DialogFragment() {
             val builder = AlertDialog.Builder(it)
             builder.setMessage(R.string.chat_members)
                 .setView(binding.root)
-                .setPositiveButton(R.string.tictactoe_invite
+                .setPositiveButton(
+                    R.string.tictactoe_invite
                 ) { dialog, id ->
                 }
-                .setNegativeButton(R.string.cancel
+                .setNegativeButton(
+                    R.string.cancel
                 ) { dialog, id ->
                 }
             builder.create()
@@ -49,7 +52,7 @@ class ChatMembersFragment: DialogFragment() {
         initializeList()
     }
 
-    private fun initializeList(){
+    private fun initializeList() {
         val recyclerViewList: RecyclerView = binding.membersRecycler
         chatMembersAdapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
 

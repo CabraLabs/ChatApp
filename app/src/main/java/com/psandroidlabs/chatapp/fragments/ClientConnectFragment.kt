@@ -15,10 +15,12 @@ import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.*
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
 
+@DelicateCoroutinesApi
 class ClientConnectFragment : Fragment(), CoroutineScope {
 
     private val parentJob = Job()
@@ -98,13 +100,13 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun initializeButtons() {
-        //TODO args treatment
+        //TODO args treatment deeplink
         with(binding) {
             loadPreferences()
 
             removeErrorListener()
 
-             joinChat.setOnClickListener {
+            joinChat.setOnClickListener {
                 when {
                     userNameField.text.toString() == "" -> {
                         username.error = getString(R.string.username_missing)

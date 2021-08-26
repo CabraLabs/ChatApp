@@ -27,7 +27,7 @@ class HomeFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId){
+        return when (item.itemId) {
             R.id.profile -> {
                 val action = HomeFragmentDirections.actionHomeFragmentToProfileFragment()
                 navController.navigate(action)

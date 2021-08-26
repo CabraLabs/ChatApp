@@ -3,7 +3,6 @@ package com.psandroidlabs.chatapp.fragments
 import android.app.Activity
 import android.os.Bundle
 import android.view.*
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -17,11 +16,13 @@ import com.psandroidlabs.chatapp.utils.*
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import com.psandroidlabs.chatapp.viewmodels.ServerViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import java.net.InetAddress
 
 
+@DelicateCoroutinesApi
 class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private val client: ClientViewModel by activityViewModels()
@@ -52,7 +53,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId){
+        return when (item.itemId) {
             R.id.profile -> {
                 val action = ServerConnectFragmentDirections.actionServerConnectFragmentToProfileFragment()
                 navController.navigate(action)
@@ -202,7 +203,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
         client.readSocket()
 
-        if(binding.showPassword.isChecked) {
+        if (binding.showPassword.isChecked) {
             client.writeToSocket(ChatManager.connectMessage(username, getString(R.string.created_the_room), getPasswordField()))
         } else {
             client.writeToSocket(ChatManager.connectMessage(username, getString(R.string.created_the_room)))
@@ -210,7 +211,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun parseStatus(status: AcceptedStatus) {
-        when(status) {
+        when (status) {
             AcceptedStatus.ACCEPTED -> {
                 val action =
                     ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(UserType.SERVER)
@@ -243,6 +244,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                 enableRadioButtons(false)
                 passwordFieldEnable(false)
 
+                port.isEnabled = false
+                username.isEnabled = false
+
                 createAndJoin.visibility = View.GONE
                 createServer.visibility = View.GONE
 
@@ -251,6 +255,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             } else {
                 enableRadioButtons(true)
                 passwordFieldEnable(true)
+
+                port.isEnabled = true
+                username.isEnabled = true
 
                 createAndJoin.visibility = View.VISIBLE
                 createServer.visibility = View.VISIBLE
