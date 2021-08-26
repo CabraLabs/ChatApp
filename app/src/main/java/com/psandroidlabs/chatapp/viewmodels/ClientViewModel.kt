@@ -22,6 +22,7 @@ import com.psandroidlabs.chatapp.utils.Constants
 import com.squareup.moshi.JsonDataException
 import kotlinx.coroutines.*
 import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.*
 
@@ -67,19 +68,27 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     fun getUsername() = userName
 
     fun startSocket(username: String, ip: InetAddress, port: Int): Boolean {
-        return try {
+        try {
             runBlocking {
                 launch(Dispatchers.IO) {
-                    val client = Socket(ip, port)
-                    socketList.add(client)
-                    userName = username
+                    withTimeout(2000) {
+                        val client = Socket()
+                        client.connect(InetSocketAddress(ip, port), 5_000)
+
+                        socketList.add(client)
+                        userName = username
+
+                        running = true
+                    }
                 }
-                running = true
             }
-            true
         } catch (e: java.net.ConnectException) {
-            false
+            return false
+        } catch (e: java.net.SocketTimeoutException) {
+            return false
         }
+
+        return true
     }
 
     @Synchronized
