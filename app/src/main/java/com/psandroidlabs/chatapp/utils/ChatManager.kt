@@ -7,7 +7,6 @@ import android.media.MediaRecorder
 import android.os.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
@@ -56,7 +55,7 @@ object ChatManager : CoroutineScope {
 
     fun formatTime(epoch: Long): String {
         val pattern = "HH:mm aa"
-        val simpleDateFormat = SimpleDateFormat(pattern)
+        val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
         return simpleDateFormat.format(epoch).uppercase()
     }
 
@@ -89,7 +88,7 @@ object ChatManager : CoroutineScope {
     fun parseMessageType(username: String, message: String, id: Int): Message {
         return if (message.startsWith("/")) {
             when (message) {
-                Constants.VIBRATE_COMMAND -> createMessage(type = MessageType.VIBRATE, username = username, text = message, id= id)
+                Constants.VIBRATE_COMMAND -> createMessage(type = MessageType.VIBRATE, username = username, text = message, id = id)
                 else -> createMessage(type = MessageType.MESSAGE, username = username, text = message, id = id)
             }
         } else {
