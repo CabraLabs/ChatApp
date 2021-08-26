@@ -7,6 +7,8 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentHomeBinding
+import com.psandroidlabs.chatapp.utils.ChatManager
+import kotlinx.coroutines.delay
 
 
 class HomeFragment : Fragment() {
@@ -58,15 +60,20 @@ class HomeFragment : Fragment() {
             clientButton.setOnClickListener {
                 loading()
 
-                val action = HomeFragmentDirections.actionHomeFragmentToClientConnectFragment(null, null)
-                navController.navigate(action)
+                ChatManager.delay(1000) {
+                    val action = HomeFragmentDirections.actionHomeFragmentToClientConnectFragment(null, null)
+                    navController.navigate(action)
+                }
+
             }
 
             serverButton.setOnClickListener {
                 loading()
 
-                val action = HomeFragmentDirections.actionHomeFragmentToServerConnectFragment()
-                navController.navigate(action)
+                ChatManager.delay(1000) {
+                    val action = HomeFragmentDirections.actionHomeFragmentToServerConnectFragment()
+                    navController.navigate(action)
+                }
             }
         }
     }
