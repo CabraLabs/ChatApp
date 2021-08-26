@@ -56,14 +56,22 @@ class HomeFragment : Fragment() {
     private fun initializeButtons() {
         with(binding) {
             clientButton.setOnClickListener {
+                loading()
+
                 val action = HomeFragmentDirections.actionHomeFragmentToClientConnectFragment(null, null)
                 navController.navigate(action)
             }
 
             serverButton.setOnClickListener {
+                loading()
+
                 val action = HomeFragmentDirections.actionHomeFragmentToServerConnectFragment()
                 navController.navigate(action)
             }
         }
+    }
+
+    private fun loading() {
+        binding.progressBar.visibility= View.VISIBLE
     }
 }
