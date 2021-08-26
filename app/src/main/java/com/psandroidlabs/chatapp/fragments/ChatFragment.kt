@@ -107,7 +107,14 @@ class ChatFragment : Fragment(), CoroutineScope {
         chatNotification.cancelNotification()
 
         if (disconnect) {
+            val message = ChatManager.leaveMessage(clientUsername)
+            ChatManager.addToAdapter(message)
+
             disconnectSnack.dismiss()
+        } else {
+            val message = ChatManager.leaveMessage(clientUsername)
+            client.writeToSocket(ChatManager.leaveMessage(clientUsername))
+            ChatManager.addToAdapter(message)
         }
 
         if (arg.user == UserType.SERVER) {
@@ -153,11 +160,6 @@ class ChatFragment : Fragment(), CoroutineScope {
                             val builder = AlertDialog.Builder(it)
                             builder.apply {
                                 setPositiveButton(R.string.yes) { _, _ ->
-                                    val message = ChatManager.leaveMessage(clientUsername)
-
-                                    client.writeToSocket(ChatManager.leaveMessage(clientUsername))
-                                    ChatManager.addToAdapter(message)
-
                                     client.updateAccepted(null)
                                     navController.popBackStack()
                                 }
