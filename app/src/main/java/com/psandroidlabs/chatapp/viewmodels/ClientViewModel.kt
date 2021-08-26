@@ -90,9 +90,12 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         return try {
             runBlocking {
                 launch(Dispatchers.IO) {
-                    socketList[0]?.getOutputStream()?.write(messageByte.toByteArray(Charsets.UTF_8))
+                    if (socketList.isNotEmpty()) {
+                        socketList[0]?.getOutputStream()?.write(messageByte.toByteArray(Charsets.UTF_8))
+                    }
                 }
             }
+
             true
         } catch (e: java.net.SocketException) {
             false
