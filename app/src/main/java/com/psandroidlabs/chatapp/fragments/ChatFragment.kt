@@ -30,6 +30,7 @@ import com.psandroidlabs.chatapp.utils.PictureManager
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.*
 
+
 @DelicateCoroutinesApi
 class ChatFragment : Fragment(), CoroutineScope {
 
