@@ -83,18 +83,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.75" />
+            app:layout_constraintGuide_percent="0.65" />
 
         <ImageView
             android:id="@+id/sendImageButton"
             android:visibility="visible"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_upload_image"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_photo"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/guideline2"
+            app:layout_constraintRight_toLeftOf="@id/guideline4"
             app:layout_constraintLeft_toRightOf="@id/guideline3"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/sendPhotoButton"
+            android:visibility="visible"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_take_picture"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/guideline2"
+            app:layout_constraintLeft_toRightOf="@id/guideline4"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"
@@ -115,6 +127,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline2"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
 
         <ImageView
             android:id="@+id/recordAudio"

@@ -140,4 +140,11 @@ object PictureManager {
             builder.show()
         }
     }
+
+    fun loadAvatar(): Bitmap? {
+        val preference = AppPreferences.getClient(MainApplication.applicationContext())
+        return if (preference.isNotEmpty() && !preference[3].isNullOrBlank()) {
+            preference[2]?.let { fileToBitmap(it) }
+        } else null
+    }
 }

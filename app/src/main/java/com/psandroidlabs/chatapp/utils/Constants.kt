@@ -12,6 +12,8 @@ object Constants {
     const val IMAGE_DIR = "image"
 
     const val RECORD_PERMISSION = 1
+    const val CAMERA_PERMISSION = 2
+    const val CHOOSE_IMAGE_GALLERY = 3
 
     const val ACTION_STOP = "STOP"
 

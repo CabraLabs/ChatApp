@@ -119,35 +119,37 @@ class ChatFragment : Fragment(), CoroutineScope {
         activity?.title = getString(R.string.chat_app_bar_name)
 
         if (!disconnect) {
-            activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val alertDialog: AlertDialog? = activity?.let {
-                        val builder = AlertDialog.Builder(it)
-                        builder.apply {
-                            setPositiveButton(R.string.yes) { _, _ ->
-                                val message = ChatManager.leaveMessage(clientUsername)
+            activity?.onBackPressedDispatcher?.addCallback(
+                this,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        val alertDialog: AlertDialog? = activity?.let {
+                            val builder = AlertDialog.Builder(it)
+                            builder.apply {
+                                setPositiveButton(R.string.yes) { _, _ ->
+                                    val message = ChatManager.leaveMessage(clientUsername)
 
-                                client.writeToSocket(ChatManager.leaveMessage(clientUsername))
-                                ChatManager.addToAdapter(message)
+                                    client.writeToSocket(ChatManager.leaveMessage(clientUsername))
+                                    ChatManager.addToAdapter(message)
 
-                                client.updateAccepted(null)
-                                navController.popBackStack()
+                                    client.updateAccepted(null)
+                                    navController.popBackStack()
+                                }
+
+                                setNegativeButton(R.string.no) { _, _ ->
+
+                                }
                             }
 
-                            setNegativeButton(R.string.no) { _, _ ->
+                            builder.setTitle(getString(R.string.dialog_warning))
+                            builder.setCancelable(true)
 
-                            }
+                            builder.create()
                         }
 
-                        builder.setTitle(getString(R.string.dialog_warning))
-                        builder.setCancelable(true)
-
-                        builder.create()
+                        alertDialog?.show()
                     }
-
-                    alertDialog?.show()
-                }
-            })
+                })
         }
     }
 
@@ -217,6 +219,8 @@ class ChatFragment : Fragment(), CoroutineScope {
         sendMessageListener()
         recordAudioListener()
         vibrateListener()
+        sendImageListener()
+        sendPhotoListener()
 
         val messageObserver = Observer<Message> {
             notifyAdapterChange(it, true)
@@ -249,6 +253,22 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun recordAudioListener() {
         binding.recordAudio.setOnClickListener {
             requestPermission()
+        }
+    }
+
+    private fun sendImageListener() {
+        with(binding) {
+            sendImageButton.setOnClickListener {
+//TODO transfer requestPermission() to PictureManager and add permission and request code params
+            }
+        }
+    }
+
+    private fun sendPhotoListener() {
+        with(binding) {
+            sendPhotoButton.setOnClickListener {
+
+            }
         }
     }
 
@@ -320,7 +340,8 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
-                val message = ChatManager.parseMessageType(clientUsername, getTextFieldString(), client.id)
+                val message =
+                    ChatManager.parseMessageType(clientUsername, getTextFieldString(), client.id)
                 val success = client.writeToSocket(message)
 
                 checkDisconnected(success, message)
