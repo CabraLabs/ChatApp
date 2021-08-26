@@ -1,13 +1,19 @@
 package com.psandroidlabs.chatapp.utils
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.*
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.snackbar.Snackbar
+import com.psandroidlabs.chatapp.MainApplication
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.models.*
@@ -253,5 +259,17 @@ object ChatManager : CoroutineScope {
 
     fun delay(delay: Long = 1500, action: () -> Unit) {
         Handler(Looper.getMainLooper()).postDelayed(action, delay)
+    }
+
+    fun requestPermission(activity: Activity?, permission: String, requestCode: Int): Boolean {
+        if (ContextCompat.checkSelfPermission(applicationContext(), permission
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            if (activity != null) {
+                ActivityCompat.requestPermissions(activity,arrayOf(permission),requestCode)
+            }
+            return true
+        }
+        return false
     }
 }
