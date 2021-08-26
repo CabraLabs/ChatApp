@@ -26,6 +26,7 @@ import java.net.Socket
 import java.util.*
 
 
+@DelicateCoroutinesApi
 class ClientViewModel : ViewModel(), CoroutineScope {
 
     private var background = false
@@ -98,7 +99,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         }
     }
 
-    @DelicateCoroutinesApi
     fun readSocket() {
         GlobalScope.launch(Dispatchers.IO) {
             val scanner = Scanner(socketList[0]?.getInputStream())
