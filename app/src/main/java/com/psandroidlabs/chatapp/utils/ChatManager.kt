@@ -166,6 +166,7 @@ object ChatManager : CoroutineScope {
     fun leaveMessage(username: String) = createMessage(
         type = MessageType.LEAVE,
         username = username,
+        text = applicationContext().getString(R.string.leaved_the_room)
     )
 
     /**
