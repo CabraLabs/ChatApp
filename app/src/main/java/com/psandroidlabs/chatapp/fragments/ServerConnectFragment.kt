@@ -221,6 +221,8 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
             AcceptedStatus.WRONG_PASSWORD -> toast(getString(R.string.wrong_password))
             AcceptedStatus.SECURITY_KICK -> toast(getString(R.string.security_kick))
             AcceptedStatus.ADMIN_KICK -> toast(getString(R.string.admin_kick))
+            AcceptedStatus.MISSING_ID -> toast(getString(R.string.missing_id))
+
         }
     }
 

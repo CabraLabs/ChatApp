@@ -212,6 +212,11 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                 loading(false)
                 toast(getString(R.string.admin_kick))
             }
+
+            AcceptedStatus.MISSING_ID -> {
+                loading(false)
+                toast(getString(R.string.missing_id))
+            }
         }
     }
 
