@@ -34,14 +34,11 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-<<<<<<< HEAD
+
                 if(PictureManager.loadMyAvatar() != null) {
                     userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
                 }
-=======
-                if (PictureManager.loadAvatar() != null)
-                    userAvatar.setImageBitmap(PictureManager.loadAvatar())
->>>>>>> feat: audio view implementation
+
                 chatRowMessage.text = message.text
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
@@ -57,10 +54,6 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                 if(message.id != null){
                     val id = message.id
                     userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
-                }
-
-                if (PictureManager.loadAvatar() != null) {
-                    userAvatar.setImageBitmap(PictureManager.loadAvatar())
                 }
 
                 chatRowMessage.text = message.text
@@ -222,37 +215,28 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
             with(binding) {
                 chatRowUsername.text = message.username
 
-                if(PictureManager.loadMyAvatar() != null) {
+                if (PictureManager.loadMyAvatar() != null) {
                     userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
 
-                if (message.base64Data.isNullOrBlank()) {
-                    userAvatar.setImageBitmap(PictureManager.defaultAvatar)
-                } else {
-                    userAvatar.setImageBitmap(message.join?.avatar?.let {
-                        PictureManager.stringToBitmap(
-                            it
-                        )
-                    })
-                }
+                    val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
 
-                val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
-
-                btnChatRowImage.setImageBitmap(bitmap)
-                btnChatRowImage.setOnClickListener {
-                    val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
-                    if(uri?.path != null) {
-                        val bundle: Bundle = bundleOf("path" to uri.path)
-                        val extras = FragmentNavigatorExtras(btnChatRowImage to "transitionImage")
-                        navController.navigate(
-                            R.id.action_chatFragment_to_imageFragment,
-                            bundle,
-                            null,
-                            extras
-                        )
+                    btnChatRowImage.setImageBitmap(bitmap)
+                    btnChatRowImage.setOnClickListener {
+                        val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
+                        if (uri?.path != null) {
+                            val bundle: Bundle = bundleOf("path" to uri.path)
+                            val extras = FragmentNavigatorExtras(btnChatRowImage to "transitionImage")
+                            navController.navigate(
+                                R.id.action_chatFragment_to_imageFragment,
+                                bundle,
+                                null,
+                                extras
+                            )
+                        }
                     }
-                }
 
-                chatRowTime.text = ChatManager.formatTime(message.time)
+                    chatRowTime.text = ChatManager.formatTime(message.time)
+                }
             }
         }
     }
@@ -263,38 +247,29 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
             with(binding) {
                 chatRowUsername.text = message.username
 
-                if(message.id != null){
+                if (message.id != null) {
                     val id = message.id
                     userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
 
-                if (message.base64Data.isNullOrBlank()) {
-                    userAvatar.setImageBitmap(PictureManager.defaultAvatar)
-                } else {
-                    userAvatar.setImageBitmap(message.join?.avatar?.let {
-                        PictureManager.stringToBitmap(
-                            it
-                        )
-                    })
-                }
+                    val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
 
-                val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
-
-                btnChatRowImage.setImageBitmap(bitmap)
-                btnChatRowImage.setOnClickListener {
-                    val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
-                    if(uri?.path != null) {
-                        val bundle: Bundle = bundleOf("path" to uri.path)
-                        val extras = FragmentNavigatorExtras(btnChatRowImage to "image_big")
-                        navController.navigate(
-                            R.id.action_chatFragment_to_imageFragment,
-                            bundle,
-                            null,
-                            extras
-                        )
+                    btnChatRowImage.setImageBitmap(bitmap)
+                    btnChatRowImage.setOnClickListener {
+                        val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
+                        if (uri?.path != null) {
+                            val bundle: Bundle = bundleOf("path" to uri.path)
+                            val extras = FragmentNavigatorExtras(btnChatRowImage to "image_big")
+                            navController.navigate(
+                                R.id.action_chatFragment_to_imageFragment,
+                                bundle,
+                                null,
+                                extras
+                            )
+                        }
                     }
-                }
 
-                chatRowTime.text = ChatManager.formatTime(message.time)
+                    chatRowTime.text = ChatManager.formatTime(message.time)
+                }
             }
         }
     }

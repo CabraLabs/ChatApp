@@ -114,7 +114,7 @@ object ChatManager : CoroutineScope {
             type = MessageType.AUDIO,
             username = username,
             text = audioPath ?: throw Exception("Audio message needs to have a full path."),
-            base64Data = audioPath.toBase64()
+            // TODO to base64
         )
     }
 
