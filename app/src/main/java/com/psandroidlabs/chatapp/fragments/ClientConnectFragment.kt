@@ -152,6 +152,8 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
             binding.ipAddress.error = getString(R.string.invalid_ip)
             return
         } else {
+            loading(true)
+
             val username = binding.userNameField.text.toString()
             val inetAddress = client.transformIp(getIpAddressField())
             val success = client.startSocket(username, inetAddress, getPortField())
@@ -167,6 +169,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
                 join(username)
             } else {
+                loading(false)
                 toast(getString(R.string.connect_error))
             }
         }
@@ -194,9 +197,26 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
                 navController.navigate(action)
             }
-            AcceptedStatus.WRONG_PASSWORD -> toast(getString(R.string.wrong_password))
-            AcceptedStatus.SECURITY_KICK -> toast(getString(R.string.security_kick))
-            AcceptedStatus.ADMIN_KICK -> toast(getString(R.string.admin_kick))
+
+            AcceptedStatus.WRONG_PASSWORD -> {
+                loading(false)
+                toast(getString(R.string.wrong_password))
+            }
+
+            AcceptedStatus.SECURITY_KICK -> {
+                loading(false)
+                toast(getString(R.string.security_kick))
+            }
+
+            AcceptedStatus.ADMIN_KICK -> {
+                loading(false)
+                toast(getString(R.string.admin_kick))
+            }
+
+            AcceptedStatus.MISSING_ID -> {
+                loading(false)
+                toast(getString(R.string.missing_id))
+            }
         }
     }
 
@@ -213,6 +233,14 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
                     ipAddress.error = null
                 }
             }
+        }
+    }
+
+    private fun loading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.GONE
         }
     }
 

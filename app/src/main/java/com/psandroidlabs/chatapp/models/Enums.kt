@@ -22,5 +22,5 @@ enum class MessageStatus(val code: Int) {
 }
 
 enum class AcceptedStatus(val code: Int) {
-    ACCEPTED(0), WRONG_PASSWORD(1), SECURITY_KICK(2), ADMIN_KICK(3)
+    ACCEPTED(0), WRONG_PASSWORD(1), SECURITY_KICK(2), ADMIN_KICK(3), MISSING_ID(4)
 }

@@ -22,6 +22,7 @@ import com.psandroidlabs.chatapp.utils.Constants
 import com.squareup.moshi.JsonDataException
 import kotlinx.coroutines.*
 import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.*
 
@@ -67,19 +68,27 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     fun getUsername() = userName
 
     fun startSocket(username: String, ip: InetAddress, port: Int): Boolean {
-        return try {
+        try {
             runBlocking {
                 launch(Dispatchers.IO) {
-                    val client = Socket(ip, port)
-                    socketList.add(client)
-                    userName = username
+                    withTimeout(2000) {
+                        val client = Socket()
+                        client.connect(InetSocketAddress(ip, port), 2_500)
+
+                        socketList.add(client)
+                        userName = username
+
+                        running = true
+                    }
                 }
-                running = true
             }
-            true
         } catch (e: java.net.ConnectException) {
-            false
+            return false
+        } catch (e: java.net.SocketTimeoutException) {
+            return false
         }
+
+        return true
     }
 
     @Synchronized
@@ -90,9 +99,12 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         return try {
             runBlocking {
                 launch(Dispatchers.IO) {
-                    socketList[0]?.getOutputStream()?.write(messageByte.toByteArray(Charsets.UTF_8))
+                    if (socketList.isNotEmpty()) {
+                        socketList[0]?.getOutputStream()?.write(messageByte.toByteArray(Charsets.UTF_8))
+                    }
                 }
             }
+
             true
         } catch (e: java.net.SocketException) {
             false
@@ -110,19 +122,27 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                     try {
                         val message = ChatManager.serializeMessage(receivedJson)
 
-                        // TODO make the exception be changed to a proper handle with a message to the user.
                         if (message != null) {
                             when (message.type) {
                                 MessageType.ACKNOWLEDGE.code -> {
-                                    updateAccepted(AcceptedStatus.ACCEPTED)
-
-                                    // TODO handle exception when the server doesn't send anybody on the list.
                                     if (message.text != null) {
-                                        ChatManager.chatMembersList = ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
+                                        try {
+                                            ChatManager.chatMembersList = ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
+                                        } catch (e: JsonDataException) {
+                                            Log.e("ClientViewModel", "Server sent an incorrect profile list: ${message.text}")
+                                        }
                                     }
 
-                                    id = message.id
-                                        ?: throw Exception("Server failed to send a verification Id")
+                                    if (message.id != null) {
+                                        updateAccepted(AcceptedStatus.ACCEPTED)
+
+                                        id = message.id
+                                            ?: throw Exception(
+                                                "id cannot be changed to null, it is useful to have it as nullable but changing it's value to null is a mistake."
+                                            )
+                                    } else {
+                                        updateAccepted(AcceptedStatus.MISSING_ID)
+                                    }
                                 }
 
                                 MessageType.REVOKED.code -> {
@@ -224,5 +244,4 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     private fun onClick(pos: Int) {
         TODO()
     }
-
 }

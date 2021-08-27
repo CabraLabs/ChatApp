@@ -48,11 +48,12 @@
     <string name="share">Compartilhar</string>
     <string name="chat_members">Membros do chat</string>
     <string name="optional">*Opcional</string>
-    <string name="invalid_ip">Por favor, providencie um endereço de IP valido</string>
+    <string name="invalid_ip">Por favor, providencie um endereço de IP válido</string>
     <string name="ip_example">192.168.x.104</string>
     <string name="port">Porta</string>
     <string name="tictactoe_invite">Convidar para TicTacToe</string>
     <string name="cancel">Cancelar</string>
     <string name="score">Pontuação</string>
-    <string name="leaved_the_room">saiu da sala:</string>
+    <string name="left_the_room">saiu da sala:</string>
+    <string name="missing_id">Servidor não conseguiu providenciar um ID de usuário</string>
 </resources>

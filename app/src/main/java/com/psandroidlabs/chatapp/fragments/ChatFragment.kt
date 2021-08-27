@@ -24,6 +24,7 @@ import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
+import com.psandroidlabs.chatapp.utils.AudioManager
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.utils.PictureManager
@@ -31,6 +32,7 @@ import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.*
 
 
+@DelicateCoroutinesApi
 class ChatFragment : Fragment(), CoroutineScope {
 
     private val client: ClientViewModel by activityViewModels()
@@ -48,7 +50,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private var disconnect = false
 
     private var recorder: MediaRecorder? = null
-    private var audioName: String? = null
+    private var audioName: String = ""
 
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -106,7 +108,14 @@ class ChatFragment : Fragment(), CoroutineScope {
         chatNotification.cancelNotification()
 
         if (disconnect) {
+            val message = ChatManager.leaveMessage(clientUsername)
+            ChatManager.addToAdapter(message)
+
             disconnectSnack.dismiss()
+        } else {
+            val message = ChatManager.leaveMessage(clientUsername)
+            client.writeToSocket(ChatManager.leaveMessage(clientUsername))
+            ChatManager.addToAdapter(message)
         }
 
         if (arg.user == UserType.SERVER) {
@@ -143,7 +152,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         ChatManager.getFragmentActivity(activity)
         activity?.title = getString(R.string.chat_app_bar_name)
 
-        if (!disconnect) {
+        if (disconnect == false) {
             activity?.onBackPressedDispatcher?.addCallback(
                 this,
                 object : OnBackPressedCallback(true) {
@@ -152,11 +161,6 @@ class ChatFragment : Fragment(), CoroutineScope {
                             val builder = AlertDialog.Builder(it)
                             builder.apply {
                                 setPositiveButton(R.string.yes) { _, _ ->
-                                    val message = ChatManager.leaveMessage(clientUsername)
-
-                                    client.writeToSocket(ChatManager.leaveMessage(clientUsername))
-                                    ChatManager.addToAdapter(message)
-
                                     client.updateAccepted(null)
                                     navController.popBackStack()
                                 }
@@ -226,14 +230,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         return binding.root
     }
 
-    @DelicateCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         startChat()
     }
 
-    @DelicateCoroutinesApi
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
@@ -324,11 +326,13 @@ class ChatFragment : Fragment(), CoroutineScope {
             if (recording) {
                 recordAudio.setBackgroundColor(requireContext().getColor(R.color.red))
 
-                audioName = ChatManager.nameAudio()
-                recorder = ChatManager.createAudioRecorder(requireContext(), audioName)
+                audioName =  AudioManager.nameAudio()
+
+                recorder = AudioManager.createAudioRecorder(AudioManager.audioDir(audioName, requireContext()))
 
                 recorder?.prepare()
                 recorder?.start()
+
                 disableChat(true)
             } else {
                 recordAudio.setBackgroundColor(requireContext().getColor(R.color.black))
@@ -338,12 +342,12 @@ class ChatFragment : Fragment(), CoroutineScope {
                     release()
                 }
 
-                val message = ChatManager.audioMessage(clientUsername, audioName)
+                val message = ChatManager.audioMessage(clientUsername, AudioManager.audioDir(audioName, requireContext()))
                 val success = client.writeToSocket(message)
 
-                checkDisconnected(success)
+                checkDisconnected(success, message)
 
-                audioName = null
+                audioName = ""
                 recorder = null
                 disableChat(false)
             }
@@ -364,7 +368,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    @DelicateCoroutinesApi
     private fun sendMessageListener() {
         binding.sendButton.setOnClickListener {
             if (getTextFieldString().isNotBlank()) {
