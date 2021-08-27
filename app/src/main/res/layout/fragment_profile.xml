@@ -21,6 +21,7 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"
+        android:transitionName="transitionImage"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"

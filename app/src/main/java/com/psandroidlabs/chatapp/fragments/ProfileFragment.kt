@@ -11,14 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentProfileBinding
-import com.psandroidlabs.chatapp.utils.AppPreferences
-import com.psandroidlabs.chatapp.utils.PictureManager
-import com.psandroidlabs.chatapp.utils.toSquare
+import com.psandroidlabs.chatapp.utils.*
 
 
 class ProfileFragment : Fragment() {
@@ -49,17 +49,6 @@ class ProfileFragment : Fragment() {
             binding.avatar.setImageBitmap(userPhoto)
         }
     }
-
-    private val activityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permission ->
-            permission.forEach {
-                when (it.key) {
-                    Manifest.permission.CAMERA -> takePhoto()
-                    Manifest.permission.READ_EXTERNAL_STORAGE -> choosePicture()
-                }
-                Log.i(tag, "Permission: ${it.key}, granted: ${it.value}")
-            }
-        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,36 +90,35 @@ class ProfileFragment : Fragment() {
                 }
 
                 avatar.setOnClickListener {
-                    PictureManager.dialogImage(context, userPhoto)
+                    val uri = PictureManager.bitmapToFile(userPhoto)
+                    if(uri.path != null) {
+                        val bundle: Bundle = bundleOf("path" to uri.path)
+                        val extras = FragmentNavigatorExtras(binding.avatar to "image_big")
+                        findNavController().navigate(
+                            R.id.action_profileFragment_to_imageFragment,
+                            bundle,
+                            null,
+                            extras
+                        )
+                    }
+
                 }
 
                 btnTakePhoto.setOnClickListener {
-                    if (ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.CAMERA
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        activityResultLauncher.launch(arrayOf(Manifest.permission.CAMERA))
-                    } else {
+                    if(ChatManager.requestPermission(activity, Manifest.permission.CAMERA, Constants.CAMERA_PERMISSION)){
                         takePhoto()
                     }
                 }
 
                 btnChoosePicture.setOnClickListener {
-                    if (ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        activityResultLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
-                    } else {
+                    if(ChatManager.requestPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, Constants.CHOOSE_IMAGE_GALLERY)){
                         choosePicture()
                     }
                 }
             }
 
             btnSave.setOnClickListener {
-                val uri = userPhoto.let { bitmap -> PictureManager.bitmapToFile(context, bitmap) }
+                val uri = userPhoto.let { bitmap -> PictureManager.bitmapToFile(bitmap) }
                 AppPreferences.saveClient(
                     userNameField.text.toString(),
                     clientAvatar = uri.path,
