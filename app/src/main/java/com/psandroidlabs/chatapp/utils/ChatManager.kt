@@ -1,12 +1,10 @@
 package com.psandroidlabs.chatapp.utils
 
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.media.MediaRecorder
 import android.os.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -24,7 +22,6 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -63,25 +60,8 @@ object ChatManager : CoroutineScope {
         return simpleDateFormat.format(epoch).uppercase()
     }
 
-    private fun getEpoch(): Long {
+    fun getEpoch(): Long {
         return Calendar.getInstance().timeInMillis
-    }
-
-    /**
-     * Create and return a MediaRecorder to record audio messages.
-     */
-    fun createAudioRecorder(context: Context, audioName: String?) = MediaRecorder().apply {
-        setAudioSource(MediaRecorder.AudioSource.MIC)
-        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            setOutputFile(File(context.getExternalFilesDir(Constants.AUDIO_DIR), audioName ?: nameAudio()))
-        }
-    }
-
-    fun nameAudio(): String {
-        return getEpoch().toString() + ".mp3"
     }
 
     /**
@@ -130,17 +110,12 @@ object ChatManager : CoroutineScope {
      * sent to the user and the server.
      */
     fun audioMessage(username: String, audioPath: String?): Message {
-        val audioMessage = createMessage(
+        return createMessage(
             type = MessageType.AUDIO,
             username = username,
-            text = audioPath ?: throw Exception("Audio message needs to have a full path.")
+            text = audioPath ?: throw Exception("Audio message needs to have a full path."),
+            base64Data = audioPath.toBase64()
         )
-
-        addToAdapter(audioMessage)
-
-        return audioMessage.apply {
-          //  base64Data = text?.toBase64()
-        }
     }
 
     /**
@@ -274,12 +249,13 @@ object ChatManager : CoroutineScope {
         Handler(Looper.getMainLooper()).postDelayed(action, delay)
     }
 
-    fun requestPermission(activity: Activity?, permission: String, requestCode: Int): Boolean{
-        if (ContextCompat.checkSelfPermission(applicationContext(), permission
+    fun requestPermission(activity: Activity?, permission: String, requestCode: Int): Boolean {
+        if (ContextCompat.checkSelfPermission(
+                applicationContext(), permission
             ) == PackageManager.PERMISSION_DENIED
         ) {
             if (activity != null) {
-                ActivityCompat.requestPermissions(activity,arrayOf(permission),requestCode)
+                ActivityCompat.requestPermissions(activity, arrayOf(permission), requestCode)
             }
             return false
         }
