@@ -24,6 +24,7 @@ import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
+import com.psandroidlabs.chatapp.utils.AudioManager
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.utils.PictureManager
@@ -49,7 +50,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private var disconnect = false
 
     private var recorder: MediaRecorder? = null
-    private var audioName: String? = null
+    private var audioName: String = ""
 
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -151,7 +152,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         ChatManager.getFragmentActivity(activity)
         activity?.title = getString(R.string.chat_app_bar_name)
 
-        if (!disconnect) {
+        if (disconnect == false) {
             activity?.onBackPressedDispatcher?.addCallback(
                 this,
                 object : OnBackPressedCallback(true) {
@@ -325,11 +326,13 @@ class ChatFragment : Fragment(), CoroutineScope {
             if (recording) {
                 recordAudio.setBackgroundColor(requireContext().getColor(R.color.red))
 
-                audioName = ChatManager.nameAudio()
-                recorder = ChatManager.createAudioRecorder(requireContext(), audioName)
+                audioName =  AudioManager.nameAudio()
+
+                recorder = AudioManager.createAudioRecorder(AudioManager.audioDir(audioName, requireContext()))
 
                 recorder?.prepare()
                 recorder?.start()
+
                 disableChat(true)
             } else {
                 recordAudio.setBackgroundColor(requireContext().getColor(R.color.black))
@@ -339,12 +342,12 @@ class ChatFragment : Fragment(), CoroutineScope {
                     release()
                 }
 
-                val message = ChatManager.audioMessage(clientUsername, audioName)
+                val message = ChatManager.audioMessage(clientUsername, AudioManager.audioDir(audioName, requireContext()))
                 val success = client.writeToSocket(message)
 
-                checkDisconnected(success)
+                checkDisconnected(success, message)
 
-                audioName = null
+                audioName = ""
                 recorder = null
                 disableChat(false)
             }
