@@ -18,6 +18,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_goat_launcher_round"
+        android:hardwareAccelerated="false"
+        android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.Socket">
         <service android:name="com.psandroidlabs.chatapp.ServerService">

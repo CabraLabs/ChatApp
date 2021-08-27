@@ -3,10 +3,12 @@ package com.psandroidlabs.chatapp.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.Base64
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
+import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 import java.util.*
 import kotlin.math.min
@@ -50,11 +52,9 @@ fun Bitmap.toSquare(): Bitmap? {
     )
 }
 
-fun String.toBase64(): String {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        Base64.getEncoder().encodeToString(this.toByteArray())
-    } else {
-        // TODO find version
-        ""
-    }
+fun Bitmap.toBase64(): String {
+    val baos = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+    val b = baos.toByteArray()
+    return Base64.encodeToString(b, Base64.NO_WRAP)
 }

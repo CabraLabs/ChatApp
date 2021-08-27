@@ -2,13 +2,18 @@ package com.psandroidlabs.chatapp.utils
 
 import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.*
+import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -141,7 +146,7 @@ object ChatManager : CoroutineScope {
         addToAdapter(audioMessage)
 
         return audioMessage.apply {
-            base64Data = text?.toBase64()
+          //  base64Data = text?.toBase64()
         }
     }
 
@@ -171,6 +176,20 @@ object ChatManager : CoroutineScope {
         username = username,
         id = id
     )
+
+    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap): Message{
+        val imageMessage = createMessage(
+            type = MessageType.IMAGE,
+            username = username,
+            text = imagePath ?: throw Exception("Image message needs to have a full path.")
+        )
+
+        addToAdapter(imageMessage)
+
+        return imageMessage.apply {
+            base64Data = bitmap.toBase64()
+        }
+    }
 
     /**
      * Parse the message to a valid REVOKED or ACKNOWLEDGE message.
@@ -261,15 +280,15 @@ object ChatManager : CoroutineScope {
         Handler(Looper.getMainLooper()).postDelayed(action, delay)
     }
 
-    fun requestPermission(activity: Activity?, permission: String, requestCode: Int): Boolean {
+    fun requestPermission(activity: Activity?, permission: String, requestCode: Int): Boolean{
         if (ContextCompat.checkSelfPermission(applicationContext(), permission
             ) == PackageManager.PERMISSION_DENIED
         ) {
             if (activity != null) {
                 ActivityCompat.requestPermissions(activity,arrayOf(permission),requestCode)
             }
-            return true
+            return false
         }
-        return false
+        return true
     }
 }

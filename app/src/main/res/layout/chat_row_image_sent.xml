@@ -32,6 +32,7 @@
 
             <ImageView
                 android:id="@+id/btnChatRowImage"
+                android:transitionName="imageSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"

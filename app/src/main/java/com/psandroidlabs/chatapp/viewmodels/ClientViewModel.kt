@@ -192,7 +192,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     fun showChatMembers(context: Context?) {
         if (context != null) {
             val dialogBox = Dialog(context).apply {
-                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
                 window?.setLayout(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
