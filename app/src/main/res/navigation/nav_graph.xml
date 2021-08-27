@@ -70,6 +70,9 @@
         <argument
             android:name="user"
             app:argType="com.psandroidlabs.chatapp.models.UserType" />
+        <action
+            android:id="@+id/action_chatFragment_to_imageFragment"
+            app:destination="@id/imageFragment" />
     </fragment>
     <fragment
         android:id="@+id/tictactoe"
@@ -80,10 +83,24 @@
         android:id="@+id/profileFragment"
         android:name="com.psandroidlabs.chatapp.fragments.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_imageFragment"
+            app:destination="@id/imageFragment" />
+    </fragment>
     <fragment
         android:id="@+id/chatMembersFragment"
         android:name="com.psandroidlabs.chatapp.fragments.ChatMembersFragment"
         android:label="Chat Members"
         tools:layout="@layout/fragment_chat_members" />
+    <fragment
+        android:id="@+id/imageFragment"
+        android:name="com.psandroidlabs.chatapp.fragments.ImageFragment"
+        android:label="Image Fragment"
+        tools:layout="@layout/fragment_image" >
+        <argument
+            android:name="path"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>
