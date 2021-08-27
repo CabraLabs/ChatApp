@@ -69,7 +69,6 @@ object PictureManager {
 
     fun bitmapToBase64(bitmap: Bitmap): String {
         val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val b = baos.toByteArray()
         return Base64.encodeToString(b, Base64.NO_WRAP)
     }
@@ -84,11 +83,6 @@ object PictureManager {
                 Base64.decode(string, Base64.NO_WRAP).size
             )
         }
-    }
-
-    fun uriToBase64(uri: Uri, contentResolver: ContentResolver): String {
-        val bitmap = uriToBitmap(uri, contentResolver)
-        return bitmapToBase64(bitmap)
     }
 
     fun bitmapToFile(bitmap: Bitmap): Uri {
@@ -116,27 +110,6 @@ object PictureManager {
         } else {
             null
         }
-    }
-
-    fun dialogImage(bitmap: Bitmap) {
-        val builder = Dialog(MainApplication.applicationContext(), android.R.style.Theme_Light)
-        builder.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        builder.window!!.setBackgroundDrawable(
-            ColorDrawable(Color.TRANSPARENT)
-        )
-
-        //TODO make dismiss
-
-        val imageView = ImageView(MainApplication.applicationContext())
-        imageView.setImageBitmap(bitmap)
-        builder.addContentView(
-            imageView, RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        )
-
-        builder.show()
     }
 
     fun loadMyAvatar(): Bitmap? {
