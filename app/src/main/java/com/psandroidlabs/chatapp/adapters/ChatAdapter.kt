@@ -101,7 +101,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                     val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
                     if(uri?.path != null) {
                         val bundle: Bundle = bundleOf("path" to uri.path)
-                        val extras = FragmentNavigatorExtras(btnChatRowImage to "image_big")
+                        val extras = FragmentNavigatorExtras(btnChatRowImage to "transitionImage")
                         navController.navigate(
                             R.id.action_chatFragment_to_imageFragment,
                             bundle,
