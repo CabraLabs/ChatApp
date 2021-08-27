@@ -1,6 +1,7 @@
 package com.psandroidlabs.chatapp.adapters
 
 import android.os.Bundle
+import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,10 @@ import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.PictureManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class ChatAdapter(private val dataSet: ArrayList<Message>, private val navController: NavController) :
@@ -29,9 +34,14 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
+<<<<<<< HEAD
                 if(PictureManager.loadMyAvatar() != null) {
                     userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
                 }
+=======
+                if (PictureManager.loadAvatar() != null)
+                    userAvatar.setImageBitmap(PictureManager.loadAvatar())
+>>>>>>> feat: audio view implementation
                 chatRowMessage.text = message.text
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
@@ -43,10 +53,16 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
+
                 if(message.id != null){
                     val id = message.id
                     userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
                 }
+
+                if (PictureManager.loadAvatar() != null) {
+                    userAvatar.setImageBitmap(PictureManager.loadAvatar())
+                }
+
                 chatRowMessage.text = message.text
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
@@ -84,6 +100,122 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
         }
     }
 
+    inner class ViewHolderAudioReceived(private val binding: ChatRowAudioReceivedBinding) :
+        ViewHolder(binding.root) {
+        private var player: MediaPlayer? = null
+        private var playing: Boolean = false
+        private var currentPosition = 0
+
+        override fun bind(message: Message) {
+            with(binding) {
+                chatRowUsername.text = message.username
+                chatRowTime.text = ChatManager.formatTime(message.time)
+
+                playButton.setOnClickListener {
+                    if (!playing) {
+                        playing = true
+
+                        if (player != null) {
+                            player?.start()
+                        } else {
+                            player = MediaPlayer().apply {
+                                setDataSource(message.text)
+                            }
+
+                            player?.prepare()
+                            player?.start()
+                        }
+                        seekBar.max = player?.duration ?: 100
+
+                        CoroutineScope(Dispatchers.Default).launch {
+                            while (player?.isPlaying == true) {
+                                player?.currentPosition?.let {
+                                    withContext(Dispatchers.Main) {
+                                        seekBar.progress = it
+                                        currentPosition = it
+                                    }
+                                }
+                            }
+
+                            if (playing) {
+                                player?.release()
+                                player = null
+
+                                currentPosition = 0
+                                seekBar.progress = 0
+
+                                playing = false
+                            }
+                        }
+                    } else {
+                        seekBar.progress = currentPosition
+
+                        player?.pause()
+                        playing = false
+                    }
+                }
+            }
+        }
+    }
+
+    inner class ViewHolderAudioSent(private val binding: ChatRowAudioSentBinding) :
+        ViewHolder(binding.root) {
+        private var player: MediaPlayer? = null
+        private var playing: Boolean = false
+        private var currentPosition = 0
+
+        override fun bind(message: Message) {
+            with(binding) {
+                chatRowUsername.text = message.username
+                chatRowTime.text = ChatManager.formatTime(message.time)
+
+                playButton.setOnClickListener {
+                    if (!playing) {
+                        playing = true
+
+                        if (player != null) {
+                            player?.start()
+                        } else {
+                            player = MediaPlayer().apply {
+                                setDataSource(message.text)
+                            }
+
+                            player?.prepare()
+                            player?.start()
+                        }
+                        seekBar.max = player?.duration ?: 100
+
+                        CoroutineScope(Dispatchers.Default).launch {
+                            while (player?.isPlaying == true) {
+                                player?.currentPosition?.let {
+                                    withContext(Dispatchers.Main) {
+                                        seekBar.progress = it
+                                        currentPosition = it
+                                    }
+                                }
+                            }
+
+                            if (playing) {
+                                player?.release()
+                                player = null
+
+                                currentPosition = 0
+                                seekBar.progress = 0
+
+                                playing = false
+                            }
+                        }
+                    } else {
+                        seekBar.progress = currentPosition
+
+                        player?.pause()
+                        playing = false
+                    }
+                }
+            }
+        }
+    }
+
     inner class ViewHolderImageSent(private val binding: ChatRowImageSentBinding) :
         ViewHolder(binding.root) {
         override fun bind(message: Message) {
@@ -92,6 +224,15 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
 
                 if(PictureManager.loadMyAvatar() != null) {
                     userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
+
+                if (message.base64Data.isNullOrBlank()) {
+                    userAvatar.setImageBitmap(PictureManager.defaultAvatar)
+                } else {
+                    userAvatar.setImageBitmap(message.join?.avatar?.let {
+                        PictureManager.stringToBitmap(
+                            it
+                        )
+                    })
                 }
 
                 val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
@@ -125,6 +266,15 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                 if(message.id != null){
                     val id = message.id
                     userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
+
+                if (message.base64Data.isNullOrBlank()) {
+                    userAvatar.setImageBitmap(PictureManager.defaultAvatar)
+                } else {
+                    userAvatar.setImageBitmap(message.join?.avatar?.let {
+                        PictureManager.stringToBitmap(
+                            it
+                        )
+                    })
                 }
 
                 val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
@@ -237,11 +387,23 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
 
             /** Audio Views **/
             3 -> {
-                TODO()
+                ViewHolderAudioSent(
+                    ChatRowAudioSentBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             11 -> {
-                TODO()
+                ViewHolderAudioReceived(
+                    ChatRowAudioReceivedBinding.inflate(
+                        LayoutInflater.from(
+                            viewGroup.context
+                        ), viewGroup, false
+                    )
+                )
             }
 
             /** Image Views **/
