@@ -2,7 +2,6 @@ package com.psandroidlabs.chatapp.utils
 
 import android.app.Dialog
 import android.content.ContentResolver
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,7 +10,9 @@ import android.graphics.ImageDecoder
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore.Images
+import android.os.ParcelFileDescriptor
+import android.provider.MediaStore
+import android.util.Base64
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.ImageView
@@ -21,12 +22,12 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import com.psandroidlabs.chatapp.MainApplication
 import com.psandroidlabs.chatapp.R
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.io.*
 import java.util.*
-
 
 object PictureManager {
 
@@ -35,7 +36,7 @@ object PictureManager {
             .let { ContextCompat.getDrawable(it, R.drawable.ic_goat)?.toBitmap(200, 200) }
     }
 
-    private fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
+    fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
         val bmp = bitmap.toDrawable(Resources.getSystem()).bitmap
         val stream = ByteArrayOutputStream()
         bmp.compress(Bitmap.CompressFormat.JPEG, 90, stream)
@@ -46,9 +47,9 @@ object PictureManager {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
-    private fun compressBitmap(bitmap: Bitmap): Bitmap {
+    fun compressBitmap(bitmap: Bitmap): Bitmap {
         val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, stream)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream)
         val byteArray = stream.toByteArray()
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
@@ -60,43 +61,42 @@ object PictureManager {
                     contentResolver,
                     it
                 )
-            }.let { ImageDecoder.decodeBitmap(it) }.also { toast(">= P") }
-
-        } else { //TODO fix else treatment
-            BitmapFactory.decodeFileDescriptor(uri?.let {
-                contentResolver.openFileDescriptor(
-                    it,
-                    "r"
-                )?.fileDescriptor
-            }).also { toast("< P") }
-        }
-    }
-
-    fun bitmapToUri(bitmap: Bitmap, contentResolver: ContentResolver): Uri {
-        val path = Images.Media.insertImage(contentResolver, bitmap, "avatar", null)
-        return Uri.parse(path)
-    }
-
-    fun bitmapToString(bitmap: Bitmap): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Base64.getEncoder().encodeToString(bitmapToByteArray(compressBitmap(bitmap)))
+            }.let { ImageDecoder.decodeBitmap(it) }
         } else {
-            "aff"
-            //TODO
+            MediaStore.Images.Media.getBitmap(contentResolver, uri)
         }
     }
 
-    fun stringToBitmap(string: String): Bitmap {
+    fun bitmapToBase64(bitmap: Bitmap): String {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val b = baos.toByteArray()
+        return Base64.encodeToString(b, Base64.NO_WRAP)
+    }
+
+    fun base64ToBitmap(string: String): Bitmap {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return byteArrayToBitmap(Base64.getDecoder().decode(string))
+            return byteArrayToBitmap(Base64.decode(string, Base64.NO_WRAP))
         } else {
-            Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888)
-            //TODO
+            BitmapFactory.decodeByteArray(
+                Base64.decode(string, Base64.NO_WRAP),
+                0,
+                Base64.decode(string, Base64.NO_WRAP).size
+            )
         }
     }
 
-    fun bitmapToFile(context: Context?, bitmap: Bitmap): Uri {
-        val file = File(context?.getExternalFilesDir(Constants.IMAGE_DIR), "${UUID.randomUUID()}.jpg")
+    fun uriToBase64(uri: Uri, contentResolver: ContentResolver): String {
+        val bitmap = uriToBitmap(uri, contentResolver)
+        return bitmapToBase64(bitmap)
+    }
+
+    fun bitmapToFile(bitmap: Bitmap): Uri {
+        val file =
+            File(
+                MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
+                "${UUID.randomUUID()}.jpg"
+            )
 
         try {
             val stream = FileOutputStream(file)
@@ -118,33 +118,40 @@ object PictureManager {
         }
     }
 
-    fun dialogImage(context: Context?, bitmap: Bitmap) {
-        if (context != null) {
-            val builder = Dialog(context, android.R.style.Theme_Light)
-            builder.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            builder.window!!.setBackgroundDrawable(
-                ColorDrawable(Color.TRANSPARENT)
+    fun dialogImage(bitmap: Bitmap) {
+        val builder = Dialog(MainApplication.applicationContext(), android.R.style.Theme_Light)
+        builder.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        builder.window!!.setBackgroundDrawable(
+            ColorDrawable(Color.TRANSPARENT)
+        )
+
+        //TODO make dismiss
+
+        val imageView = ImageView(MainApplication.applicationContext())
+        imageView.setImageBitmap(bitmap)
+        builder.addContentView(
+            imageView, RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
+        )
 
-            //TODO make dismiss
-
-            val imageView = ImageView(context)
-            imageView.setImageBitmap(bitmap)
-            builder.addContentView(
-                imageView, RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-            )
-
-            builder.show()
-        }
+        builder.show()
     }
 
-    fun loadAvatar(): Bitmap? {
+    fun loadMyAvatar(): Bitmap? {
         val preference = AppPreferences.getClient(MainApplication.applicationContext())
         return if (preference.isNotEmpty() && !preference[3].isNullOrBlank()) {
             preference[2]?.let { fileToBitmap(it) }
         } else null
+    }
+
+    fun loadMembersAvatar(id: Int): Bitmap? {
+        ChatManager.chatMembersList.forEach {
+            if(it.id == id){
+                return it.photoProfile?.let { it1 -> PictureManager.base64ToBitmap(it1) }
+            }
+        }
+        return null
     }
 }
