@@ -62,16 +62,6 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (args.ip != null) {
-            with(binding) {
-                ipAddressField.setText(args.ip)
-                portField.setText(args.port)
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -83,6 +73,13 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (args.ip != null) {
+            with(binding) {
+                ipAddressField.setText(args.ip)
+                portField.setText(args.port)
+            }
+        }
 
         view.setOnClickListener {
             hideKeyboard()
