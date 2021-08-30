@@ -138,7 +138,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                                         id = message.id
                                             ?: throw Exception(
-                                                "id cannot be changed to null, it is useful to have it as nullable but changing it's value to null is a mistake."
+                                                "id cannot be changed to null, " +
+                                                        "it is useful to have it as nullable but" +
+                                                        " changing it's value to null is a mistake."
                                             )
                                     } else {
                                         updateAccepted(AcceptedStatus.MISSING_ID)
@@ -162,8 +164,31 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                 ChatManager.startVibrate()
                                             }
 
+                                            MessageType.AUDIO.code -> {
+
+                                            }
+
                                             MessageType.JOIN.code -> {
-                                                //TODO add profile to ChatManager.chatMembersList
+                                                ChatManager.chatMembersList.add(
+                                                    Profile(
+                                                        message.id,
+                                                        message.username,
+                                                        message.join?.avatar,
+                                                        0
+                                                    )
+                                                )
+                                            }
+
+                                            MessageType.LEAVE.code -> {
+                                                var toRemove = Profile()
+
+                                                ChatManager.chatMembersList.forEach {
+                                                    if (it.id == message.id) {
+                                                        toRemove = it
+                                                    }
+                                                }
+
+                                                ChatManager.chatMembersList.remove(toRemove)
                                             }
                                         }
 
