@@ -32,7 +32,7 @@ object ChatManager : CoroutineScope {
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
-    private lateinit var fragmentActivity: FragmentActivity
+    //private lateinit var fragmentActivity: FragmentActivity
 
     var chatList: ArrayList<Message> = ArrayList()
     var chatMembersList: ArrayList<Profile> = ArrayList()
@@ -48,16 +48,22 @@ object ChatManager : CoroutineScope {
         adapter
     }
 
-    fun getFragmentActivity(parameterFragmentActivity: FragmentActivity?) {
-        if (parameterFragmentActivity != null) {
-            fragmentActivity = parameterFragmentActivity
-        }
-    }
+//    fun getFragmentActivity(parameterFragmentActivity: FragmentActivity?) {
+//        if (parameterFragmentActivity != null) {
+//            fragmentActivity = parameterFragmentActivity
+//        }
+//    }
 
     fun formatTime(epoch: Long): String {
         val pattern = "HH:mm aa"
         val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
         return simpleDateFormat.format(epoch).uppercase()
+    }
+
+    fun formatAudioTime(time: Int): String {
+        val pattern = "mm:ss"
+        val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
+        return simpleDateFormat.format(time)
     }
 
     fun getEpoch(): Long {
@@ -204,24 +210,24 @@ object ChatManager : CoroutineScope {
         return jsonProfileAdapter.fromJson(profileList)
     }
 
-    private fun startTicTacToe() {
-        val ticTacToeFragment = TicTacToeFragment(false)
-
-        fragmentActivity.supportFragmentManager.let {
-            ticTacToeFragment.show(it, null)
-        }
-    }
-
-    private fun ticTacToeListener() {
-        fragmentActivity.let {
-            Snackbar.make(
-                it.findViewById(R.id.chatLayout),
-                applicationContext().getString(R.string.accept_tictactoe_invite),
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction("YES") { startTicTacToe() }.show()
-        }
-    }
+//    private fun startTicTacToe() {
+//        val ticTacToeFragment = TicTacToeFragment(false)
+//
+//        fragmentActivity.supportFragmentManager.let {
+//            ticTacToeFragment.show(it, null)
+//        }
+//    }
+//
+//    private fun ticTacToeListener() {
+//        fragmentActivity.let {
+//            Snackbar.make(
+//                it.findViewById(R.id.chatLayout),
+//                applicationContext().getString(R.string.accept_tictactoe_invite),
+//                Snackbar.LENGTH_INDEFINITE
+//            )
+//                .setAction("YES") { startTicTacToe() }.show()
+//        }
+//    }
 
     fun startVibrate() {
         val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator

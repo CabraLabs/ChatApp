@@ -1,7 +1,8 @@
 package com.psandroidlabs.chatapp.adapters
 
-import android.os.Bundle
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +17,10 @@ import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.PictureManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
 
 
 class ChatAdapter(private val dataSet: ArrayList<Message>, private val navController: NavController) :
@@ -35,7 +36,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
             with(binding) {
                 chatRowUsername.text = message.username
 
-                if(PictureManager.loadMyAvatar() != null) {
+                if (PictureManager.loadMyAvatar() != null) {
                     userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
                 }
 
@@ -51,7 +52,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
             with(binding) {
                 chatRowUsername.text = message.username
 
-                if(message.id != null){
+                if (message.id != null) {
                     val id = message.id
                     userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
                 }
@@ -104,6 +105,15 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
 
+                message.text?.let {
+                    val length = getAudio(it)?.toInt()
+
+                    if (length != null) {
+                        duration.text = ChatManager.formatAudioTime(length)
+                        seekBar.max = length.toInt()
+                    }
+                }
+
                 playButton.setOnClickListener {
                     if (!playing) {
                         playing = true
@@ -118,11 +128,18 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                             player?.prepare()
                             player?.start()
                         }
-                        seekBar.max = player?.duration ?: 100
 
                         CoroutineScope(Dispatchers.Default).launch {
                             while (player?.isPlaying == true) {
                                 player?.currentPosition?.let {
+                                    Timer().schedule(1000) {
+                                        runBlocking {
+                                            withContext(Dispatchers.Main) {
+                                                duration.text = ChatManager.formatAudioTime(seekBar.max - it)
+                                            }
+                                        }
+                                    }
+
                                     withContext(Dispatchers.Main) {
                                         seekBar.progress = it
                                         currentPosition = it
@@ -131,6 +148,10 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                             }
 
                             if (playing) {
+                                withContext(Dispatchers.Main) {
+                                    duration.text = ChatManager.formatAudioTime(seekBar.max)
+                                }
+
                                 player?.release()
                                 player = null
 
@@ -149,6 +170,14 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                 }
             }
         }
+
+        private fun getAudio(path: String): String? {
+            val mmr = MediaMetadataRetriever().apply {
+                setDataSource(path)
+            }
+
+            return mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+        }
     }
 
     inner class ViewHolderAudioSent(private val binding: ChatRowAudioSentBinding) :
@@ -161,6 +190,15 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
             with(binding) {
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
+
+                message.text?.let {
+                    val length = getAudio(it)?.toInt()
+
+                    if (length != null) {
+                        duration.text = ChatManager.formatAudioTime(length)
+                        seekBar.max = length.toInt()
+                    }
+                }
 
                 playButton.setOnClickListener {
                     if (!playing) {
@@ -176,11 +214,16 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                             player?.prepare()
                             player?.start()
                         }
-                        seekBar.max = player?.duration ?: 100
 
                         CoroutineScope(Dispatchers.Default).launch {
                             while (player?.isPlaying == true) {
                                 player?.currentPosition?.let {
+                                    if (it % 1000 == 0) {
+                                        withContext(Dispatchers.Main) {
+                                            duration.text = ChatManager.formatAudioTime(seekBar.max - it)
+                                        }
+                                    }
+
                                     withContext(Dispatchers.Main) {
                                         seekBar.progress = it
                                         currentPosition = it
@@ -189,6 +232,10 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                             }
 
                             if (playing) {
+                                withContext(Dispatchers.Main) {
+                                    duration.text = ChatManager.formatAudioTime(seekBar.max)
+                                }
+
                                 player?.release()
                                 player = null
 
@@ -206,6 +253,14 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                     }
                 }
             }
+        }
+
+        private fun getAudio(path: String): String? {
+            val mmr = MediaMetadataRetriever().apply {
+                setDataSource(path)
+            }
+
+            return mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         }
     }
 
