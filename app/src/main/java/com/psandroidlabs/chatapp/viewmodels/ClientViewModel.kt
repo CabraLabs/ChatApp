@@ -197,10 +197,12 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     fun shareChatLink(activity: Activity) {
         val sendIntent: Intent = Intent().apply {
+            val ip = socketList[0]?.localAddress.toString()
+
             action = Intent.ACTION_SEND
             putExtra(
                 Intent.EXTRA_TEXT,
-                "http/www.chatapp.psandroidlabs.com/clientconnect/chatroomip=${socketList[0]?.localAddress}"
+                "http://www.chatapp.psandroidlabs.com/args=${ip.replace("/", "")}:${socketList[0]?.port}"
             )
             type = "text/plain"
         }

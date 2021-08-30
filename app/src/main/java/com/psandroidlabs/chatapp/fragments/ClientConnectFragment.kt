@@ -40,6 +40,16 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
         super.onDestroy()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (args.ip != null) {
+            with(binding) {
+                ipAddressField.setText(args.ip)
+                portField.setText(args.port)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -59,16 +69,6 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
             }
 
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (args.ip != null) {
-            with(binding) {
-                ipAddressField.setText(args.ip)
-                portField.setText(args.port)
-            }
         }
     }
 

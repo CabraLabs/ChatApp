@@ -55,7 +55,11 @@
                 <data
                     android:host="www.chatapp.psandroidlabs.com"
                     android:scheme="http"
-                    android:pathPrefix="/" />
+                    android:pathPrefix="/"/>
+                <data
+                    android:host="www.chatapp.psandroidlabs.com"
+                    android:scheme="https"
+                    android:pathPrefix="/"/>
             </intent-filter>
         </activity>
 
