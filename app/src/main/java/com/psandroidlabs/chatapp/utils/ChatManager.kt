@@ -8,13 +8,10 @@ import android.media.MediaPlayer
 import android.os.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
-import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.models.Message
-import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -120,7 +117,7 @@ object ChatManager : CoroutineScope {
             type = MessageType.AUDIO,
             username = username,
             text = audioPath ?: throw Exception("Audio message needs to have a full path."),
-            // TODO to base64
+            base64Data = RecordAudioManager.audioBase64(audioPath),
         )
     }
 

@@ -25,7 +25,7 @@ import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
-import com.psandroidlabs.chatapp.utils.AudioManager
+import com.psandroidlabs.chatapp.utils.RecordAudioManager
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.utils.PictureManager
@@ -341,10 +341,10 @@ class ChatFragment : Fragment(), CoroutineScope {
             if (recording) {
                 recordAudio.setBackgroundColor(requireContext().getColor(R.color.red))
 
-                audioName = AudioManager.nameAudio()
+                audioName = RecordAudioManager.nameAudio()
 
-                recorder = AudioManager.createAudioRecorder(
-                    AudioManager.audioDir(
+                recorder = RecordAudioManager.createAudioRecorder(
+                    RecordAudioManager.audioDir(
                         audioName,
                         requireContext()
                     )
@@ -364,7 +364,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 val message = ChatManager.audioMessage(
                     clientUsername,
-                    AudioManager.audioDir(audioName, requireContext())
+                    RecordAudioManager.audioDir(audioName, requireContext())
                 )
                 val success = client.writeToSocket(message)
 
