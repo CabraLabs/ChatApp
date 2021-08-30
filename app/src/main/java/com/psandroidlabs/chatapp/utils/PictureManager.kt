@@ -67,12 +67,6 @@ object PictureManager {
         }
     }
 
-    fun bitmapToBase64(bitmap: Bitmap): String {
-        val baos = ByteArrayOutputStream()
-        val b = baos.toByteArray()
-        return Base64.encodeToString(b, Base64.NO_WRAP)
-    }
-
     fun base64ToBitmap(string: String): Bitmap {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return byteArrayToBitmap(Base64.decode(string, Base64.NO_WRAP))
