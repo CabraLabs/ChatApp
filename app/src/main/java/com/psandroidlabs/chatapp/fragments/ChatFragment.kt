@@ -8,11 +8,12 @@ import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -93,7 +94,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            val bitmap = PictureManager.compressBitmap(PictureManager.uriToBitmap(uri, requireContext().contentResolver))
+            val bitmap = PictureManager.compressBitmap(
+                PictureManager.uriToBitmap(
+                    uri,
+                    requireContext().contentResolver
+                )
+            )
             val message = ChatManager.imageMessage(clientUsername, uri.path, bitmap)
             val success = client.writeToSocket(message)
 
@@ -144,6 +150,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         client.background(true)
         super.onPause()
     }
+
     // App Bar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -238,7 +245,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun startChat() {
         list = ChatManager.chatList
         val recyclerViewList: RecyclerView = binding.chatRecycler
-        chatAdapter = ChatAdapter(list, navController)
+        chatAdapter = ChatAdapter(list, ::onImageClick)
 
         notifyAdapterChange()
         changeSendButton()
@@ -253,10 +260,20 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
 
         recyclerViewList.apply {
-            //postponeEnterTransition()
             adapter = chatAdapter
             layoutManager = LinearLayoutManager(context)
         }
+    }
+
+    private fun onImageClick(path: String, view: View) {
+        val bundle: Bundle = bundleOf("path" to path)
+        val extras = FragmentNavigatorExtras(view to "image_big")
+        navController.navigate(
+            R.id.action_chatFragment_to_imageFragment,
+            bundle,
+            null,
+            extras
+        )
     }
 
     private fun changeSendButton() {
@@ -297,7 +314,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                         Constants.CAMERA_PERMISSION
                     )
                 )
-                takePhoto()
+                    takePhoto()
 
             }
         }
@@ -312,7 +329,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                         Constants.CHOOSE_IMAGE_GALLERY
                     )
                 )
-                choosePicture()
+                    choosePicture()
             }
         }
     }
@@ -324,9 +341,14 @@ class ChatFragment : Fragment(), CoroutineScope {
             if (recording) {
                 recordAudio.setBackgroundColor(requireContext().getColor(R.color.red))
 
-                audioName =  AudioManager.nameAudio()
+                audioName = AudioManager.nameAudio()
 
-                recorder = AudioManager.createAudioRecorder(AudioManager.audioDir(audioName, requireContext()))
+                recorder = AudioManager.createAudioRecorder(
+                    AudioManager.audioDir(
+                        audioName,
+                        requireContext()
+                    )
+                )
 
                 recorder?.prepare()
                 recorder?.start()
@@ -340,7 +362,10 @@ class ChatFragment : Fragment(), CoroutineScope {
                     release()
                 }
 
-                val message = ChatManager.audioMessage(clientUsername, AudioManager.audioDir(audioName, requireContext()))
+                val message = ChatManager.audioMessage(
+                    clientUsername,
+                    AudioManager.audioDir(audioName, requireContext())
+                )
                 val success = client.writeToSocket(message)
 
                 checkDisconnected(success, message)

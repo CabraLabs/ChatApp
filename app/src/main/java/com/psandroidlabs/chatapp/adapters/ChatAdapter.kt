@@ -23,7 +23,8 @@ import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 
 
-class ChatAdapter(private val dataSet: ArrayList<Message>, private val navController: NavController) :
+class ChatAdapter(private val dataSet: ArrayList<Message>, private val onImageClick: (String, View) -> Unit
+) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
     abstract class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -272,26 +273,17 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
 
                 if (PictureManager.loadMyAvatar() != null) {
                     userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
-
-                    val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
-
-                    btnChatRowImage.setImageBitmap(bitmap)
-                    btnChatRowImage.setOnClickListener {
-                        val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
-                        if (uri?.path != null) {
-                            val bundle: Bundle = bundleOf("path" to uri.path)
-                            val extras = FragmentNavigatorExtras(btnChatRowImage to "transitionImage")
-                            navController.navigate(
-                                R.id.action_chatFragment_to_imageFragment,
-                                bundle,
-                                null,
-                                extras
-                            )
-                        }
-                    }
-
-                    chatRowTime.text = ChatManager.formatTime(message.time)
                 }
+
+                val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
+
+                btnChatRowImage.setImageBitmap(bitmap)
+                btnChatRowImage.setOnClickListener {
+                    val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
+                    uri?.path?.let { path -> onImageClick.invoke(path, btnChatRowImage) }
+                }
+
+                chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }
@@ -311,16 +303,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val navContro
                     btnChatRowImage.setImageBitmap(bitmap)
                     btnChatRowImage.setOnClickListener {
                         val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
-                        if (uri?.path != null) {
-                            val bundle: Bundle = bundleOf("path" to uri.path)
-                            val extras = FragmentNavigatorExtras(btnChatRowImage to "image_big")
-                            navController.navigate(
-                                R.id.action_chatFragment_to_imageFragment,
-                                bundle,
-                                null,
-                                extras
-                            )
-                        }
+                        uri?.path?.let { path -> onImageClick.invoke(path, btnChatRowImage) }
                     }
 
                     chatRowTime.text = ChatManager.formatTime(message.time)
