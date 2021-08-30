@@ -88,12 +88,11 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
             hideKeyboard()
         }
 
-        val acceptedObserver = Observer<AcceptedStatus?> {
+        client.accepted.observe(viewLifecycleOwner) {
             if (it != null) {
                 parseStatus(it)
             }
         }
-        client.accepted.observe(viewLifecycleOwner, acceptedObserver)
 
         initializeButtons()
         portNumbers()
