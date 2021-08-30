@@ -144,15 +144,14 @@ class ChatFragment : Fragment(), CoroutineScope {
         client.background(true)
         super.onPause()
     }
-
     // App Bar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        ChatManager.getFragmentActivity(activity)
+        //ChatManager.getFragmentActivity(activity)
         activity?.title = getString(R.string.chat_app_bar_name)
 
-        if (disconnect == false) {
+        if (!disconnect) {
             activity?.onBackPressedDispatcher?.addCallback(
                 this,
                 object : OnBackPressedCallback(true) {
@@ -249,13 +248,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         sendImageListener()
         sendPhotoListener()
 
-        val messageObserver = Observer<Message> {
+        client.newMessage.observe(viewLifecycleOwner) {
             notifyAdapterChange(it, true)
         }
-        client.newMessage.observe(viewLifecycleOwner, messageObserver)
 
         recyclerViewList.apply {
-            postponeEnterTransition()
+            //postponeEnterTransition()
             adapter = chatAdapter
             layoutManager = LinearLayoutManager(context)
         }
@@ -434,6 +432,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
         binding.chatRecycler.scrollToPosition(list.size - 1)
         chatAdapter.notifyDataSetChanged()
+        //chatAdapter.notifyItemChanged()
     }
 
     private fun takePhoto() {
