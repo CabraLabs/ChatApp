@@ -137,8 +137,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                         updateAccepted(AcceptedStatus.ACCEPTED)
 
                                         id = message.id
-                                            ?: throw Exception(
-                                                "id cannot be changed to null, it is useful to have it as nullable but changing it's value to null is a mistake."
+                                            ?: throw Exception("id cannot be changed to null, " +
+                                                        "it is useful to have it as nullable but" +
+                                                        " changing it's value to null is a mistake."
                                             )
                                     } else {
                                         updateAccepted(AcceptedStatus.MISSING_ID)
