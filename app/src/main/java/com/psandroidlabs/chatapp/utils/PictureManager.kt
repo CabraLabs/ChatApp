@@ -122,7 +122,7 @@ object PictureManager {
     fun loadMembersAvatar(id: Int): Bitmap? {
         ChatManager.chatMembersList.forEach {
             if(it.id == id){
-                return it.photoProfile?.let { it1 -> PictureManager.base64ToBitmap(it1) }
+                return it.photoProfile?.let { it1 -> base64ToBitmap(it1) }
             }
         }
         return null
