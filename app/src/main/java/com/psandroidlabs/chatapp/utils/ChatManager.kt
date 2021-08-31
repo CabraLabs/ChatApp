@@ -127,7 +127,8 @@ object ChatManager : CoroutineScope {
         type = MessageType.JOIN,
         username = username,
         text = text,
-        password = password
+        password = password,
+        avatar = PictureManager.loadMyAvatar()?.toBase64()
     )
 
     /**
