@@ -18,12 +18,13 @@ class ChatMembersAdapter(
         abstract fun bind(profile: Profile, position: Int)
     }
 
-    inner class RowViewHolder(private val binding: ChatMembersRowBinding) : ViewHolder(binding.root) {
+    inner class RowViewHolder(private val binding: ChatMembersRowBinding) :
+        ViewHolder(binding.root) {
         override fun bind(profile: Profile, position: Int) {
             with(binding) {
                 chatMembersUsername.text = dataSet[position].name
 
-                if(dataSet[position].photoProfile != null){
+                if (dataSet[position].photoProfile != null) {
                     userAvatar.setImageBitmap(dataSet[position].photoProfile?.let {
                         PictureManager.base64ToBitmap(
                             it

@@ -98,7 +98,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
             runBlocking {
                 launch(Dispatchers.IO) {
                     if (socketList.isNotEmpty()) {
-                        socketList[0]?.getOutputStream()?.write(messageByte.toByteArray(Charsets.UTF_8))
+                        socketList[0]?.getOutputStream()
+                            ?.write(messageByte.toByteArray(Charsets.UTF_8))
                     }
                 }
             }
@@ -125,9 +126,13 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                 MessageType.ACKNOWLEDGE.code -> {
                                     if (message.text != null) {
                                         try {
-                                            ChatManager.chatMembersList = ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
+                                            ChatManager.chatMembersList =
+                                                ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
                                         } catch (e: JsonDataException) {
-                                            Log.e("ClientViewModel", "Server sent an incorrect profile list: ${message.text}")
+                                            Log.e(
+                                                "ClientViewModel",
+                                                "Server sent an incorrect profile list: ${message.text}"
+                                            )
                                         }
                                     }
 
@@ -147,9 +152,15 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                                 MessageType.REVOKED.code -> {
                                     when (message.id) {
-                                        AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(AcceptedStatus.WRONG_PASSWORD)
-                                        AcceptedStatus.SECURITY_KICK.code -> updateAccepted(AcceptedStatus.SECURITY_KICK)
-                                        AcceptedStatus.ADMIN_KICK.code -> updateAccepted(AcceptedStatus.ADMIN_KICK)
+                                        AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(
+                                            AcceptedStatus.WRONG_PASSWORD
+                                        )
+                                        AcceptedStatus.SECURITY_KICK.code -> updateAccepted(
+                                            AcceptedStatus.SECURITY_KICK
+                                        )
+                                        AcceptedStatus.ADMIN_KICK.code -> updateAccepted(
+                                            AcceptedStatus.ADMIN_KICK
+                                        )
                                     }
 
                                     closeSocket()
@@ -175,7 +186,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                                             MessageType.AUDIO.code -> {
                                                 if (message.base64Data != null) {
-                                                    val path = RecordAudioManager.base64toAudio(message.base64Data)
+                                                    val path =
+                                                        RecordAudioManager.base64toAudio(message.base64Data)
                                                     message.path = path
                                                 }
                                             }
@@ -183,8 +195,11 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                             MessageType.IMAGE.code -> {
                                                 message.base64Data.let {
                                                     if (it != null) {
-                                                        val bitmap = PictureManager.base64ToBitmap(it)
-                                                        val uri = PictureManager.bitmapToFile(bitmap)
+                                                        val bitmap =
+                                                            PictureManager.base64ToBitmap(it)
+                                                        val uri =
+                                                            PictureManager.bitmapToFile(bitmap)
+                                                        message.path = uri.path
                                                     }
                                                 }
                                             }
@@ -237,7 +252,12 @@ class ClientViewModel : ViewModel(), CoroutineScope {
             action = Intent.ACTION_SEND
             putExtra(
                 Intent.EXTRA_TEXT,
-                "http://www.chatapp.psandroidlabs.com/args=${ip.replace("/", "")}:${socketList[0]?.port}"
+                "http://www.chatapp.psandroidlabs.com/args=${
+                    ip.replace(
+                        "/",
+                        ""
+                    )
+                }:${socketList[0]?.port}"
             )
             type = "text/plain"
         }

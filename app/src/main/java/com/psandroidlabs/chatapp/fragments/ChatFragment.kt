@@ -25,10 +25,10 @@ import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
-import com.psandroidlabs.chatapp.utils.RecordAudioManager
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.utils.PictureManager
+import com.psandroidlabs.chatapp.utils.RecordAudioManager
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.*
 
