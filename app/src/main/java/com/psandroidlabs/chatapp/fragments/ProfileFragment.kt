@@ -44,10 +44,12 @@ class ProfileFragment : Fragment() {
     private val registerChoosePhoto = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        val square = PictureManager.uriToBitmap(uri, requireContext().contentResolver).toSquare()
-        if (uri != null && square != null) {
-            userPhoto = square
-            binding.avatar.setImageBitmap(userPhoto)
+        if (uri != null) {
+            val square = PictureManager.uriToBitmap(uri, requireContext().contentResolver).toSquare()
+            if (square != null) {
+                userPhoto = square
+                binding.avatar.setImageBitmap(userPhoto)
+            }
         }
     }
 
@@ -75,7 +77,11 @@ class ProfileFragment : Fragment() {
                 if (preference.isNotEmpty()) {
                     userNameField.setText(AppPreferences.getClient(context)[0])
                     if (PictureManager.loadMyAvatar() != null) {
-                        avatar.setImageBitmap(PictureManager.loadMyAvatar())
+                        val bitmap = PictureManager.loadMyAvatar()
+                        if (bitmap != null) {
+                            userPhoto = bitmap
+                            avatar.setImageBitmap(PictureManager.loadMyAvatar())
+                        }
                     } else {
                         avatar.setImageDrawable(
                             ContextCompat.getDrawable(
