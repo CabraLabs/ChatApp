@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.*
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageStatus
@@ -18,7 +19,7 @@ import kotlin.concurrent.schedule
 
 
 class ChatAdapter(
-    private val dataSet: ArrayList<Message>, private val onImageClick: (String, View) -> Unit
+    private val dataSet: ArrayList<Message>, private val onImageClick: (String?, View) -> Unit
 ) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
@@ -131,7 +132,8 @@ class ChatAdapter(
                                     Timer().schedule(1000) {
                                         runBlocking {
                                             withContext(Dispatchers.Main) {
-                                                duration.text = ChatManager.formatAudioTime(seekBar.max - it)
+                                                duration.text =
+                                                    ChatManager.formatAudioTime(seekBar.max - it)
                                             }
                                         }
                                     }
@@ -215,7 +217,8 @@ class ChatAdapter(
                                 player?.currentPosition?.let {
                                     if (it % 1000 == 0) {
                                         withContext(Dispatchers.Main) {
-                                            duration.text = ChatManager.formatAudioTime(seekBar.max - it)
+                                            duration.text =
+                                                ChatManager.formatAudioTime(seekBar.max - it)
                                         }
                                     }
 
@@ -271,10 +274,17 @@ class ChatAdapter(
 
                 val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
 
-                btnChatRowImage.setImageBitmap(bitmap)
-                btnChatRowImage.setOnClickListener {
-                    val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
-                    uri?.path?.let { path -> onImageClick.invoke(path, btnChatRowImage) }
+                if(bitmap != null){
+                    btnChatRowImage.setImageBitmap(bitmap)
+                    btnChatRowImage.setOnClickListener {
+                        val uri = bitmap.let { bitmap -> PictureManager.bitmapToFile(bitmap) }
+                        onImageClick.invoke(uri.path, btnChatRowImage)
+                    }
+                } else {
+                    btnChatRowImage.setImageResource(R.mipmap.ic_image_error)
+                    btnChatRowImage.setOnClickListener {
+                        onImageClick.invoke(null, btnChatRowImage)
+                    }
                 }
 
                 chatRowTime.text = ChatManager.formatTime(message.time)
@@ -291,17 +301,24 @@ class ChatAdapter(
                 if (message.id != null) {
                     val id = message.id
                     userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
+                }
 
-                    val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
+                val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
 
+                if(bitmap != null){
                     btnChatRowImage.setImageBitmap(bitmap)
                     btnChatRowImage.setOnClickListener {
-                        val uri = bitmap?.let { it1 -> PictureManager.bitmapToFile(it1) }
-                        uri?.path?.let { path -> onImageClick.invoke(path, btnChatRowImage) }
+                        val uri = bitmap.let { bitmap -> PictureManager.bitmapToFile(bitmap) }
+                        onImageClick.invoke(uri.path, btnChatRowImage)
                     }
-
-                    chatRowTime.text = ChatManager.formatTime(message.time)
+                } else {
+                    btnChatRowImage.setImageResource(R.mipmap.ic_image_error)
+                    btnChatRowImage.setOnClickListener {
+                        onImageClick.invoke(null, btnChatRowImage)
+                    }
                 }
+
+                chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
     }

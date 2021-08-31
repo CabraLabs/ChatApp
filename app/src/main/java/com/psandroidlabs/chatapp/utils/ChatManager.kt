@@ -29,8 +29,6 @@ object ChatManager : CoroutineScope {
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.Main
 
-    //private lateinit var fragmentActivity: FragmentActivity
-
     var chatList: ArrayList<Message> = ArrayList()
     var chatMembersList: ArrayList<Profile> = ArrayList()
 
@@ -44,12 +42,6 @@ object ChatManager : CoroutineScope {
         val adapter: JsonAdapter<List<Profile>> = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter(listAdapter)
         adapter
     }
-
-//    fun getFragmentActivity(parameterFragmentActivity: FragmentActivity?) {
-//        if (parameterFragmentActivity != null) {
-//            fragmentActivity = parameterFragmentActivity
-//        }
-//    }
 
     fun formatTime(epoch: Long): String {
         val pattern = "HH:mm aa"
@@ -135,7 +127,8 @@ object ChatManager : CoroutineScope {
         type = MessageType.JOIN,
         username = username,
         text = text,
-        password = password
+        password = password,
+        avatar = PictureManager.loadMyAvatar()?.toBase64()
     )
 
     /**
@@ -156,19 +149,12 @@ object ChatManager : CoroutineScope {
         id = id
     )
 
-    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap): Message{
-        val imageMessage = createMessage(
+    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap) = createMessage(
             type = MessageType.IMAGE,
             username = username,
-            text = imagePath ?: throw Exception("Image message needs to have a full path.")
-        )
-
-        addToAdapter(imageMessage)
-
-        return imageMessage.apply {
+            text = imagePath ?: throw Exception("Image message needs to have a full path."),
             base64Data = bitmap.toBase64()
-        }
-    }
+        )
 
     /**
      * Parse the message to a valid REVOKED or ACKNOWLEDGE message.

@@ -33,7 +33,10 @@ class ProfileFragment : Fragment() {
         ActivityResultContracts.TakePicturePreview()
     ) { image: Bitmap? ->
         if (image != null) {
-            userPhoto = image.toSquare()!!
+            val square = image.toSquare()
+            if (square != null) {
+                userPhoto = square
+            }
             binding.avatar.setImageBitmap(userPhoto)
         }
     }
@@ -71,12 +74,8 @@ class ProfileFragment : Fragment() {
 
                 if (preference.isNotEmpty()) {
                     userNameField.setText(AppPreferences.getClient(context)[0])
-                    if (!preference[3].isNullOrBlank()) {
-                        val bitmap = preference[2]?.let { PictureManager.fileToBitmap(it) }
-                        if (bitmap != null) {
-                            avatar.setImageBitmap(bitmap)
-                            userPhoto = bitmap
-                        }
+                    if (PictureManager.loadMyAvatar() != null) {
+                        avatar.setImageBitmap(PictureManager.loadMyAvatar())
                     } else {
                         avatar.setImageDrawable(
                             ContextCompat.getDrawable(
