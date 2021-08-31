@@ -51,8 +51,9 @@ class ChatAdapter(
             with(binding) {
                 chatRowUsername.text = message.username
 
-                if (message.join?.avatar != null) {
-                    userAvatar.setImageBitmap(PictureManager.base64ToBitmap(message.join.avatar))
+                if (message.id != null) {
+                    val id = message.id
+                    userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
                 }
 
                 chatRowMessage.text = message.text

@@ -10,9 +10,7 @@ import com.psandroidlabs.chatapp.utils.PictureManager
 
 
 class ChatMembersAdapter(
-    private var dataSet: ArrayList<Profile>,
-    private val onClick: (Int) -> Unit
-) : RecyclerView.Adapter<ChatMembersAdapter.ViewHolder>() {
+    private var dataSet: ArrayList<Profile>) : RecyclerView.Adapter<ChatMembersAdapter.ViewHolder>() {
 
     abstract class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(profile: Profile, position: Int)
@@ -33,8 +31,8 @@ class ChatMembersAdapter(
                 }
 
                 btnChatMember.setOnClickListener {
-                    onClick.invoke(position)
-                    notifyDataSetChanged()
+//                    onClick.invoke(position)
+//                    notifyDataSetChanged()
                 }
             }
         }
