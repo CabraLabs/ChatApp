@@ -50,6 +50,8 @@ class ImageFragment : Fragment(R.layout.fragment_image) {
             if (args.path != null) {
                 val path = args.path
                 expandedImage.setImageBitmap(path?.let { PictureManager.fileToBitmap(it) })
+            } else {
+                expandedImage.setImageResource(R.mipmap.ic_image_error)
             }
 
             btnImageFragment.setOnClickListener {
