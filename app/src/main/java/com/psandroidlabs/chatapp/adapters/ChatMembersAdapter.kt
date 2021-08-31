@@ -31,8 +31,6 @@ class ChatMembersAdapter(
                     })
                 }
 
-
-
                 btnChatMember.setOnClickListener {
                     onClick.invoke(position)
                     notifyDataSetChanged()
