@@ -166,6 +166,7 @@ class ServerService : Service(), CoroutineScope {
         ).toByteArray(Charsets.UTF_8)
 
         user.socket.getOutputStream().write(json)
+        joinMessage.id = id
 
         if (user.socket.inetAddress == serverSocket.inetAddress) {
             joinMessage.join?.isAdmin = true
