@@ -14,7 +14,8 @@ data class Message(
     var status: Int,
     val username: String?,
     val text: String?,
-    var base64Data: String?,
+    @Ignore var base64Data: String?,
+    var path: String?,
     val time: Long,
     @Ignore var id: Int?,
     val join: Join?
