@@ -86,7 +86,7 @@ class ChatFragment : Fragment(), CoroutineScope {
             val message = ChatManager.imageMessage(clientUsername, file.path, bitmap)
             val success = client.writeToSocket(message)
 
-            checkDisconnected(success)
+            checkDisconnected(success, message)
         }
     }
 
@@ -103,7 +103,7 @@ class ChatFragment : Fragment(), CoroutineScope {
             val message = ChatManager.imageMessage(clientUsername, uri.path, bitmap)
             val success = client.writeToSocket(message)
 
-            checkDisconnected(success)
+            checkDisconnected(success, message)
         }
     }
 
