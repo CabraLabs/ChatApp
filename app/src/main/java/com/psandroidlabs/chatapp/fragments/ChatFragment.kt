@@ -109,7 +109,6 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     // Fragment life cycle
     override fun onDestroy() {
-        client.closeSocket()
         this.cancel()
         chatNotification.cancelNotification()
 
@@ -123,6 +122,8 @@ class ChatFragment : Fragment(), CoroutineScope {
             client.writeToSocket(ChatManager.leaveMessage(clientUsername))
             ChatManager.addToAdapter(message)
         }
+
+        client.closeSocket()
 
         if (arg.user == UserType.SERVER) {
             activity?.title = getString(R.string.server_app_bar_name)

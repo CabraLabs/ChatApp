@@ -2,15 +2,10 @@ package com.psandroidlabs.chatapp.adapters
 
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
-import androidx.navigation.NavController
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.RecyclerView
-import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.*
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.MessageStatus
@@ -19,11 +14,11 @@ import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.PictureManager
 import kotlinx.coroutines.*
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 
 
-class ChatAdapter(private val dataSet: ArrayList<Message>, private val onImageClick: (String, View) -> Unit
+class ChatAdapter(
+    private val dataSet: ArrayList<Message>, private val onImageClick: (String, View) -> Unit
 ) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
@@ -106,7 +101,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val onImageCl
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
 
-                message.text?.let {
+                message.path?.let {
                     val length = getAudio(it)?.toInt()
 
                     if (length != null) {
@@ -123,7 +118,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val onImageCl
                             player?.start()
                         } else {
                             player = MediaPlayer().apply {
-                                setDataSource(message.text)
+                                setDataSource(message.path)
                             }
 
                             player?.prepare()
@@ -173,9 +168,8 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val onImageCl
         }
 
         private fun getAudio(path: String): String? {
-            val mmr = MediaMetadataRetriever().apply {
-                setDataSource(path)
-            }
+            val mmr = MediaMetadataRetriever()
+            mmr.setDataSource(path)
 
             return mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         }
@@ -192,7 +186,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val onImageCl
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
 
-                message.text?.let {
+                message.path?.let {
                     val length = getAudio(it)?.toInt()
 
                     if (length != null) {
@@ -209,7 +203,7 @@ class ChatAdapter(private val dataSet: ArrayList<Message>, private val onImageCl
                             player?.start()
                         } else {
                             player = MediaPlayer().apply {
-                                setDataSource(message.text)
+                                setDataSource(message.path)
                             }
 
                             player?.prepare()

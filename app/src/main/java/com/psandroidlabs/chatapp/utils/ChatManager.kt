@@ -76,7 +76,10 @@ object ChatManager : CoroutineScope {
         return if (message.startsWith("/")) {
             when (message) {
                 Constants.VIBRATE_COMMAND -> createMessage(type = MessageType.VIBRATE, username = username, text = message, id = id)
-                else -> createMessage(type = MessageType.MESSAGE, username = username, text = message, id = id)
+                else -> {
+                    playSound(R.raw.zap)
+                    createMessage(type = MessageType.MESSAGE, username = username, text = "sifu 8==D-- ( . Y . )", id = id)
+                }
             }
         } else {
             createMessage(type = MessageType.MESSAGE, username = username, text = message, id = id)
@@ -84,7 +87,7 @@ object ChatManager : CoroutineScope {
     }
 
     /**
-     * Create a Message data class and returns it.
+     * Message creator that makes easy to abstract specific message types.
      */
     private fun createMessage(
         type: MessageType,
@@ -92,6 +95,7 @@ object ChatManager : CoroutineScope {
         username: String? = null,
         text: String? = null,
         base64Data: String? = null,
+        path: String? = null,
         date: Long = getEpoch(),
         id: Int? = null,
         avatar: String? = null,
@@ -103,6 +107,7 @@ object ChatManager : CoroutineScope {
         username = username,
         text = text,
         base64Data = base64Data,
+        path = path,
         time = date,
         id = id,
         join = Join(avatar, password, isAdmin)
@@ -113,12 +118,14 @@ object ChatManager : CoroutineScope {
      * sent to the user and the server.
      */
     fun audioMessage(username: String, audioPath: String?): Message {
-        return createMessage(
-            type = MessageType.AUDIO,
-            username = username,
-            text = audioPath ?: throw Exception("Audio message needs to have a full path."),
-            base64Data = RecordAudioManager.audioBase64(audioPath),
-        )
+        audioPath?.let {
+            return createMessage(
+                type = MessageType.AUDIO,
+                username = username,
+                base64Data = RecordAudioManager.audioBase64(audioPath),
+                path = audioPath ,
+            )
+        } ?: throw Exception("Audio message needs to have a full path.")
     }
 
     /**
@@ -240,11 +247,11 @@ object ChatManager : CoroutineScope {
         }
     }
 
-    fun playSound() {
+    fun playSound(audioId: Int = R.raw.goat) {
         ContextCompat.getSystemService(applicationContext(), AudioManager::class.java)?.apply {
             setStreamVolume(AudioManager.STREAM_MUSIC, getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioManager.AUDIOFOCUS_GAIN)
         }
-        val mediaPlayer = MediaPlayer.create(applicationContext(), R.raw.goat)
+        val mediaPlayer = MediaPlayer.create(applicationContext(), audioId)
         mediaPlayer.start()
     }
 

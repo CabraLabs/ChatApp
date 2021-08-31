@@ -19,6 +19,8 @@ import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
+import com.psandroidlabs.chatapp.utils.PictureManager
+import com.psandroidlabs.chatapp.utils.RecordAudioManager
 import com.squareup.moshi.JsonDataException
 import kotlinx.coroutines.*
 import java.net.InetAddress
@@ -71,24 +73,20 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         try {
             runBlocking {
                 launch(Dispatchers.IO) {
-                    withTimeout(2000) {
-                        val client = Socket()
-                        client.connect(InetSocketAddress(ip, port), 2_500)
-
-                        socketList.add(client)
-                        userName = username
-
-                        running = true
-                    }
+                    val client = Socket()
+                    client.connect(InetSocketAddress(ip, port), 10_000)
+                    socketList.add(client)
+                    userName = username
+                    running = true
                 }
             }
+
+            return true
         } catch (e: java.net.ConnectException) {
             return false
         } catch (e: java.net.SocketTimeoutException) {
             return false
         }
-
-        return true
     }
 
     @Synchronized
@@ -160,14 +158,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                 else -> {
                                     if (accepted.value == AcceptedStatus.ACCEPTED) {
                                         when (message.type) {
-                                            MessageType.VIBRATE.code -> {
-                                                ChatManager.startVibrate()
-                                            }
-
-                                            MessageType.AUDIO.code -> {
-
-                                            }
-
                                             MessageType.JOIN.code -> {
                                                 ChatManager.chatMembersList.add(
                                                     Profile(
@@ -177,6 +167,26 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                         0
                                                     )
                                                 )
+                                            }
+
+                                            MessageType.VIBRATE.code -> {
+                                                ChatManager.startVibrate()
+                                            }
+
+                                            MessageType.AUDIO.code -> {
+                                                if (message.base64Data != null) {
+                                                    val path = RecordAudioManager.base64toAudio(message.base64Data)
+                                                    message.path = path
+                                                }
+                                            }
+
+                                            MessageType.IMAGE.code -> {
+                                                message.base64Data.let {
+                                                    if (it != null) {
+                                                        val bitmap = PictureManager.base64ToBitmap(it)
+                                                        val uri = PictureManager.bitmapToFile(bitmap)
+                                                    }
+                                                }
                                             }
 
                                             MessageType.LEAVE.code -> {

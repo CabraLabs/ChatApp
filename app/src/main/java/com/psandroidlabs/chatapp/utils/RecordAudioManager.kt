@@ -1,13 +1,13 @@
 package com.psandroidlabs.chatapp.utils
 
 import android.content.Context
-import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Build
 import android.util.Base64
-import android.util.Log
+import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import java.io.File
-import java.io.IOException
+import java.io.FileOutputStream
+
 
 object RecordAudioManager {
     /**
@@ -17,7 +17,6 @@ object RecordAudioManager {
         setAudioSource(MediaRecorder.AudioSource.MIC)
         setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-
         setOutputFile(audioPath)
     }
 
@@ -36,7 +35,22 @@ object RecordAudioManager {
         return Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
     }
 
-    fun base64toAudio(base64: String) {
+    fun base64toAudio(base64: String?): String {
+        val audio = Base64.decode(base64, Base64.NO_WRAP)
+        val audioName = nameAudio()
 
+        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            File(applicationContext().getExternalFilesDir(Constants.AUDIO_DIR), audioName).toString()
+        } else {
+            File(applicationContext().cacheDir, audioName).toString()
+        }
+
+        FileOutputStream(path).apply {
+            write(audio)
+            flush()
+            close()
+        }
+
+        return path
     }
 }

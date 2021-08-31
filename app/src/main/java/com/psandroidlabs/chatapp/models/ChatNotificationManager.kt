@@ -49,7 +49,7 @@ class ChatNotificationManager(val context: Context, private val channel: String)
             setContentIntent(pendingIntent)
             setAutoCancel(true)
             priority = NotificationCompat.PRIORITY_HIGH
-            color = context.getColor(R.color.blue)
+            color = context.getColor(R.color.purple_200)
         }
 
         showNotification(notification = builder)
@@ -72,7 +72,7 @@ class ChatNotificationManager(val context: Context, private val channel: String)
         ).build()
 
         return NotificationCompat.Builder(context, channel)
-            .setColor(context.getColor(R.color.blue))
+            .setColor(context.getColor(R.color.R.color.purple_200))
             .setContentTitle(context.getString(R.string.server_running))
             .setContentText(ip)
             .setSmallIcon(R.drawable.ic_server_foreground)
