@@ -93,10 +93,10 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:layout_marginStart="5dp"
             android:src="@drawable/ic_goat"
-            app:shapeAppearanceOverlay="@style/RoundedShape50"
+            android:padding="3dp"
+            app:strokeWidth="3dp"
             app:strokeColor="@color/purple_app"
-            app:strokeWidth="1dp" />
+            app:shapeAppearanceOverlay="@style/RoundedShape50" />
     </LinearLayout>
 </LinearLayout>

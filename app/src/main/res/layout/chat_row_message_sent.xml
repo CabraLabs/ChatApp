@@ -49,14 +49,15 @@
                 tools:textSize="11sp" />
         </LinearLayout>
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/userAvatar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_goat"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/purple_app"
-                app:shapeAppearanceOverlay="@style/RoundedShape50"/>
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/userAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_goat"
+            android:padding="3dp"
+            app:strokeWidth="3dp"
+            app:strokeColor="@color/purple_app"
+            app:shapeAppearanceOverlay="@style/RoundedShape50"/>
     </LinearLayout>
 </LinearLayout>
