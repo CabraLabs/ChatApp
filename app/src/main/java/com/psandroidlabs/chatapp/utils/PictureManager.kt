@@ -1,40 +1,20 @@
 package com.psandroidlabs.chatapp.utils
 
-import android.app.Dialog
 import android.content.ContentResolver
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.ImageDecoder
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
-import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import android.util.Base64
-import android.view.ViewGroup
-import android.view.Window
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import com.psandroidlabs.chatapp.MainApplication
-import com.psandroidlabs.chatapp.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.*
 import java.util.*
 
 object PictureManager {
-
-    val defaultAvatar by lazy {
-        MainApplication.applicationContext()
-            .let { ContextCompat.getDrawable(it, R.drawable.ic_goat)?.toBitmap(200, 200) }
-    }
 
     fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
         val bmp = bitmap.toDrawable(Resources.getSystem()).bitmap
@@ -114,11 +94,12 @@ object PictureManager {
     }
 
     fun loadMembersAvatar(id: Int): Bitmap? {
+        var bitmap: Bitmap? = null
         ChatManager.chatMembersList.forEach {
             if(it.id == id){
-                return it.photoProfile?.let { it1 -> base64ToBitmap(it1) }
+                bitmap = it.photoProfile?.let { base64 -> base64ToBitmap(base64) }
             }
         }
-        return null
+        return bitmap
     }
 }

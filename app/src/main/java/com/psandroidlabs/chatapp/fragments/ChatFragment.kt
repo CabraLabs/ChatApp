@@ -266,7 +266,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun onImageClick(path: String, view: View) {
+    private fun onImageClick(path: String?, view: View) {
         val bundle: Bundle = bundleOf("path" to path)
         val extras = FragmentNavigatorExtras(view to "image_big")
         navController.navigate(
