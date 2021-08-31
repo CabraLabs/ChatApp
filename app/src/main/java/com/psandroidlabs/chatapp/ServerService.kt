@@ -46,7 +46,8 @@ class ServerService : Service(), CoroutineScope {
     }
 
     override fun onCreate() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, IntentFilter(Constants.ACTION_STOP))
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(receiver, IntentFilter(Constants.ACTION_STOP))
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -55,7 +56,8 @@ class ServerService : Service(), CoroutineScope {
         password = intent.getStringExtra(Constants.PASSWORD)
         val port = intent.getIntExtra(Constants.PORT, Constants.PORT_1027)
 
-        notificationManager = ChatNotificationManager(applicationContext, Constants.FOREGROUND_CHAT_CHANNEL)
+        notificationManager =
+            ChatNotificationManager(applicationContext, Constants.FOREGROUND_CHAT_CHANNEL)
         startForeground(100, notificationManager.foregroundNotification(port))
 
         startServer(port)
@@ -120,7 +122,10 @@ class ServerService : Service(), CoroutineScope {
                             }
                         }
                     } catch (e: JsonDataException) {
-                        Log.e("ServerService", "Received a message that can't be parsed to json: $json")
+                        Log.e(
+                            "ServerService",
+                            "Received a message that can't be parsed to json: $json"
+                        )
                     }
                 }
             }
@@ -149,7 +154,7 @@ class ServerService : Service(), CoroutineScope {
 
         user.profile.let {
             it.id = id
-            it.photoProfile = joinMessage.base64Data
+            it.photoProfile = joinMessage.join?.avatar
             it.name = joinMessage.username ?: codeGenerator().toString()
             it.scoreTicTacToe = 0
         }
@@ -164,9 +169,15 @@ class ServerService : Service(), CoroutineScope {
 
         if (user.socket.inetAddress == serverSocket.inetAddress) {
             joinMessage.join?.isAdmin = true
-            forwardMessage(user.socket, ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8))
+            forwardMessage(
+                user.socket,
+                ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8)
+            )
         } else {
-            forwardMessage(user.socket, ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8))
+            forwardMessage(
+                user.socket,
+                ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8)
+            )
         }
     }
 

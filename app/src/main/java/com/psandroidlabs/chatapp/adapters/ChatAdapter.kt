@@ -49,9 +49,8 @@ class ChatAdapter(
             with(binding) {
                 chatRowUsername.text = message.username
 
-                if (message.id != null) {
-                    val id = message.id
-                    userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
+                if (message.join?.avatar != null) {
+                    userAvatar.setImageBitmap(PictureManager.base64ToBitmap(message.join.avatar))
                 }
 
                 chatRowMessage.text = message.text
@@ -101,6 +100,10 @@ class ChatAdapter(
             with(binding) {
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
+
+                if (message.join?.avatar != null) {
+                    userAvatar.setImageBitmap(PictureManager.base64ToBitmap(message.join.avatar))
+                }
 
                 message.path?.let {
                     val length = getAudio(it)?.toInt()
@@ -188,6 +191,10 @@ class ChatAdapter(
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
 
+                if (PictureManager.loadMyAvatar() != null) {
+                    userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
+                }
+
                 message.path?.let {
                     val length = getAudio(it)?.toInt()
 
@@ -274,7 +281,7 @@ class ChatAdapter(
 
                 val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
 
-                if(bitmap != null){
+                if (bitmap != null) {
                     btnChatRowImage.setImageBitmap(bitmap)
                     btnChatRowImage.setOnClickListener {
                         val uri = bitmap.let { bitmap -> PictureManager.bitmapToFile(bitmap) }
@@ -298,18 +305,16 @@ class ChatAdapter(
             with(binding) {
                 chatRowUsername.text = message.username
 
-                if (message.id != null) {
-                    val id = message.id
-                    userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
+                if (message.join?.avatar != null) {
+                    userAvatar.setImageBitmap(PictureManager.base64ToBitmap(message.join.avatar))
                 }
 
                 val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
 
-                if(bitmap != null){
+                if (bitmap != null) {
                     btnChatRowImage.setImageBitmap(bitmap)
                     btnChatRowImage.setOnClickListener {
-                        val uri = bitmap.let { bitmap -> PictureManager.bitmapToFile(bitmap) }
-                        onImageClick.invoke(uri.path, btnChatRowImage)
+                        onImageClick.invoke(message.path, btnChatRowImage)
                     }
                 } else {
                     btnChatRowImage.setImageResource(R.mipmap.ic_image_error)

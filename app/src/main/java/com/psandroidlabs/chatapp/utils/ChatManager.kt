@@ -39,7 +39,8 @@ object ChatManager : CoroutineScope {
 
     private val jsonProfileAdapter by lazy {
         val listAdapter = Types.newParameterizedType(List::class.java, Profile::class.java)
-        val adapter: JsonAdapter<List<Profile>> = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter(listAdapter)
+        val adapter: JsonAdapter<List<Profile>> =
+            Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter(listAdapter)
         adapter
     }
 
@@ -67,10 +68,20 @@ object ChatManager : CoroutineScope {
     fun parseMessageType(username: String, message: String, id: Int): Message {
         return if (message.startsWith("/")) {
             when (message) {
-                Constants.VIBRATE_COMMAND -> createMessage(type = MessageType.VIBRATE, username = username, text = message, id = id)
+                Constants.VIBRATE_COMMAND -> createMessage(
+                    type = MessageType.VIBRATE,
+                    username = username,
+                    text = message,
+                    id = id
+                )
                 else -> {
                     playSound(R.raw.zap)
-                    createMessage(type = MessageType.MESSAGE, username = username, text = "sifu 8==D-- ( . Y . )", id = id)
+                    createMessage(
+                        type = MessageType.MESSAGE,
+                        username = username,
+                        text = "sifu 8==D-- ( . Y . )",
+                        id = id
+                    )
                 }
             }
         } else {
@@ -115,7 +126,7 @@ object ChatManager : CoroutineScope {
                 type = MessageType.AUDIO,
                 username = username,
                 base64Data = RecordAudioManager.audioBase64(audioPath),
-                path = audioPath ,
+                path = audioPath,
             )
         } ?: throw Exception("Audio message needs to have a full path.")
     }
@@ -150,11 +161,11 @@ object ChatManager : CoroutineScope {
     )
 
     fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap) = createMessage(
-            type = MessageType.IMAGE,
-            username = username,
-            text = imagePath ?: throw Exception("Image message needs to have a full path."),
-            base64Data = bitmap.toBase64()
-        )
+        type = MessageType.IMAGE,
+        username = username,
+        text = imagePath ?: throw Exception("Image message needs to have a full path."),
+        base64Data = bitmap.toBase64()
+    )
 
     /**
      * Parse the message to a valid REVOKED or ACKNOWLEDGE message.
@@ -220,7 +231,8 @@ object ChatManager : CoroutineScope {
 //    }
 
     fun startVibrate() {
-        val vibrator = ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
+        val vibrator =
+            ContextCompat.getSystemService(applicationContext(), Vibrator::class.java) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(
                 VibrationEffect.createOneShot(
@@ -235,7 +247,11 @@ object ChatManager : CoroutineScope {
 
     fun playSound(audioId: Int = R.raw.goat) {
         ContextCompat.getSystemService(applicationContext(), AudioManager::class.java)?.apply {
-            setStreamVolume(AudioManager.STREAM_MUSIC, getStreamMaxVolume(AudioManager.STREAM_MUSIC), AudioManager.AUDIOFOCUS_GAIN)
+            setStreamVolume(
+                AudioManager.STREAM_MUSIC,
+                getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+                AudioManager.AUDIOFOCUS_GAIN
+            )
         }
         val mediaPlayer = MediaPlayer.create(applicationContext(), audioId)
         mediaPlayer.start()

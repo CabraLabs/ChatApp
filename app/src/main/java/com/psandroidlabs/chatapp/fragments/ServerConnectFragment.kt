@@ -55,7 +55,8 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.profile -> {
-                val action = ServerConnectFragmentDirections.actionServerConnectFragmentToProfileFragment()
+                val action =
+                    ServerConnectFragmentDirections.actionServerConnectFragmentToProfileFragment()
                 navController.navigate(action)
                 true
             }
@@ -111,7 +112,11 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
                     loading(true)
 
                     if (showPassword.isChecked) {
-                        server.startServerService(activity as Activity, getPasswordField(), getPortField())
+                        server.startServerService(
+                            activity as Activity,
+                            getPasswordField(),
+                            getPortField()
+                        )
                     } else {
                         server.startServerService(activity as Activity, port = getPortField())
                     }
@@ -129,7 +134,11 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
                 if (showPassword.isChecked) {
                     if (checkFields()) {
-                        server.startServerService(activity as Activity, getPasswordField(), getPortField())
+                        server.startServerService(
+                            activity as Activity,
+                            getPasswordField(),
+                            getPortField()
+                        )
                     }
                 } else {
                     server.startServerService(activity as Activity, port = getPortField())
@@ -175,7 +184,11 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
     private fun join() {
         with(binding) {
             ChatManager.delay(1000) {
-                val success = client.startSocket(userNameField.text.toString(), InetAddress.getByName(ipAddress.text.toString()), getPortField())
+                val success = client.startSocket(
+                    userNameField.text.toString(),
+                    InetAddress.getByName(ipAddress.text.toString()),
+                    getPortField()
+                )
 
                 if (success) {
                     loading(false)
@@ -203,9 +216,20 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         client.readSocket()
 
         if (binding.showPassword.isChecked) {
-            client.writeToSocket(ChatManager.connectMessage(username, getString(R.string.created_the_room), getPasswordField()))
+            client.writeToSocket(
+                ChatManager.connectMessage(
+                    username,
+                    getString(R.string.created_the_room),
+                    getPasswordField()
+                )
+            )
         } else {
-            client.writeToSocket(ChatManager.connectMessage(username, getString(R.string.created_the_room)))
+            client.writeToSocket(
+                ChatManager.connectMessage(
+                    username,
+                    getString(R.string.created_the_room)
+                )
+            )
         }
     }
 
@@ -213,7 +237,9 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
         when (status) {
             AcceptedStatus.ACCEPTED -> {
                 val action =
-                    ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(UserType.SERVER)
+                    ServerConnectFragmentDirections.actionServerConnectFragmentToChatFragment(
+                        UserType.SERVER
+                    )
 
                 navController.navigate(action)
             }
