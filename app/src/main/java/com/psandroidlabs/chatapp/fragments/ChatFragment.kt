@@ -25,6 +25,7 @@ import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
+import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.utils.PictureManager
@@ -195,24 +196,17 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-//            R.id.ticTactToe -> {
-//                val ticTacToeFragment = TicTacToeFragment(true)
-//
-//                GlobalScope.launch(Dispatchers.IO) {
-//                    client.writeToSocket(
-//                        ChatManager.sendMessageToSocket(
-//                            clientUsername,
-//                            "/TICTACTOE_INVITE"
-//                        )
-//                    )
-//                }
-//
-//                activity?.supportFragmentManager?.let {
-//                    ticTacToeFragment.show(it, null)
-//                }
-//
-//                true
-//            }
+            R.id.ticTactToe -> {
+                val ticTacToeFragment = TicTacToeFragment(true)
+
+                //show chat members list and choose one to send invite
+
+                activity?.supportFragmentManager?.let {
+                    ticTacToeFragment.show(it, null)
+                }
+
+                true
+            }
 
             R.id.shareLink -> {
                 client.shareChatLink(requireActivity())
@@ -220,7 +214,6 @@ class ChatFragment : Fragment(), CoroutineScope {
             }
 
             R.id.chatMembers -> {
-                //TODO call chat members dialog
                 client.showChatMembers(context)
                 true
             }
