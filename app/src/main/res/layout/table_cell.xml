@@ -9,7 +9,7 @@
 
     <ImageView
         android:id="@+id/cell_image_id"
-        android:background="@color/cell"
+        android:background="@color/white"
         android:layout_width="60dp"
         android:layout_height="60dp" />
 
