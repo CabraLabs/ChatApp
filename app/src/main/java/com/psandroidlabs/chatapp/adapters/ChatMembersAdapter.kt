@@ -23,11 +23,11 @@ class ChatMembersAdapter(
                 chatMembersUsername.text = dataSet[position].name
 
                 if (dataSet[position].photoProfile != null) {
-                    userAvatar.setImageBitmap(dataSet[position].photoProfile?.let {
-                        PictureManager.base64ToBitmap(
-                            it
-                        )
-                    })
+                    val base64 = dataSet[position].photoProfile
+                    if (!base64.isNullOrBlank()) {
+                        val bitmap = PictureManager.base64ToBitmap(base64)
+                        userAvatar.setImageBitmap(bitmap)
+                    }
                 }
 
                 btnChatMember.setOnClickListener {
