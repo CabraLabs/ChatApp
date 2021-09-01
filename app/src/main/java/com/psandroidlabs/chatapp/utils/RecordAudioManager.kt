@@ -35,22 +35,27 @@ object RecordAudioManager {
         return Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
     }
 
+    fun path(): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            applicationContext().getExternalFilesDir(Constants.AUDIO_DIR).toString()
+        } else {
+            applicationContext().cacheDir.toString()
+        }
+    }
+
+
     fun base64toAudio(base64: String?): String {
         val audio = Base64.decode(base64, Base64.NO_WRAP)
         val audioName = nameAudio()
 
-        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            File(applicationContext().getExternalFilesDir(Constants.AUDIO_DIR), audioName).toString()
-        } else {
-            File(applicationContext().cacheDir, audioName).toString()
-        }
+        val filePath = File(path(), audioName)
 
-        FileOutputStream(path).apply {
+        FileOutputStream(filePath).apply {
             write(audio)
             flush()
             close()
         }
 
-        return path
+        return audioName
     }
 }
