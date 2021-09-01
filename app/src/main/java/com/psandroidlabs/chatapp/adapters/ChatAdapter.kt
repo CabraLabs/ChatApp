@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.*
 import com.psandroidlabs.chatapp.models.Message
@@ -13,7 +14,9 @@ import com.psandroidlabs.chatapp.models.MessageStatus
 import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.PictureManager
+import com.psandroidlabs.chatapp.utils.RecordAudioManager
 import kotlinx.coroutines.*
+import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -64,7 +67,11 @@ class ChatAdapter(
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
-                chatRowMessage.text = message.text
+                if (message.type == MessageType.JOIN.code) {
+                    chatRowMessage.text = applicationContext().getString(R.string.joined_the_room)
+                } else {
+                    chatRowMessage.text = applicationContext().getString(R.string.left_the_room)
+                }
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
         }
@@ -95,18 +102,20 @@ class ChatAdapter(
         private var player: MediaPlayer? = null
         private var playing: Boolean = false
         private var currentPosition = 0
+        private var filePath: String = ""
 
         override fun bind(message: Message) {
             with(binding) {
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
 
-                if (message.join?.avatar != null) {
-                    userAvatar.setImageBitmap(PictureManager.base64ToBitmap(message.join.avatar))
+                if (PictureManager.loadMyAvatar() != null) {
+                    userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
                 }
 
-                message.path?.let {
-                    val length = getAudio(it)?.toInt()
+                message.mediaId?.let {
+                    filePath = File(RecordAudioManager.path(), it).toString()
+                    val length = getAudio(filePath)?.toInt()
 
                     if (length != null) {
                         duration.text = ChatManager.formatAudioTime(length)
@@ -122,7 +131,7 @@ class ChatAdapter(
                             player?.start()
                         } else {
                             player = MediaPlayer().apply {
-                                setDataSource(message.path)
+                                setDataSource(filePath)
                             }
 
                             player?.prepare()
@@ -132,12 +141,10 @@ class ChatAdapter(
                         CoroutineScope(Dispatchers.Default).launch {
                             while (player?.isPlaying == true) {
                                 player?.currentPosition?.let {
-                                    Timer().schedule(1000) {
-                                        runBlocking {
-                                            withContext(Dispatchers.Main) {
-                                                duration.text =
-                                                    ChatManager.formatAudioTime(seekBar.max - it)
-                                            }
+                                    if (it % 1000 == 0) {
+                                        withContext(Dispatchers.Main) {
+                                            duration.text =
+                                                ChatManager.formatAudioTime(seekBar.max - it)
                                         }
                                     }
 
@@ -173,8 +180,9 @@ class ChatAdapter(
         }
 
         private fun getAudio(path: String): String? {
-            val mmr = MediaMetadataRetriever()
-            mmr.setDataSource(path)
+            val mmr = MediaMetadataRetriever().apply {
+                setDataSource(path)
+            }
 
             return mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         }
@@ -185,6 +193,7 @@ class ChatAdapter(
         private var player: MediaPlayer? = null
         private var playing: Boolean = false
         private var currentPosition = 0
+        private var filePath: String = ""
 
         override fun bind(message: Message) {
             with(binding) {
@@ -195,8 +204,9 @@ class ChatAdapter(
                     userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
                 }
 
-                message.path?.let {
-                    val length = getAudio(it)?.toInt()
+                message.mediaId?.let {
+                    filePath = File(RecordAudioManager.path(), it).toString()
+                    val length = getAudio(filePath)?.toInt()
 
                     if (length != null) {
                         duration.text = ChatManager.formatAudioTime(length)
@@ -212,7 +222,7 @@ class ChatAdapter(
                             player?.start()
                         } else {
                             player = MediaPlayer().apply {
-                                setDataSource(message.path)
+                                setDataSource(filePath)
                             }
 
                             player?.prepare()
