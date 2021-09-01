@@ -283,12 +283,38 @@ class ChatFragment : Fragment(), CoroutineScope {
             recordAudio.visibility = View.VISIBLE
 
             binding.messageField.doAfterTextChanged {
-                if (it.toString().isNotEmpty()) {
+                if (!it.isNullOrEmpty()) {
                     sendButton.visibility = View.VISIBLE
                     recordAudio.visibility = View.GONE
+
+                    sendPhotoButton.animate().translationX(sendPhotoButton.width.toFloat()).apply {
+                        duration = 200
+                    }
+
+                    sendImageButton.animate().translationX(sendImageButton.width.toFloat() * 2).apply {
+                        duration = 200
+                    }
+
+                    ChatManager.delay(200) {
+                        if (messageField.text.toString() != "") {
+                            sendPhotoButton.visibility = View.GONE
+                            sendImageButton.visibility = View.GONE
+                        }
+                    }
                 } else {
                     sendButton.visibility = View.GONE
                     recordAudio.visibility = View.VISIBLE
+
+                    sendPhotoButton.visibility = View.VISIBLE
+                    sendImageButton.visibility = View.VISIBLE
+
+                    sendPhotoButton.animate().translationX(0F).apply {
+                        duration = 200
+                    }
+
+                    sendImageButton.animate().translationX(0F).apply {
+                        duration = 200
+                    }
                 }
             }
         }
@@ -345,10 +371,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 audioName = RecordAudioManager.nameAudio()
 
                 recorder = RecordAudioManager.createAudioRecorder(
-                    RecordAudioManager.audioDir(
-                        audioName,
-                        requireContext()
-                    )
+                    RecordAudioManager.audioDir(audioName)
                 )
 
                 recorder?.prepare()
@@ -365,7 +388,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 val message = ChatManager.audioMessage(
                     clientUsername,
-                    RecordAudioManager.audioDir(audioName, requireContext())
+                    RecordAudioManager.audioDir(audioName)
                 )
                 val success = client.writeToSocket(message)
 

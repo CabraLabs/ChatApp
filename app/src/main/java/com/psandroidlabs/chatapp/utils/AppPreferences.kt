@@ -13,12 +13,19 @@ object AppPreferences {
         val sharedClient = getSharedClient(context) ?: return
 
         with(sharedClient.edit()) {
-            clear()
-
             putString(Constants.CLIENT_USER, clientUsername)
-            putString(Constants.CLIENT_IP, clientIp)
-            putString(Constants.CLIENT_AVATAR, clientAvatar)
-            putString(Constants.CLIENT_PORT, clientPort)
+
+            if (clientIp != null) {
+                putString(Constants.CLIENT_IP, clientIp)
+            }
+
+            if (clientAvatar != null) {
+                putString(Constants.CLIENT_AVATAR, clientAvatar)
+            }
+
+            if (clientPort != null) {
+                putString(Constants.CLIENT_PORT, clientPort)
+            }
 
             apply()
         }

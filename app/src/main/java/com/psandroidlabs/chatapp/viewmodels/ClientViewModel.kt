@@ -22,6 +22,7 @@ import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.utils.PictureManager
 import com.psandroidlabs.chatapp.utils.RecordAudioManager
 import com.squareup.moshi.JsonDataException
+import com.squareup.moshi.JsonEncodingException
 import kotlinx.coroutines.*
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -93,6 +94,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     fun writeToSocket(message: Message): Boolean {
         message.id = id
         val messageByte = ChatManager.parseToJson(message)
+        Log.d("Sent Message", messageByte)
 
         return try {
             runBlocking {
@@ -117,6 +119,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
             while (isActive && running) {
                 if (scanner.hasNextLine()) {
                     val receivedJson = scanner.nextLine()
+                    Log.d("Received Json", receivedJson)
 
                     try {
                         val message = ChatManager.serializeMessage(receivedJson)
@@ -130,7 +133,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                 ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
                                         } catch (e: JsonDataException) {
                                             Log.e(
-                                                "ClientViewModel",
+                                                "Bad acknowledge profile list",
                                                 "Server sent an incorrect profile list: ${message.text}"
                                             )
                                         }
@@ -188,7 +191,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                 if (message.base64Data != null) {
                                                     val path =
                                                         RecordAudioManager.base64toAudio(message.base64Data)
-                                                    message.path = path
+                                                    message.mediaId = path
                                                 }
                                             }
 
@@ -199,7 +202,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                             PictureManager.base64ToBitmap(it)
                                                         val uri =
                                                             PictureManager.bitmapToFile(bitmap)
-                                                        message.path = uri.path
+                                                        message.mediaId = uri.path
                                                     }
                                                 }
                                             }
@@ -230,7 +233,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             }
                         }
                     } catch (e: JsonDataException) {
-                        Log.e("ClientViewModel", receivedJson)
+                        //Log.e("ClientViewModel", receivedJson)
+                    } catch (e: JsonEncodingException) {
+                        Log.e("JsonEncodingException", receivedJson)
                     }
                 }
             }
