@@ -23,17 +23,18 @@ class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
 
-    private lateinit var userPhoto: Bitmap
+    private var userPhoto: Bitmap? = null
+    private lateinit var imageUri: Uri
 
     private val navController: NavController by lazy {
         findNavController()
     }
 
     private val registerTakePhoto = registerForActivityResult(
-        ActivityResultContracts.TakePicturePreview()
-    ) { image: Bitmap? ->
-        if (image != null) {
-            val square = image.toSquare()
+        ActivityResultContracts.TakePicture()
+    ) { isSaved ->
+        if (isSaved) {
+            val square = PictureManager.uriToBitmap(imageUri, requireContext().contentResolver).toSquare()
             if (square != null) {
                 userPhoto = square
             }
@@ -93,17 +94,29 @@ class ProfileFragment : Fragment() {
                 }
 
                 avatar.setOnClickListener {
-                    val uri = PictureManager.bitmapToFile(userPhoto)
-                    if(uri.path != null) {
-                        val bundle: Bundle = bundleOf("path" to uri.path)
-                        val extras = FragmentNavigatorExtras(binding.avatar to "image_big")
+                    val bitmap = userPhoto
+                    val extras = FragmentNavigatorExtras(binding.avatar to "image_big")
+                    if (bitmap != null) {
+                        val uri = PictureManager.bitmapToFile(bitmap)
+                        if(uri.path != null) {
+                            val bundle: Bundle = bundleOf("path" to uri.path)
+                            findNavController().navigate(
+                                R.id.action_profileFragment_to_imageFragment,
+                                bundle,
+                                null,
+                                extras
+                            )
+                        }
+                    } else {
                         findNavController().navigate(
                             R.id.action_profileFragment_to_imageFragment,
-                            bundle,
+                            null,
                             null,
                             extras
                         )
                     }
+
+
 
                 }
 
@@ -121,20 +134,29 @@ class ProfileFragment : Fragment() {
             }
 
             btnSave.setOnClickListener {
-                val uri = userPhoto.let { bitmap -> PictureManager.bitmapToFile(bitmap) }
-                AppPreferences.saveClient(
-                    userNameField.text.toString(),
-                    clientAvatar = uri.path,
-                    context = context
-                )
+                val bitmap = userPhoto
+                if (bitmap != null) {
+                    val uri = PictureManager.bitmapToFile(bitmap)
+                    AppPreferences.saveClient(
+                        userNameField.text.toString(),
+                        clientAvatar = uri.path,
+                        context = context
+                    )
+                    navController.popBackStack()
+                } else {
+                    AppPreferences.saveClient(
+                        userNameField.text.toString(),
+                        context = context
+                    )
+                }
 
-                navController.popBackStack()
             }
         }
     }
 
     private fun takePhoto() {
-        registerTakePhoto.launch(null)
+        imageUri = PictureManager.createUri()
+        registerTakePhoto.launch(imageUri)
     }
 
     private fun choosePicture() {

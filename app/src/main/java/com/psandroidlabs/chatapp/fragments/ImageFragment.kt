@@ -12,6 +12,10 @@ import androidx.navigation.fragment.navArgs
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentImageBinding
 import com.psandroidlabs.chatapp.utils.PictureManager
+import androidx.appcompat.app.AppCompatActivity
+
+
+
 
 class ImageFragment : Fragment(R.layout.fragment_image) {
 
@@ -21,6 +25,16 @@ class ImageFragment : Fragment(R.layout.fragment_image) {
 
     private val navController: NavController by lazy {
         findNavController()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (requireActivity() as AppCompatActivity).supportActionBar?.show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -54,6 +54,8 @@ class ChatFragment : Fragment(), CoroutineScope {
     private var recorder: MediaRecorder? = null
     private var audioName: String = ""
 
+    private lateinit var imageUri: Uri
+
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
     }
@@ -79,12 +81,10 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private val registerTakePhoto = registerForActivityResult(
-        ActivityResultContracts.TakePicturePreview()
-    ) { image: Bitmap? ->
-        if (image != null) {
-            val bitmap = PictureManager.compressBitmap(image)
-            val file = PictureManager.bitmapToFile(bitmap)
-            val message = ChatManager.imageMessage(clientUsername, file.path, bitmap)
+        ActivityResultContracts.TakePicture()
+    ) { isSaved ->
+        if (isSaved) {
+            val message = ChatManager.imageMessage(clientUsername, imageUri.path, PictureManager.uriToBitmap(imageUri, requireContext().contentResolver))
             val success = client.writeToSocket(message)
 
             checkDisconnected(success, message)
@@ -478,7 +478,8 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun takePhoto() {
-        registerTakePhoto.launch(null)
+        imageUri = PictureManager.createUri()
+        registerTakePhoto.launch(imageUri)
     }
 
     private fun choosePicture() {

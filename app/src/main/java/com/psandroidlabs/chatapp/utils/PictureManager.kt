@@ -29,7 +29,7 @@ object PictureManager {
 
     fun compressBitmap(bitmap: Bitmap): Bitmap {
         val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
         val byteArray = stream.toByteArray()
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
@@ -57,6 +57,15 @@ object PictureManager {
                 Base64.decode(string, Base64.NO_WRAP).size
             )
         }
+    }
+
+    fun createUri(): Uri {
+        val file =
+            File(
+                MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
+                "${UUID.randomUUID()}.jpg"
+            )
+        return Uri.fromFile(file)
     }
 
     fun bitmapToFile(bitmap: Bitmap): Uri {
