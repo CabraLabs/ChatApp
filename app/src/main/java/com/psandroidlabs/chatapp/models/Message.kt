@@ -15,7 +15,7 @@ data class Message(
     val username: String?,
     val text: String?,
     @Ignore var base64Data: String?,
-    var path: String?,
+    var mediaId: String?,
     val time: Long,
     @Ignore var id: Int?,
     val join: Join?
