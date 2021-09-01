@@ -18,7 +18,6 @@ import com.psandroidlabs.chatapp.utils.RecordAudioManager
 import kotlinx.coroutines.*
 import java.io.File
 import java.util.*
-import kotlin.concurrent.schedule
 
 
 class ChatAdapter(
@@ -114,8 +113,8 @@ class ChatAdapter(
                 }
 
                 message.mediaId?.let {
-                    filePath = File(RecordAudioManager.path(), it).toString()
-                    val length = getAudio(filePath)?.toInt()
+                    filePath = RecordAudioManager.audioDir(it)
+                    val length = getAudioMetadata(filePath)?.toInt()
 
                     if (length != null) {
                         duration.text = ChatManager.formatAudioTime(length)
@@ -179,7 +178,7 @@ class ChatAdapter(
             }
         }
 
-        private fun getAudio(path: String): String? {
+        private fun getAudioMetadata(path: String): String? {
             val mmr = MediaMetadataRetriever().apply {
                 setDataSource(path)
             }
@@ -205,7 +204,7 @@ class ChatAdapter(
                 }
 
                 message.mediaId?.let {
-                    filePath = File(RecordAudioManager.path(), it).toString()
+                    filePath = RecordAudioManager.audioDir(it)
                     val length = getAudio(filePath)?.toInt()
 
                     if (length != null) {

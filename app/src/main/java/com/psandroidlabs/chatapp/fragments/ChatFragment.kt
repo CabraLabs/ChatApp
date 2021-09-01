@@ -371,10 +371,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 audioName = RecordAudioManager.nameAudio()
 
                 recorder = RecordAudioManager.createAudioRecorder(
-                    RecordAudioManager.audioDir(
-                        audioName,
-                        requireContext()
-                    )
+                    RecordAudioManager.audioDir(audioName)
                 )
 
                 recorder?.prepare()
@@ -391,7 +388,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 val message = ChatManager.audioMessage(
                     clientUsername,
-                    RecordAudioManager.audioDir(audioName, requireContext())
+                    RecordAudioManager.audioDir(audioName)
                 )
                 val success = client.writeToSocket(message)
 

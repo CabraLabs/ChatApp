@@ -22,11 +22,11 @@ object RecordAudioManager {
 
     fun nameAudio(): String = ChatManager.getEpoch().toString() + ".mp3"
 
-    fun audioDir(fileName: String, context: Context): String {
+    fun audioDir(fileName: String): String {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            File(context.getExternalFilesDir(Constants.AUDIO_DIR), fileName).toString()
+            File(applicationContext().getExternalFilesDir(Constants.AUDIO_DIR), fileName).toString()
         } else {
-            File(context.cacheDir, fileName).toString()
+            File(applicationContext().cacheDir, fileName).toString()
         }
     }
 
@@ -35,20 +35,11 @@ object RecordAudioManager {
         return Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
     }
 
-    fun path(): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            applicationContext().getExternalFilesDir(Constants.AUDIO_DIR).toString()
-        } else {
-            applicationContext().cacheDir.toString()
-        }
-    }
-
-
     fun base64toAudio(base64: String?): String {
         val audio = Base64.decode(base64, Base64.NO_WRAP)
         val audioName = nameAudio()
 
-        val filePath = File(path(), audioName)
+        val filePath = audioDir(audioName)
 
         FileOutputStream(filePath).apply {
             write(audio)
