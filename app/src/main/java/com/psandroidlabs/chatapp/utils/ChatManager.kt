@@ -98,7 +98,7 @@ object ChatManager : CoroutineScope {
         username: String? = null,
         text: String? = null,
         base64Data: String? = null,
-        path: String? = null,
+        mediaId: String? = null,
         date: Long = getEpoch(),
         id: Int? = null,
         avatar: String? = null,
@@ -110,7 +110,7 @@ object ChatManager : CoroutineScope {
         username = username,
         text = text,
         base64Data = base64Data,
-        path = path,
+        mediaId = mediaId,
         time = date,
         id = id,
         join = Join(avatar, password, isAdmin)
@@ -126,7 +126,7 @@ object ChatManager : CoroutineScope {
                 type = MessageType.AUDIO,
                 username = username,
                 base64Data = RecordAudioManager.audioBase64(audioPath),
-                path = audioPath,
+                mediaId = audioPath,
             )
         } ?: throw Exception("Audio message needs to have a full path.")
     }
