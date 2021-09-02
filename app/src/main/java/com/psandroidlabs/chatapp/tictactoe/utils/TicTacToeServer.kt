@@ -17,4 +17,8 @@ object TicTacToeServer {
     private fun checkWinner() {
         TODO()
     }
+
+    private fun removeGame() {
+        TODO()
+    }
 }
