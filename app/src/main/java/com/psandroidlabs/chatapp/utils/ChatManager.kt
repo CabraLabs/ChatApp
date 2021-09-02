@@ -165,9 +165,10 @@ object ChatManager : CoroutineScope {
             return  createMessage(
                 type = MessageType.IMAGE,
                 username = username,
-                base64Data = bitmap.toBase64()
+                base64Data = bitmap.toBase64(),
+                mediaId = imagePath
             )
-        } ?: throw Exception("Audio message needs to have a full path.")
+        } ?: throw Exception("Image message needs to have a full path.")
     }
 
     /**

@@ -200,9 +200,14 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                     if (it != null) {
                                                         val bitmap =
                                                             PictureManager.base64ToBitmap(it)
-                                                        val uri =
-                                                            PictureManager.bitmapToFile(bitmap)
-                                                        message.mediaId = uri.path
+                                                            var mediaId = message.mediaId
+                                                            if(!mediaId.isNullOrBlank()){
+                                                                val file = PictureManager.bitmapToFile(bitmap, mediaId)
+                                                            } else {
+                                                                mediaId = PictureManager.setImageName()
+                                                                val file = PictureManager.bitmapToFile(bitmap, mediaId)
+                                                                message.mediaId = mediaId
+                                                            }
                                                     }
                                                 }
                                             }

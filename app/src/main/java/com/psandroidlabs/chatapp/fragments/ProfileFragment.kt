@@ -25,6 +25,7 @@ class ProfileFragment : Fragment() {
 
     private var userPhoto: Bitmap? = null
     private lateinit var imageUri: Uri
+    private lateinit var imageName: String
 
     private val navController: NavController by lazy {
         findNavController()
@@ -47,6 +48,10 @@ class ProfileFragment : Fragment() {
     ) { uri: Uri? ->
         if (uri != null) {
             val square = PictureManager.uriToBitmap(uri, requireContext().contentResolver).toSquare()
+            imageName = PictureManager.setImageName()
+            
+            val uri = square?.let { PictureManager.bitmapToFile(it, imageName) }
+
             if (square != null) {
                 userPhoto = square
                 binding.avatar.setImageBitmap(userPhoto)
@@ -97,7 +102,7 @@ class ProfileFragment : Fragment() {
                     val bitmap = userPhoto
                     val extras = FragmentNavigatorExtras(binding.avatar to "image_big")
                     if (bitmap != null) {
-                        val uri = PictureManager.bitmapToFile(bitmap)
+                        val uri = PictureManager.bitmapToFile(bitmap, imageName)
                         if(uri.path != null) {
                             val bundle: Bundle = bundleOf("path" to uri.path)
                             findNavController().navigate(
@@ -136,7 +141,7 @@ class ProfileFragment : Fragment() {
             btnSave.setOnClickListener {
                 val bitmap = userPhoto
                 if (bitmap != null) {
-                    val uri = PictureManager.bitmapToFile(bitmap)
+                    val uri = PictureManager.bitmapToFile(bitmap, imageName)
                     AppPreferences.saveClient(
                         userNameField.text.toString(),
                         clientAvatar = uri.path,
@@ -155,7 +160,8 @@ class ProfileFragment : Fragment() {
     }
 
     private fun takePhoto() {
-        imageUri = PictureManager.createUri()
+        imageName = PictureManager.setImageName()
+        imageUri = PictureManager.createUri(imageName)
         registerTakePhoto.launch(imageUri)
     }
 

@@ -1,6 +1,5 @@
 package com.psandroidlabs.chatapp.fragments
 
-import android.graphics.Bitmap
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -55,6 +54,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private var audioName: String = ""
 
     private lateinit var imageUri: Uri
+    private lateinit var imageName: String
 
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -84,7 +84,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.TakePicture()
     ) { isSaved ->
         if (isSaved) {
-            val message = ChatManager.imageMessage(clientUsername, imageUri.path, PictureManager.uriToBitmap(imageUri, requireContext().contentResolver))
+            val message = ChatManager.imageMessage(clientUsername, imageName, PictureManager.uriToBitmap(imageUri, requireContext().contentResolver))
             val success = client.writeToSocket(message)
 
             checkDisconnected(success, message)
@@ -101,7 +101,10 @@ class ChatFragment : Fragment(), CoroutineScope {
                     requireContext().contentResolver
                 )
             )
-            val message = ChatManager.imageMessage(clientUsername, uri.path, bitmap)
+            imageName = PictureManager.setImageName()
+            val uri = PictureManager.bitmapToFile(bitmap, imageName)
+
+            val message = ChatManager.imageMessage(clientUsername, imageName, PictureManager.uriToBitmap(uri, requireContext().contentResolver))
             val success = client.writeToSocket(message)
 
             checkDisconnected(success, message)
@@ -478,7 +481,8 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun takePhoto() {
-        imageUri = PictureManager.createUri()
+        imageName = PictureManager.setImageName()
+        imageUri = PictureManager.createUri(imageName)
         registerTakePhoto.launch(imageUri)
     }
 
