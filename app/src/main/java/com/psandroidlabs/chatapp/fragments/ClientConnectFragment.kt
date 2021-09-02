@@ -1,6 +1,7 @@
 package com.psandroidlabs.chatapp.fragments
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -13,17 +14,11 @@ import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.*
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 
 
 @DelicateCoroutinesApi
-class ClientConnectFragment : Fragment(), CoroutineScope {
-
-    private val parentJob = Job()
-    override val coroutineContext = parentJob + Dispatchers.Main
+class ClientConnectFragment : Fragment() {
 
     private val client: ClientViewModel by activityViewModels()
 
@@ -35,6 +30,7 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
     }
 
     override fun onDestroy() {
+        client.closeSocket()
         activity?.title = getString(R.string.home_app_bar_name)
         super.onDestroy()
     }
@@ -85,12 +81,6 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
 
         view.setOnClickListener {
             hideKeyboard()
-        }
-
-        client.accepted.observe(viewLifecycleOwner) {
-            if (it != null) {
-                parseStatus(it)
-            }
         }
 
         initializeButtons()
@@ -174,6 +164,12 @@ class ClientConnectFragment : Fragment(), CoroutineScope {
     }
 
     private fun join(username: String) {
+        client.accepted.observe(viewLifecycleOwner) {
+            if (it != null) {
+                parseStatus(it)
+            }
+        }
+
         client.writeToSocket(
             ChatManager.connectMessage(
                 username,
