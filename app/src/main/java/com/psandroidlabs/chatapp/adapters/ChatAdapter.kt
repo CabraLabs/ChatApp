@@ -15,8 +15,10 @@ import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.PictureManager
 import com.psandroidlabs.chatapp.utils.RecordAudioManager
-import kotlinx.coroutines.*
-import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 
@@ -51,8 +53,9 @@ class ChatAdapter(
             with(binding) {
                 chatRowUsername.text = message.username
 
-                if (message.join?.avatar != null) {
-                    userAvatar.setImageBitmap(PictureManager.base64ToBitmap(message.join.avatar))
+                if (message.id != null) {
+                    val id = message.id
+                    userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
                 }
 
                 chatRowMessage.text = message.text
@@ -293,8 +296,7 @@ class ChatAdapter(
                 if (bitmap != null) {
                     btnChatRowImage.setImageBitmap(bitmap)
                     btnChatRowImage.setOnClickListener {
-                        val uri = bitmap.let { bitmap -> PictureManager.bitmapToFile(bitmap) }
-                        onImageClick.invoke(uri.path, btnChatRowImage)
+                        onImageClick.invoke(message.mediaId, btnChatRowImage)
                     }
                 } else {
                     btnChatRowImage.setImageResource(R.mipmap.ic_image_error)
@@ -318,12 +320,15 @@ class ChatAdapter(
                     userAvatar.setImageBitmap(PictureManager.base64ToBitmap(message.join.avatar))
                 }
 
-                val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
+                val mediaId = message.mediaId
+                if (!mediaId.isNullOrBlank()) {
+                    val bitmap = PictureManager.getImage(mediaId)
+                    if (bitmap != null) {
+                        btnChatRowImage.setImageBitmap(bitmap)
 
-                if (bitmap != null) {
-                    btnChatRowImage.setImageBitmap(bitmap)
-                    btnChatRowImage.setOnClickListener {
-                        onImageClick.invoke(message.path, btnChatRowImage)
+                        btnChatRowImage.setOnClickListener {
+                            onImageClick.invoke(mediaId, btnChatRowImage)
+                        }
                     }
                 } else {
                     btnChatRowImage.setImageResource(R.mipmap.ic_image_error)

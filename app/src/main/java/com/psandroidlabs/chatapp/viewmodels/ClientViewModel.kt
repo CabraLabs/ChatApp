@@ -200,9 +200,14 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                     if (it != null) {
                                                         val bitmap =
                                                             PictureManager.base64ToBitmap(it)
-                                                        val uri =
-                                                            PictureManager.bitmapToFile(bitmap)
-                                                        message.mediaId = uri.path
+                                                            var mediaId = message.mediaId
+                                                            if(!mediaId.isNullOrBlank()){
+                                                                val file = PictureManager.bitmapToFile(bitmap, mediaId)
+                                                            } else {
+                                                                mediaId = PictureManager.setImageName()
+                                                                val file = PictureManager.bitmapToFile(bitmap, mediaId)
+                                                                message.mediaId = mediaId
+                                                            }
                                                     }
                                                 }
                                             }
@@ -274,7 +279,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     fun showChatMembers(context: Context?) {
         if (context != null) {
             val dialogBox = Dialog(context).apply {
-                window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
                 window?.setLayout(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
@@ -298,7 +302,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                 )
             }
 
-            val adapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
+            val adapter = ChatMembersAdapter(ChatManager.chatMembersList)
             recyclerView.adapter = adapter
         }
     }

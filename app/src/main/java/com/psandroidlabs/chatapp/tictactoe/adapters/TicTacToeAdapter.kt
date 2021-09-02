@@ -26,7 +26,7 @@ class TicTacToeAdapter(
                 val imgRes = when (dataSet[position]) {
                     "x" -> R.drawable.ic_x
                     "o" -> R.drawable.ic_o
-                    else -> R.drawable.empty
+                    else -> R.drawable.table_cell_empty
                 }
 
                 cellImageId.setImageResource(imgRes)

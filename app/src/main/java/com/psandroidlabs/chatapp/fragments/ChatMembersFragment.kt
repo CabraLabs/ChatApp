@@ -54,7 +54,7 @@ class ChatMembersFragment : DialogFragment() {
 
     private fun initializeList() {
         val recyclerViewList: RecyclerView = binding.membersRecycler
-        chatMembersAdapter = ChatMembersAdapter(ChatManager.chatMembersList, ::onClick)
+        chatMembersAdapter = ChatMembersAdapter(ChatManager.chatMembersList)
 
         recyclerViewList.apply {
             adapter = chatMembersAdapter

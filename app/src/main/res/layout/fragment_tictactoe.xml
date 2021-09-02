@@ -7,10 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
-
     tools:context=".tictactoe.fragments.TicTacToeFragment"
     android:background="@color/soft_grey_2"
-
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     >
 

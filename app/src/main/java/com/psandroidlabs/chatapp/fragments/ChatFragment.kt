@@ -1,6 +1,5 @@
 package com.psandroidlabs.chatapp.fragments
 
-import android.graphics.Bitmap
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -25,6 +24,7 @@ import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
 import com.psandroidlabs.chatapp.models.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
+import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.psandroidlabs.chatapp.utils.PictureManager
@@ -53,6 +53,9 @@ class ChatFragment : Fragment(), CoroutineScope {
     private var recorder: MediaRecorder? = null
     private var audioName: String = ""
 
+    private lateinit var imageUri: Uri
+    private lateinit var imageName: String
+
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
     }
@@ -78,12 +81,10 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private val registerTakePhoto = registerForActivityResult(
-        ActivityResultContracts.TakePicturePreview()
-    ) { image: Bitmap? ->
-        if (image != null) {
-            val bitmap = PictureManager.compressBitmap(image)
-            val file = PictureManager.bitmapToFile(bitmap)
-            val message = ChatManager.imageMessage(clientUsername, file.path, bitmap)
+        ActivityResultContracts.TakePicture()
+    ) { isSaved ->
+        if (isSaved) {
+            val message = ChatManager.imageMessage(clientUsername, imageName, PictureManager.uriToBitmap(imageUri, requireContext().contentResolver))
             val success = client.writeToSocket(message)
 
             checkDisconnected(success, message)
@@ -100,7 +101,10 @@ class ChatFragment : Fragment(), CoroutineScope {
                     requireContext().contentResolver
                 )
             )
-            val message = ChatManager.imageMessage(clientUsername, uri.path, bitmap)
+            imageName = PictureManager.setImageName()
+            val uri = PictureManager.bitmapToFile(bitmap, imageName)
+
+            val message = ChatManager.imageMessage(clientUsername, imageName, PictureManager.uriToBitmap(uri, requireContext().contentResolver))
             val success = client.writeToSocket(message)
 
             checkDisconnected(success, message)
@@ -195,24 +199,17 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-//            R.id.ticTactToe -> {
-//                val ticTacToeFragment = TicTacToeFragment(true)
-//
-//                GlobalScope.launch(Dispatchers.IO) {
-//                    client.writeToSocket(
-//                        ChatManager.sendMessageToSocket(
-//                            clientUsername,
-//                            "/TICTACTOE_INVITE"
-//                        )
-//                    )
-//                }
-//
-//                activity?.supportFragmentManager?.let {
-//                    ticTacToeFragment.show(it, null)
-//                }
-//
-//                true
-//            }
+            R.id.ticTactToe -> {
+                val ticTacToeFragment = TicTacToeFragment(true)
+
+                //show chat members list and choose one to send invite
+
+                activity?.supportFragmentManager?.let {
+                    ticTacToeFragment.show(it, null)
+                }
+
+                true
+            }
 
             R.id.shareLink -> {
                 client.shareChatLink(requireActivity())
@@ -220,7 +217,6 @@ class ChatFragment : Fragment(), CoroutineScope {
             }
 
             R.id.chatMembers -> {
-                //TODO call chat members dialog
                 client.showChatMembers(context)
                 true
             }
@@ -485,7 +481,9 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun takePhoto() {
-        registerTakePhoto.launch(null)
+        imageName = PictureManager.setImageName()
+        imageUri = PictureManager.createUri(imageName)
+        registerTakePhoto.launch(imageUri)
     }
 
     private fun choosePicture() {

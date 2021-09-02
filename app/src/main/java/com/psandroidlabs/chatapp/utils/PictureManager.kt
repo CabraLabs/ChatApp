@@ -2,12 +2,14 @@ package com.psandroidlabs.chatapp.utils
 
 import android.content.ContentResolver
 import android.content.res.Resources
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Base64
 import androidx.core.graphics.drawable.toDrawable
 import com.psandroidlabs.chatapp.MainApplication
@@ -29,7 +31,7 @@ object PictureManager {
 
     fun compressBitmap(bitmap: Bitmap): Bitmap {
         val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 40, stream)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
         val byteArray = stream.toByteArray()
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
@@ -59,11 +61,37 @@ object PictureManager {
         }
     }
 
-    fun bitmapToFile(bitmap: Bitmap): Uri {
+    fun setImageName(): String {
+        return "${UUID.randomUUID()}.jpg"
+    }
+
+    fun createUri(name: String): Uri {
         val file =
             File(
                 MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
-                "${UUID.randomUUID()}.jpg"
+                name
+            )
+        return Uri.fromFile(file)
+    }
+
+    fun getImage (name: String): Bitmap? {
+        val file =
+            File(
+                MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
+                name
+            )
+        return if (file.exists()) {
+            BitmapFactory.decodeFile(file.absolutePath)
+        } else {
+            null
+        }
+    }
+
+    fun bitmapToFile(bitmap: Bitmap, name: String): Uri {
+        val file =
+            File(
+                MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
+                name
             )
 
         try {

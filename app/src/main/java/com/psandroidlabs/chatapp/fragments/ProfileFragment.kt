@@ -23,17 +23,19 @@ class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
 
-    private lateinit var userPhoto: Bitmap
+    private var userPhoto: Bitmap? = null
+    private lateinit var imageUri: Uri
+    private lateinit var imageName: String
 
     private val navController: NavController by lazy {
         findNavController()
     }
 
     private val registerTakePhoto = registerForActivityResult(
-        ActivityResultContracts.TakePicturePreview()
-    ) { image: Bitmap? ->
-        if (image != null) {
-            val square = image.toSquare()
+        ActivityResultContracts.TakePicture()
+    ) { isSaved ->
+        if (isSaved) {
+            val square = PictureManager.uriToBitmap(imageUri, requireContext().contentResolver).toSquare()
             if (square != null) {
                 userPhoto = square
             }
@@ -44,10 +46,16 @@ class ProfileFragment : Fragment() {
     private val registerChoosePhoto = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        val square = PictureManager.uriToBitmap(uri, requireContext().contentResolver).toSquare()
-        if (uri != null && square != null) {
-            userPhoto = square
-            binding.avatar.setImageBitmap(userPhoto)
+        if (uri != null) {
+            val square = PictureManager.uriToBitmap(uri, requireContext().contentResolver).toSquare()
+            imageName = PictureManager.setImageName()
+            
+            val uri = square?.let { PictureManager.bitmapToFile(it, imageName) }
+
+            if (square != null) {
+                userPhoto = square
+                binding.avatar.setImageBitmap(userPhoto)
+            }
         }
     }
 
@@ -75,7 +83,11 @@ class ProfileFragment : Fragment() {
                 if (preference.isNotEmpty()) {
                     userNameField.setText(AppPreferences.getClient(context)[0])
                     if (PictureManager.loadMyAvatar() != null) {
-                        avatar.setImageBitmap(PictureManager.loadMyAvatar())
+                        val bitmap = PictureManager.loadMyAvatar()
+                        if (bitmap != null) {
+                            userPhoto = bitmap
+                            avatar.setImageBitmap(PictureManager.loadMyAvatar())
+                        }
                     } else {
                         avatar.setImageDrawable(
                             ContextCompat.getDrawable(
@@ -87,17 +99,29 @@ class ProfileFragment : Fragment() {
                 }
 
                 avatar.setOnClickListener {
-                    val uri = PictureManager.bitmapToFile(userPhoto)
-                    if(uri.path != null) {
-                        val bundle: Bundle = bundleOf("path" to uri.path)
-                        val extras = FragmentNavigatorExtras(binding.avatar to "image_big")
+                    val bitmap = userPhoto
+                    val extras = FragmentNavigatorExtras(binding.avatar to "image_big")
+                    if (bitmap != null) {
+                        val uri = PictureManager.bitmapToFile(bitmap, imageName)
+                        if(uri.path != null) {
+                            val bundle: Bundle = bundleOf("path" to uri.path)
+                            findNavController().navigate(
+                                R.id.action_profileFragment_to_imageFragment,
+                                bundle,
+                                null,
+                                extras
+                            )
+                        }
+                    } else {
                         findNavController().navigate(
                             R.id.action_profileFragment_to_imageFragment,
-                            bundle,
+                            null,
                             null,
                             extras
                         )
                     }
+
+
 
                 }
 
@@ -115,20 +139,30 @@ class ProfileFragment : Fragment() {
             }
 
             btnSave.setOnClickListener {
-                val uri = userPhoto.let { bitmap -> PictureManager.bitmapToFile(bitmap) }
-                AppPreferences.saveClient(
-                    userNameField.text.toString(),
-                    clientAvatar = uri.path,
-                    context = context
-                )
+                val bitmap = userPhoto
+                if (bitmap != null) {
+                    val uri = PictureManager.bitmapToFile(bitmap, imageName)
+                    AppPreferences.saveClient(
+                        userNameField.text.toString(),
+                        clientAvatar = uri.path,
+                        context = context
+                    )
+                    navController.popBackStack()
+                } else {
+                    AppPreferences.saveClient(
+                        userNameField.text.toString(),
+                        context = context
+                    )
+                }
 
-                navController.popBackStack()
             }
         }
     }
 
     private fun takePhoto() {
-        registerTakePhoto.launch(null)
+        imageName = PictureManager.setImageName()
+        imageUri = PictureManager.createUri(imageName)
+        registerTakePhoto.launch(imageUri)
     }
 
     private fun choosePicture() {

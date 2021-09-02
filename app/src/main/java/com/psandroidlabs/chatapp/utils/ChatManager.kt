@@ -160,12 +160,16 @@ object ChatManager : CoroutineScope {
         id = id
     )
 
-    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap) = createMessage(
-        type = MessageType.IMAGE,
-        username = username,
-        text = imagePath ?: throw Exception("Image message needs to have a full path."),
-        base64Data = bitmap.toBase64()
-    )
+    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap): Message {
+        imagePath?.let {
+            return  createMessage(
+                type = MessageType.IMAGE,
+                username = username,
+                base64Data = bitmap.toBase64(),
+                mediaId = imagePath
+            )
+        } ?: throw Exception("Image message needs to have a full path.")
+    }
 
     /**
      * Parse the message to a valid REVOKED or ACKNOWLEDGE message.
