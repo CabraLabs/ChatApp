@@ -7,6 +7,7 @@ import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -360,7 +361,7 @@ class ChatFragment : Fragment(), CoroutineScope {
             recording = !recording
 
             if (recording) {
-                recordAudio.setBackgroundColor(requireContext().getColor(R.color.red))
+                recordAudio.setImageResource(R.drawable.ic_mic_on)
 
                 audioName = RecordAudioManager.nameAudio()
 
@@ -373,7 +374,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 disableChat(true)
             } else {
-                recordAudio.setBackgroundColor(requireContext().getColor(R.color.black))
+                recordAudio.setImageResource(R.drawable.ic_mic_none)
 
                 recorder?.apply {
                     stop()
@@ -382,7 +383,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
                 val message = ChatManager.audioMessage(
                     clientUsername,
-                    RecordAudioManager.audioDir(audioName)
+                    audioName
                 )
                 val success = client.writeToSocket(message)
 
