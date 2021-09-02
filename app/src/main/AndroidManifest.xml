@@ -65,7 +65,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.psandroidlabs.chatapp.provider_file"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
