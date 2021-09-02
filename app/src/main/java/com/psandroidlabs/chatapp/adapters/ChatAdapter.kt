@@ -125,7 +125,7 @@ class ChatAdapter(
                     } else {
                         playButton.visibility = View.GONE
                         seekBar.visibility = View.GONE
-                        chatRowUsername.text = "Error displaying audio"
+                        chatRowUsername.text = applicationContext().getString(R.string.audio_missing)
                         return
                     }
                 }
@@ -196,6 +196,7 @@ class ChatAdapter(
             } catch (e: IllegalArgumentException) {
                 null
             }
+        }
     }
 
     inner class ViewHolderAudioSent(private val binding: ChatRowAudioSentBinding) :
@@ -224,7 +225,7 @@ class ChatAdapter(
                     } else {
                         playButton.visibility = View.GONE
                         seekBar.visibility = View.GONE
-                        chatRowUsername.text = "Error displaying audio"
+                        chatRowUsername.text = applicationContext().getString(R.string.audio_missing)
                         return
                     }
                 }
