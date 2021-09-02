@@ -11,6 +11,7 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Base64
+import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import com.psandroidlabs.chatapp.MainApplication
 import java.io.*
@@ -29,11 +30,39 @@ object PictureManager {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
-    fun compressBitmap(bitmap: Bitmap): Bitmap {
+    fun compressBitmap(bitmap: Bitmap, quality: Int): Bitmap {
         val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)
         val byteArray = stream.toByteArray()
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
+
+    fun createUri(name: String): Uri {
+        val file =
+            File(
+                MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
+                name
+            )
+        return FileProvider.getUriForFile(MainApplication.applicationContext(), "com.psandroidlabs.chatapp.provider_file", file)
+    }
+
+    fun bitmapToUri(bitmap: Bitmap, name: String): Uri {
+        val file =
+            File(
+                MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
+                name
+            )
+
+        try {
+            val stream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            stream.flush()
+            stream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return Uri.parse(file.absolutePath)
     }
 
     fun uriToBitmap(uri: Uri?, contentResolver: ContentResolver): Bitmap {
@@ -65,15 +94,6 @@ object PictureManager {
         return "${UUID.randomUUID()}.jpg"
     }
 
-    fun createUri(name: String): Uri {
-        val file =
-            File(
-                MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
-                name
-            )
-        return Uri.fromFile(file)
-    }
-
     fun getImage (name: String): Bitmap? {
         val file =
             File(
@@ -87,25 +107,6 @@ object PictureManager {
         }
     }
 
-    fun bitmapToFile(bitmap: Bitmap, name: String): Uri {
-        val file =
-            File(
-                MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
-                name
-            )
-
-        try {
-            val stream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            stream.flush()
-            stream.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        return Uri.parse(file.absolutePath)
-    }
-
     fun fileToBitmap(path: String): Bitmap? {
         return if (File(path).exists()) {
             return BitmapFactory.decodeFile(File(path).absolutePath)
@@ -117,7 +118,7 @@ object PictureManager {
     fun loadMyAvatar(): Bitmap? {
         val preference = AppPreferences.getClient(MainApplication.applicationContext())
         return if (preference.isNotEmpty() && !preference[3].isNullOrBlank()) {
-            preference[2]?.let { fileToBitmap(it) }
+            preference[2]?.let { getImage(it) }
         } else null
     }
 

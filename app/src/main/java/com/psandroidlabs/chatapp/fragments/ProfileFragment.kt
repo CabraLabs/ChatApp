@@ -25,7 +25,7 @@ class ProfileFragment : Fragment() {
 
     private var userPhoto: Bitmap? = null
     private lateinit var imageUri: Uri
-    private lateinit var imageName: String
+    private var imageName: String = ""
 
     private val navController: NavController by lazy {
         findNavController()
@@ -38,8 +38,8 @@ class ProfileFragment : Fragment() {
             val square = PictureManager.uriToBitmap(imageUri, requireContext().contentResolver).toSquare()
             if (square != null) {
                 userPhoto = square
+                binding.avatar.setImageBitmap(userPhoto)
             }
-            binding.avatar.setImageBitmap(userPhoto)
         }
     }
 
@@ -47,11 +47,14 @@ class ProfileFragment : Fragment() {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            val square = PictureManager.uriToBitmap(uri, requireContext().contentResolver).toSquare()
+            val square = PictureManager.compressBitmap(
+                PictureManager.uriToBitmap(
+                    uri,
+                    requireContext().contentResolver
+                ), 50
+            ).toSquare()
             imageName = PictureManager.setImageName()
-            
-            val uri = square?.let { PictureManager.bitmapToFile(it, imageName) }
-
+            val uri = square?.let { PictureManager.bitmapToUri(it, imageName) }
             if (square != null) {
                 userPhoto = square
                 binding.avatar.setImageBitmap(userPhoto)
@@ -100,11 +103,14 @@ class ProfileFragment : Fragment() {
 
                 avatar.setOnClickListener {
                     val bitmap = userPhoto
-                    val extras = FragmentNavigatorExtras(binding.avatar to "image_big")
+                    val extras = FragmentNavigatorExtras(avatar to "image_big")
                     if (bitmap != null) {
-                        val uri = PictureManager.bitmapToFile(bitmap, imageName)
+                        if(imageName.isBlank()){
+                            imageName = PictureManager.setImageName()
+                        }
+                        val uri = PictureManager.bitmapToUri(bitmap, imageName)
                         if(uri.path != null) {
-                            val bundle: Bundle = bundleOf("path" to uri.path)
+                            val bundle: Bundle = bundleOf("path" to imageName)
                             findNavController().navigate(
                                 R.id.action_profileFragment_to_imageFragment,
                                 bundle,
@@ -120,9 +126,6 @@ class ProfileFragment : Fragment() {
                             extras
                         )
                     }
-
-
-
                 }
 
                 btnTakePhoto.setOnClickListener {
@@ -141,10 +144,13 @@ class ProfileFragment : Fragment() {
             btnSave.setOnClickListener {
                 val bitmap = userPhoto
                 if (bitmap != null) {
-                    val uri = PictureManager.bitmapToFile(bitmap, imageName)
+                    if (imageName.isBlank()) {
+                        imageName = PictureManager.setImageName()
+                    }
+                    val uri = PictureManager.bitmapToUri(bitmap, imageName)
                     AppPreferences.saveClient(
                         userNameField.text.toString(),
-                        clientAvatar = uri.path,
+                        clientAvatar = imageName,
                         context = context
                     )
                     navController.popBackStack()

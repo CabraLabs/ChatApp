@@ -4,8 +4,6 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
@@ -202,10 +200,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                             PictureManager.base64ToBitmap(it)
                                                             var mediaId = message.mediaId
                                                             if(!mediaId.isNullOrBlank()){
-                                                                val file = PictureManager.bitmapToFile(bitmap, mediaId)
+                                                                val file = PictureManager.bitmapToUri(bitmap, mediaId)
                                                             } else {
                                                                 mediaId = PictureManager.setImageName()
-                                                                val file = PictureManager.bitmapToFile(bitmap, mediaId)
+                                                                val file = PictureManager.bitmapToUri(bitmap, mediaId)
                                                                 message.mediaId = mediaId
                                                             }
                                                     }

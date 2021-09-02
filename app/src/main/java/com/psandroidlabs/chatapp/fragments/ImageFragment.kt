@@ -63,7 +63,12 @@ class ImageFragment : Fragment(R.layout.fragment_image) {
 
             if (args.path != null) {
                 val path = args.path
-                expandedImage.setImageBitmap(path?.let { PictureManager.fileToBitmap(it) })
+                val bitmap = path?.let { PictureManager.getImage(it) }
+                if (bitmap != null) {
+                    expandedImage.setImageBitmap(bitmap)
+                } else {
+                    expandedImage.setImageResource(R.mipmap.ic_image_error)
+                }
             } else {
                 expandedImage.setImageResource(R.mipmap.ic_image_error)
             }
