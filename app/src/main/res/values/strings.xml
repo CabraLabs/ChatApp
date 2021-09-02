@@ -70,6 +70,7 @@
     <string name="tictactoe_invite">Invite to TicTacToe</string>
     <string name="cancel">Cancel</string>
     <string name="score">Score</string>
+
     <!-- Foreground -->
     <string name="close_server">Close Server</string>
     <string name="server_running">Server is running</string>
@@ -81,4 +82,7 @@
     <!-- Profile -->
     <string name="profile">Profile</string>
     <string name="save">Save</string>
+
+    <!-- View Error -->
+    <string name="audio_missing">Error receiving the audio</string>
 </resources>

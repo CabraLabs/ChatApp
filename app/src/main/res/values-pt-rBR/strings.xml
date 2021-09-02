@@ -56,4 +56,5 @@
     <string name="score">Pontuação</string>
     <string name="left_the_room">saiu da sala:</string>
     <string name="missing_id">Servidor não conseguiu providenciar um ID de usuário</string>
+    <string name="audio_missing">Erro ao receber o audio</string>
 </resources>

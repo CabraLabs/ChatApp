@@ -120,13 +120,13 @@ object ChatManager : CoroutineScope {
      * Creates an audio message and manipulate it's text and base64Data to be correctly
      * sent to the user and the server.
      */
-    fun audioMessage(username: String, audioPath: String?): Message {
-        audioPath?.let {
+    fun audioMessage(username: String, audioName: String?): Message {
+        audioName?.let {
             return createMessage(
                 type = MessageType.AUDIO,
                 username = username,
-                base64Data = RecordAudioManager.audioBase64(audioPath),
-                mediaId = audioPath,
+                base64Data = RecordAudioManager.audioBase64(RecordAudioManager.audioDir(audioName)),
+                mediaId = audioName,
             )
         } ?: throw Exception("Audio message needs to have a full path.")
     }

@@ -80,7 +80,9 @@ class ServerService : Service(), CoroutineScope {
                     val socket = serverSocket.accept()
                     val user = User(socket, Profile())
 
-                    userList.add(user)
+                    listMutex.withLock {
+                        userList.add(user)
+                    }
 
                     socketListen(user)
 

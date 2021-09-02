@@ -249,8 +249,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     fun closeSocket() {
         running = false
-        socketList[0]?.close()
-        socketList.remove(socketList[0])
+        socketList.forEach {
+            it?.close()
+        }
+        socketList.removeAll(socketList)
     }
 
     fun shareChatLink(activity: Activity) {
