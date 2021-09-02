@@ -86,7 +86,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         if (isSaved) {
             val message = ChatManager.imageMessage(clientUsername, imageName, PictureManager.uriToBitmap(imageUri, requireContext().contentResolver))
             val success = client.writeToSocket(message)
-
             checkDisconnected(success, message)
         }
     }
@@ -99,14 +98,13 @@ class ChatFragment : Fragment(), CoroutineScope {
                 PictureManager.uriToBitmap(
                     uri,
                     requireContext().contentResolver
-                )
+                ), 100
             )
             imageName = PictureManager.setImageName()
-            val uri = PictureManager.bitmapToFile(bitmap, imageName)
+            val uri = PictureManager.bitmapToUri(bitmap, imageName)
 
-            val message = ChatManager.imageMessage(clientUsername, imageName, PictureManager.uriToBitmap(uri, requireContext().contentResolver))
+            val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
             val success = client.writeToSocket(message)
-
             checkDisconnected(success, message)
         }
     }
@@ -262,8 +260,8 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun onImageClick(path: String?, view: View) {
-        val bundle: Bundle = bundleOf("path" to path)
+    private fun onImageClick(name: String?, view: View) {
+        val bundle: Bundle = bundleOf("path" to name)
         val extras = FragmentNavigatorExtras(view to "image_big")
         navController.navigate(
             R.id.action_chatFragment_to_imageFragment,
