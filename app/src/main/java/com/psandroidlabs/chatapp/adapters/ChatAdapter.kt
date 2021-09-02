@@ -122,6 +122,11 @@ class ChatAdapter(
                     if (length != null) {
                         duration.text = ChatManager.formatAudioTime(length)
                         seekBar.max = length.toInt()
+                    } else {
+                        playButton.visibility = View.GONE
+                        seekBar.visibility = View.GONE
+                        chatRowUsername.text = "Error displaying audio"
+                        return
                     }
                 }
 
@@ -182,12 +187,15 @@ class ChatAdapter(
         }
 
         private fun getAudioMetadata(path: String): String? {
-            val mmr = MediaMetadataRetriever().apply {
-                setDataSource(path)
-            }
+            return try {
+                val mmr = MediaMetadataRetriever().apply {
+                    setDataSource(path)
+                }
 
-            return mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        }
+                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
     }
 
     inner class ViewHolderAudioSent(private val binding: ChatRowAudioSentBinding) :
@@ -213,6 +221,11 @@ class ChatAdapter(
                     if (length != null) {
                         duration.text = ChatManager.formatAudioTime(length)
                         seekBar.max = length.toInt()
+                    } else {
+                        playButton.visibility = View.GONE
+                        seekBar.visibility = View.GONE
+                        chatRowUsername.text = "Error displaying audio"
+                        return
                     }
                 }
 
@@ -273,11 +286,15 @@ class ChatAdapter(
         }
 
         private fun getAudio(path: String): String? {
-            val mmr = MediaMetadataRetriever().apply {
-                setDataSource(path)
-            }
+            return try {
+                val mmr = MediaMetadataRetriever().apply {
+                    setDataSource(path)
+                }
 
-            return mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
         }
     }
 
