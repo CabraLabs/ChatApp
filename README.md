@@ -11,8 +11,8 @@ ChatApp is a simple local chat for Android. Features included in the chat are:
 - Link to connect to chats
 
 ChatApp has the following language supports:
-- English 🇺🇸 (US) 
-- Portuguese 🇧🇷 (BR)
+- English (US) 
+- Portuguese (BR)
 
 The app implements its own message protocol and uses JSON to send messages across connected members.
 
