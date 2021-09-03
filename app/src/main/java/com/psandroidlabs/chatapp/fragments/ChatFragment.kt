@@ -242,7 +242,6 @@ class ChatFragment : Fragment(), CoroutineScope {
         val recyclerViewList: RecyclerView = binding.chatRecycler
         chatAdapter = ChatAdapter(list, ::onImageClick)
 
-        //notifyAdapterChange()
         changeSendButton()
         sendMessageListener()
         recordAudioListener()
@@ -474,8 +473,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
 
         binding.chatRecycler.scrollToPosition(list.size - 1)
-        chatAdapter.notifyDataSetChanged()
-        //chatAdapter.notifyItemChanged()
+        chatAdapter.notifyItemChanged(ChatManager.chatList.size)
     }
 
     private fun takePhoto() {
