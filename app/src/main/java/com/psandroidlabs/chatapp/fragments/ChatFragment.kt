@@ -7,12 +7,10 @@ import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -261,14 +259,9 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun onImageClick(name: String?, view: View) {
-        val bundle: Bundle = bundleOf("path" to name)
-        val extras = FragmentNavigatorExtras(view to "image_big")
-        navController.navigate(
-            R.id.action_chatFragment_to_imageFragment,
-            bundle,
-            null,
-            extras
-        )
+        if (name != null) {
+            activity?.supportFragmentManager?.let { PictureManager.showDialogImage(name, it) }
+        }
     }
 
     private fun changeSendButton() {
