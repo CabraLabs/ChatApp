@@ -10,6 +10,10 @@ ChatApp is a simple local chat for Android. Features included in the chat are:
 - Interactive commands (such as vibrate)
 - Link to connect to chats
 
+ChatApp has the following language supports:
+- English 🇺🇸 (US) 
+- Portuguese 🇧🇷 (BR)
+
 The app implements its own message protocol and uses JSON to send messages across connected members.
 
 ChatApp needs a host to work, anyone with the app installed can run the server (which is an android foreground service) and invite
