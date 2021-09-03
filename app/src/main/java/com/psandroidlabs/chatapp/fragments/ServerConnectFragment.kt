@@ -15,10 +15,7 @@ import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.*
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import com.psandroidlabs.chatapp.viewmodels.ServerViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import java.net.InetAddress
 
 
