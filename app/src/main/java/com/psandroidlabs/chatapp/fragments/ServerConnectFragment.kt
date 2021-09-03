@@ -183,7 +183,7 @@ class ServerConnectFragment : Fragment(), CoroutineScope {
 
     private fun join() {
         with(binding) {
-            ChatManager.delay(1000) {
+            ChatManager.delay(200) {
                 val success = client.startSocket(
                     userNameField.text.toString(),
                     InetAddress.getByName(ipAddress.text.toString()),

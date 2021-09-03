@@ -60,7 +60,7 @@ class HomeFragment : Fragment() {
             clientButton.setOnClickListener {
                 loading()
 
-                ChatManager.delay(1000) {
+                ChatManager.delay(200) {
                     val action = HomeFragmentDirections.actionHomeFragmentToClientConnectFragment(null, null)
                     navController.navigate(action)
                 }
@@ -70,7 +70,7 @@ class HomeFragment : Fragment() {
             serverButton.setOnClickListener {
                 loading()
 
-                ChatManager.delay(1000) {
+                ChatManager.delay(200) {
                     val action = HomeFragmentDirections.actionHomeFragmentToServerConnectFragment()
                     navController.navigate(action)
                 }

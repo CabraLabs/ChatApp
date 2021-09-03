@@ -115,6 +115,10 @@ class ServerService : Service(), CoroutineScope {
                                 forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
                             }
 
+                            MessageType.TIC_INVITE.code -> {
+
+                            }
+
                             else -> {
                                 if (message?.id != user.profile.id) {
                                     removeSocket(user)

@@ -196,15 +196,15 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                             MessageType.IMAGE.code -> {
                                                 message.base64Data.let {
                                                     if (it != null) {
-                                                        val bitmap =
-                                                            PictureManager.base64ToBitmap(it)
-                                                            var mediaId = message.mediaId
+                                                        val bitmap = PictureManager.base64ToBitmap(it)
+                                                        var mediaId = message.mediaId
+
                                                         if (bitmap != null) {
-                                                            if(!mediaId.isNullOrBlank()){
-                                                                val file = PictureManager.bitmapToUri(bitmap, mediaId)
+                                                            if (!mediaId.isNullOrBlank()) {
+                                                                PictureManager.bitmapToUri(bitmap, mediaId)
                                                             } else {
                                                                 mediaId = PictureManager.setImageName()
-                                                                val file = PictureManager.bitmapToUri(bitmap, mediaId)
+                                                                PictureManager.bitmapToUri(bitmap, mediaId)
                                                                 message.mediaId = mediaId
                                                             }
                                                         }
@@ -238,7 +238,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             }
                         }
                     } catch (e: JsonDataException) {
-                        //Log.e("ClientViewModel", receivedJson)
+                        Log.e("ClientViewModel", receivedJson)
                     } catch (e: JsonEncodingException) {
                         Log.e("JsonEncodingException", receivedJson)
                     }
