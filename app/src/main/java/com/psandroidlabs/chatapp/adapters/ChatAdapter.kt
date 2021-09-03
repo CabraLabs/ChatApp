@@ -55,7 +55,10 @@ class ChatAdapter(
 
                 if (message.id != null) {
                     val id = message.id
-                    userAvatar.setImageBitmap(id?.let { PictureManager.loadMembersAvatar(it) })
+                    val bitmap = id?.let { PictureManager.loadMembersAvatar(it) }
+                    if (bitmap != null) {
+                        userAvatar.setImageBitmap(bitmap)
+                    }
                 }
 
                 chatRowMessage.text = message.text
@@ -111,8 +114,12 @@ class ChatAdapter(
                 chatRowUsername.text = message.username
                 chatRowTime.text = ChatManager.formatTime(message.time)
 
-                if (PictureManager.loadMyAvatar() != null) {
-                    userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
+                if (message.id != null) {
+                    val id = message.id
+                    val bitmap = id?.let { PictureManager.loadMembersAvatar(it) }
+                    if (bitmap != null) {
+                        userAvatar.setImageBitmap(bitmap)
+                    }
                 }
 
                 message.mediaId?.let {
@@ -334,8 +341,12 @@ class ChatAdapter(
             with(binding) {
                 chatRowUsername.text = message.username
 
-                if (message.join?.avatar != null) {
-                    userAvatar.setImageBitmap(PictureManager.base64ToBitmap(message.join.avatar))
+                if (message.id != null) {
+                    val id = message.id
+                    val bitmap = id?.let { PictureManager.loadMembersAvatar(it) }
+                    if (bitmap != null) {
+                        userAvatar.setImageBitmap(bitmap)
+                    }
                 }
 
                 val mediaId = message.mediaId

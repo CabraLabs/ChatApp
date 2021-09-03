@@ -199,6 +199,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                         val bitmap =
                                                             PictureManager.base64ToBitmap(it)
                                                             var mediaId = message.mediaId
+                                                        if (bitmap != null) {
                                                             if(!mediaId.isNullOrBlank()){
                                                                 val file = PictureManager.bitmapToUri(bitmap, mediaId)
                                                             } else {
@@ -206,6 +207,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                                 val file = PictureManager.bitmapToUri(bitmap, mediaId)
                                                                 message.mediaId = mediaId
                                                             }
+                                                        }
                                                     }
                                                 }
                                             }

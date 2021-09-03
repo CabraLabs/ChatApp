@@ -78,9 +78,10 @@ object PictureManager {
         }
     }
 
-    fun base64ToBitmap(string: String): Bitmap {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return byteArrayToBitmap(Base64.decode(string, Base64.NO_WRAP))
+    fun base64ToBitmap(string: String): Bitmap? {
+        var bitmap: Bitmap? = null
+        bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            byteArrayToBitmap(Base64.decode(string, Base64.NO_WRAP))
         } else {
             BitmapFactory.decodeByteArray(
                 Base64.decode(string, Base64.NO_WRAP),
@@ -88,6 +89,7 @@ object PictureManager {
                 Base64.decode(string, Base64.NO_WRAP).size
             )
         }
+        return bitmap
     }
 
     fun setImageName(): String {
