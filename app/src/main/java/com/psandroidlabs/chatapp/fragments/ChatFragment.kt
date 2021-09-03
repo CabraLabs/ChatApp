@@ -7,7 +7,6 @@ import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -102,7 +101,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 ), 60
             )
             imageName = PictureManager.setImageName()
-            val uri = PictureManager.bitmapToUri(bitmap, imageName)
+            PictureManager.bitmapToUri(bitmap, imageName)
 
             val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
             val success = client.writeToSocket(message)

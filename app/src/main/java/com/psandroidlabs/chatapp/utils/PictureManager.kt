@@ -2,19 +2,20 @@ package com.psandroidlabs.chatapp.utils
 
 import android.content.ContentResolver
 import android.content.res.Resources
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.util.Base64
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
 import com.psandroidlabs.chatapp.MainApplication
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 
 object PictureManager {
@@ -79,24 +80,28 @@ object PictureManager {
     }
 
     fun base64ToBitmap(string: String): Bitmap? {
-        var bitmap: Bitmap? = null
-        bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            byteArrayToBitmap(Base64.decode(string, Base64.NO_WRAP))
-        } else {
-            BitmapFactory.decodeByteArray(
-                Base64.decode(string, Base64.NO_WRAP),
-                0,
-                Base64.decode(string, Base64.NO_WRAP).size
-            )
+        if (string.isNotBlank()) {
+            val bitmap: Bitmap? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                byteArrayToBitmap(Base64.decode(string, Base64.NO_WRAP))
+            } else {
+                BitmapFactory.decodeByteArray(
+                    Base64.decode(string, Base64.NO_WRAP),
+                    0,
+                    Base64.decode(string, Base64.NO_WRAP).size
+                )
+            }
+
+            return bitmap
         }
-        return bitmap
+
+        return null
     }
 
     fun setImageName(): String {
         return "${UUID.randomUUID()}.jpg"
     }
 
-    fun getImage (name: String): Bitmap? {
+    fun getImage(name: String): Bitmap? {
         val file =
             File(
                 MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
@@ -127,7 +132,7 @@ object PictureManager {
     fun loadMembersAvatar(id: Int): Bitmap? {
         var bitmap: Bitmap? = null
         ChatManager.chatMembersList.forEach {
-            if(it.id == id){
+            if (it.id == id) {
                 bitmap = it.photoProfile?.let { base64 -> base64ToBitmap(base64) }
             }
         }

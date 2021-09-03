@@ -10,7 +10,8 @@ import com.psandroidlabs.chatapp.utils.PictureManager
 
 
 class ChatMembersAdapter(
-    private var dataSet: ArrayList<Profile>) : RecyclerView.Adapter<ChatMembersAdapter.ViewHolder>() {
+    private var dataSet: ArrayList<Profile>
+) : RecyclerView.Adapter<ChatMembersAdapter.ViewHolder>() {
 
     abstract class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(profile: Profile, position: Int)
