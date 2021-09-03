@@ -1,5 +1,5 @@
 ### ChatApp
-![Preview Images](./Preview.md)
+[Preview Images](./Preview.md)
 
 ChatApp is a simple local chat for Android. Features included in the chat are:
 - Text messages
