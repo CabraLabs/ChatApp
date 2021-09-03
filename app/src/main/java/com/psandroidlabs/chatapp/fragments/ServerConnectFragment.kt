@@ -23,13 +23,10 @@ import java.net.InetAddress
 
 
 @DelicateCoroutinesApi
-class ServerConnectFragment : Fragment(), CoroutineScope {
+class ServerConnectFragment : Fragment() {
 
     private val client: ClientViewModel by activityViewModels()
     private val server: ServerViewModel by activityViewModels()
-
-    private val parentJob = Job()
-    override val coroutineContext = parentJob + Dispatchers.Main
 
     private lateinit var binding: FragmentServerConnectBinding
 
