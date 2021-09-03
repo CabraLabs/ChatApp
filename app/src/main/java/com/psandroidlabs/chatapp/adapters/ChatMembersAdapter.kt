@@ -26,7 +26,9 @@ class ChatMembersAdapter(
                     val base64 = dataSet[position].photoProfile
                     if (!base64.isNullOrBlank()) {
                         val bitmap = PictureManager.base64ToBitmap(base64)
-                        userAvatar.setImageBitmap(bitmap)
+                        if (bitmap != null) {
+                            userAvatar.setImageBitmap(bitmap)
+                        }
                     }
                 }
 

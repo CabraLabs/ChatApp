@@ -99,7 +99,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 PictureManager.uriToBitmap(
                     uri,
                     requireContext().contentResolver
-                ), 100
+                ), 60
             )
             imageName = PictureManager.setImageName()
             val uri = PictureManager.bitmapToUri(bitmap, imageName)
@@ -159,7 +159,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        //ChatManager.getFragmentActivity(activity)
+
         activity?.title = getString(R.string.chat_app_bar_name)
 
         if (!disconnect) {
@@ -243,7 +243,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         val recyclerViewList: RecyclerView = binding.chatRecycler
         chatAdapter = ChatAdapter(list, ::onImageClick)
 
-        notifyAdapterChange()
+        //notifyAdapterChange()
         changeSendButton()
         sendMessageListener()
         recordAudioListener()
