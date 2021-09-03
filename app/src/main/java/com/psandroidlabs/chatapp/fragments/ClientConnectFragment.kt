@@ -1,7 +1,6 @@
 package com.psandroidlabs.chatapp.fragments
 
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -14,7 +13,7 @@ import com.psandroidlabs.chatapp.models.AcceptedStatus
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.*
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 
 @DelicateCoroutinesApi
@@ -231,10 +230,15 @@ class ClientConnectFragment : Fragment() {
     }
 
     private fun loading(isLoading: Boolean) {
-        if (isLoading) {
-            binding.progressBar.visibility = View.VISIBLE
-        } else {
-            binding.progressBar.visibility = View.GONE
+        with(binding) {
+            if (isLoading) {
+                progressBar.visibility = View.VISIBLE
+                joinChat.isEnabled = false
+
+            } else {
+                progressBar.visibility = View.GONE
+                joinChat.isEnabled = true
+            }
         }
     }
 
