@@ -57,6 +57,7 @@ class ImageFragment (private val bitmap: Bitmap?) : DialogFragment() {
                 expandedImage.setImageBitmap(bitmap)
             } else {
                 expandedImage.setImageResource(R.mipmap.ic_image_error)
+                //set match parent
             }
 
             btnImageFragment.setOnClickListener {
