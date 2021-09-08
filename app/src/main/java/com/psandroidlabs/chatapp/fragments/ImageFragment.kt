@@ -2,6 +2,7 @@ package com.psandroidlabs.chatapp.fragments
 
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.LayoutInflater
@@ -51,13 +52,12 @@ class ImageFragment (private val bitmap: Bitmap?) : DialogFragment() {
 
         with(binding) {
 
-            btnImageFragment.setBackgroundColor(Color.TRANSPARENT)
+            dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
             if (bitmap != null) {
                 expandedImage.setImageBitmap(bitmap)
             } else {
                 expandedImage.setImageResource(R.mipmap.ic_image_error)
-                //set match parent
             }
 
             btnImageFragment.setOnClickListener {
