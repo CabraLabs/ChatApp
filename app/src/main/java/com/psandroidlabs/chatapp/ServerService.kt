@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.utils.ChatManager
+import com.psandroidlabs.chatapp.utils.ChatNotificationManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonEncodingException
@@ -78,7 +79,10 @@ class ServerService : Service(), CoroutineScope {
 
             while (isActive && count <= Constants.MAX_SERVER_USERS) {
                 try {
-                    val socket = serverSocket.accept()
+                    val socket = serverSocket.accept().apply {
+                        sendBufferSize = Constants.SOCKET_BUFFER_SIZE
+                        receiveBufferSize = Constants.SOCKET_BUFFER_SIZE
+                    }
                     val user = User(socket, Profile())
 
                     listMutex.withLock {
@@ -148,7 +152,7 @@ class ServerService : Service(), CoroutineScope {
                     } catch (e: JsonDataException) {
                         Log.e(
                             "ServerService",
-                            "Received a message that can't be parsed to json: $json"
+                            "Json data error: $json"
                         )
                     } catch (e: JsonEncodingException) {
                         Log.e("ServerService", "Json encoding error: $json")

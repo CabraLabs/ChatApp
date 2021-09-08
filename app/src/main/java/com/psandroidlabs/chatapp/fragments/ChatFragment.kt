@@ -19,7 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
-import com.psandroidlabs.chatapp.models.ChatNotificationManager
+import com.psandroidlabs.chatapp.utils.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment

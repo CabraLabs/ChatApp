@@ -15,10 +15,7 @@ import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
 import com.psandroidlabs.chatapp.models.*
-import com.psandroidlabs.chatapp.utils.ChatManager
-import com.psandroidlabs.chatapp.utils.Constants
-import com.psandroidlabs.chatapp.utils.PictureManager
-import com.psandroidlabs.chatapp.utils.RecordAudioManager
+import com.psandroidlabs.chatapp.utils.*
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonEncodingException
 import kotlinx.coroutines.*
@@ -72,7 +69,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         try {
             runBlocking {
                 launch(Dispatchers.IO) {
-                    val client = Socket()
+                    val client = Socket().apply {
+                        sendBufferSize = Constants.SOCKET_BUFFER_SIZE
+                        receiveBufferSize = Constants.SOCKET_BUFFER_SIZE
+                    }
                     client.connect(InetSocketAddress(ip, port), 10_000)
                     socketList.add(client)
                     userName = username
