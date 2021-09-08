@@ -15,21 +15,15 @@ import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.utils.*
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import com.psandroidlabs.chatapp.viewmodels.ServerViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import java.net.InetAddress
 
 
 @DelicateCoroutinesApi
-class ServerConnectFragment : Fragment(), CoroutineScope {
+class ServerConnectFragment : Fragment() {
 
     private val client: ClientViewModel by activityViewModels()
     private val server: ServerViewModel by activityViewModels()
-
-    private val parentJob = Job()
-    override val coroutineContext = parentJob + Dispatchers.Main
 
     private lateinit var binding: FragmentServerConnectBinding
 

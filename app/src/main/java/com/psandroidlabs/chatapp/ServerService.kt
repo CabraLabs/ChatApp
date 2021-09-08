@@ -12,6 +12,7 @@ import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.utils.ChatManager
 import com.psandroidlabs.chatapp.utils.Constants
 import com.squareup.moshi.JsonDataException
+import com.squareup.moshi.JsonEncodingException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -85,9 +86,26 @@ class ServerService : Service(), CoroutineScope {
                     }
 
                     socketListen(user)
+                    ping(user)
 
                     count++
                 } catch (e: java.net.SocketException) {
+                    return@launch
+                }
+            }
+        }
+    }
+
+    private fun ping(user: User) {
+        launch(Dispatchers.IO) {
+            val bytePing = Constants.PING.toByteArray(Charsets.UTF_8)
+
+            while (isActive) {
+                delay(1000)
+                try {
+                    user.socket.getOutputStream()?.write(bytePing)
+                } catch (e: java.net.SocketException) {
+                    removeSocket(user)
                     return@launch
                 }
             }
@@ -132,6 +150,8 @@ class ServerService : Service(), CoroutineScope {
                             "ServerService",
                             "Received a message that can't be parsed to json: $json"
                         )
+                    } catch (e: JsonEncodingException) {
+                        Log.e("ServerService", "Json encoding error: $json")
                     }
                 }
             }
@@ -239,7 +259,7 @@ class ServerService : Service(), CoroutineScope {
         return List(4) { Random.nextInt(0, 100) }.joinToString("").toInt()
     }
 
-    private fun getProfileList(): String {
+    private fun getProfileList(): String? {
         val profileList: ArrayList<Profile> = arrayListOf()
 
         runBlocking {
@@ -250,6 +270,10 @@ class ServerService : Service(), CoroutineScope {
                     }
                 }
             }
+        }
+
+        if (profileList.isEmpty()) {
+            return null
         }
 
         return ChatManager.parseProfileList(profileList)

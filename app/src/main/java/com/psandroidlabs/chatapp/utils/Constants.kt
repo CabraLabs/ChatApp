@@ -16,8 +16,8 @@ object Constants {
     const val CHOOSE_IMAGE_GALLERY = 3
 
     const val ACTION_STOP = "STOP"
-
     const val MAX_SERVER_USERS = 5
+    const val PING = "ping\n"
 
     const val PRIMARY_CHAT_CHANNEL = "0"
     const val FOREGROUND_CHAT_CHANNEL = "foreground"
