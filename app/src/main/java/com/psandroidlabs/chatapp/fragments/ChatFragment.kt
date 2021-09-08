@@ -82,7 +82,9 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.TakePicture()
     ) { isSaved ->
         if (isSaved) {
-            val message = ChatManager.imageMessage(clientUsername, imageName, PictureManager.uriToBitmap(imageUri, requireContext().contentResolver))
+            var bitmap = PictureManager.uriToBitmap(imageUri, requireContext().contentResolver)
+            bitmap = PictureManager.compressBitmap(bitmap, 60)
+            val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
             val success = client.writeToSocket(message)
             checkDisconnected(success, message)
         }
