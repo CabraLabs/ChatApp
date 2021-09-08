@@ -18,6 +18,7 @@ object Constants {
     const val ACTION_STOP = "STOP"
     const val MAX_SERVER_USERS = 5
     const val PING = "ping\n"
+    const val SOCKET_BUFFER_SIZE = 16 * 1024
 
     const val PRIMARY_CHAT_CHANNEL = "0"
     const val FOREGROUND_CHAT_CHANNEL = "foreground"

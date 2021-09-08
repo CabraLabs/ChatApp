@@ -18,7 +18,8 @@ data class Message(
     var mediaId: String?,
     val time: Long,
     @Ignore var id: Int?,
-    val join: Join?
+    val join: Join?,
+    //val ticTacToePlay: TicTacToePlay?
 )
 
 @JsonClass(generateAdapter = true)
@@ -30,6 +31,15 @@ data class Profile(
     var name: String? = null,
     var photoProfile: String? = null,
     var scoreTicTacToe: Int? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class TicTacToePlay(
+    val isInviting: Boolean? = null,
+    val isAccepting: Boolean? = null,
+    val play: String? = null,
+    val gameEnd: TicTacToeGameEnd,
+    val opponentId: Int
 )
 
 data class User(

@@ -1,4 +1,4 @@
-package com.psandroidlabs.chatapp.models
+package com.psandroidlabs.chatapp.utils
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -14,9 +14,6 @@ import com.psandroidlabs.chatapp.ActionManager
 import com.psandroidlabs.chatapp.MainActivity
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
-import com.psandroidlabs.chatapp.utils.ChatManager
-import com.psandroidlabs.chatapp.utils.Constants
-import com.psandroidlabs.chatapp.utils.IP
 
 
 class ChatNotificationManager(val context: Context, private val channel: String) {
