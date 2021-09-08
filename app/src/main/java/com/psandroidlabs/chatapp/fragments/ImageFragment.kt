@@ -1,31 +1,21 @@
 package com.psandroidlabs.chatapp.fragments
 
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentImageBinding
-import com.psandroidlabs.chatapp.utils.PictureManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 
 
-
-
-class ImageFragment : Fragment(R.layout.fragment_image) {
+class ImageFragment (private val bitmap: Bitmap?) : DialogFragment() {
 
     private lateinit var binding: FragmentImageBinding
-
-    private val args: ImageFragmentArgs by navArgs()
-
-    private val navController: NavController by lazy {
-        findNavController()
-    }
 
     override fun onResume() {
         super.onResume()
@@ -61,20 +51,16 @@ class ImageFragment : Fragment(R.layout.fragment_image) {
 
         with(binding) {
 
-            if (args.path != null) {
-                val path = args.path
-                val bitmap = path?.let { PictureManager.getImage(it) }
-                if (bitmap != null) {
-                    expandedImage.setImageBitmap(bitmap)
-                } else {
-                    expandedImage.setImageResource(R.mipmap.ic_image_error)
-                }
+            btnImageFragment.setBackgroundColor(Color.TRANSPARENT)
+
+            if (bitmap != null) {
+                expandedImage.setImageBitmap(bitmap)
             } else {
                 expandedImage.setImageResource(R.mipmap.ic_image_error)
             }
 
             btnImageFragment.setOnClickListener {
-                navController.popBackStack()
+                dismiss()
             }
         }
     }

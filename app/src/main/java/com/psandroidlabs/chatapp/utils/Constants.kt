@@ -28,4 +28,6 @@ object Constants {
     const val CLIENT_IP = "client_ip"
     const val CLIENT_AVATAR = "client_avatar"
     const val CLIENT_PORT = "client_port"
+
+    const val IMAGE_TAG = "image_fragment"
 }

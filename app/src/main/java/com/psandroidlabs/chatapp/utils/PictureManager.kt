@@ -11,7 +11,9 @@ import android.provider.MediaStore
 import android.util.Base64
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toDrawable
+import androidx.fragment.app.FragmentManager
 import com.psandroidlabs.chatapp.MainApplication
+import com.psandroidlabs.chatapp.fragments.ImageFragment
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -44,7 +46,11 @@ object PictureManager {
                 MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR),
                 name
             )
-        return FileProvider.getUriForFile(MainApplication.applicationContext(), "com.psandroidlabs.chatapp.provider_file", file)
+        return FileProvider.getUriForFile(
+            MainApplication.applicationContext(),
+            "com.psandroidlabs.chatapp.provider_file",
+            file
+        )
     }
 
     fun bitmapToUri(bitmap: Bitmap, name: String): Uri {
@@ -137,5 +143,21 @@ object PictureManager {
             }
         }
         return bitmap
+    }
+
+    fun showDialogImage(name: String, supportFragmentManager: FragmentManager) {
+        if (name.isNotBlank()) {
+            val bitmap = getImage(name)
+            if (bitmap != null) {
+                val imageFragment = ImageFragment(bitmap)
+                imageFragment.show(supportFragmentManager, Constants.IMAGE_TAG)
+            } else {
+                val imageFragment = ImageFragment(null)
+                imageFragment.show(supportFragmentManager, Constants.IMAGE_TAG)
+            }
+        } else {
+            val imageFragment = ImageFragment(null)
+            imageFragment.show(supportFragmentManager, Constants.IMAGE_TAG)
+        }
     }
 }

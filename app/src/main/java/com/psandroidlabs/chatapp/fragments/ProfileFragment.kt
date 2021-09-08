@@ -54,7 +54,7 @@ class ProfileFragment : Fragment() {
                 ), 50
             ).toSquare()
             imageName = PictureManager.setImageName()
-            val uri = square?.let { PictureManager.bitmapToUri(it, imageName) }
+            square?.let { PictureManager.bitmapToUri(it, imageName) }
             if (square != null) {
                 userPhoto = square
                 binding.avatar.setImageBitmap(userPhoto)
@@ -103,28 +103,28 @@ class ProfileFragment : Fragment() {
 
                 avatar.setOnClickListener {
                     val bitmap = userPhoto
-                    val extras = FragmentNavigatorExtras(avatar to "image_big")
-                    if (bitmap != null) {
-                        if(imageName.isBlank()){
+                    if (imageName.isBlank()) {
+                        if (bitmap != null) {
                             imageName = PictureManager.setImageName()
-                        }
-                        val uri = PictureManager.bitmapToUri(bitmap, imageName)
-                        if(uri.path != null) {
-                            val bundle: Bundle = bundleOf("path" to imageName)
-                            findNavController().navigate(
-                                R.id.action_profileFragment_to_imageFragment,
-                                bundle,
-                                null,
-                                extras
-                            )
+                            PictureManager.bitmapToUri(bitmap, imageName)
+                            activity?.supportFragmentManager?.let { it1 ->
+                                PictureManager.showDialogImage(imageName,
+                                    it1
+                                )
+                            }
+                        } else {
+                            activity?.supportFragmentManager?.let { it1 ->
+                                PictureManager.showDialogImage("",
+                                    it1
+                                )
+                            }
                         }
                     } else {
-                        findNavController().navigate(
-                            R.id.action_profileFragment_to_imageFragment,
-                            null,
-                            null,
-                            extras
-                        )
+                        activity?.supportFragmentManager?.let { it1 ->
+                            PictureManager.showDialogImage(imageName,
+                                it1
+                            )
+                        }
                     }
                 }
 
