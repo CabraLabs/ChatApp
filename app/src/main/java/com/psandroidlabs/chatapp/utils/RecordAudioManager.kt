@@ -1,6 +1,5 @@
 package com.psandroidlabs.chatapp.utils
 
-import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
 import android.util.Base64

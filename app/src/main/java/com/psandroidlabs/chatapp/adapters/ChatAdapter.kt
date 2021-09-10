@@ -316,19 +316,19 @@ class ChatAdapter(
                     userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
                 }
 
-                val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
-
-                if (bitmap != null) {
-                    btnChatRowImage.setImageBitmap(bitmap)
-                    btnChatRowImage.setOnClickListener {
-                        onImageClick.invoke(message.mediaId, btnChatRowImage)
-                    }
-                } else {
-                    btnChatRowImage.setImageResource(R.mipmap.ic_image_error)
-                    btnChatRowImage.setOnClickListener {
-                        onImageClick.invoke(null, btnChatRowImage)
-                    }
-                }
+//                val bitmap = message.base64Data?.let { PictureManager.base64ToBitmap(it) }
+//
+//                if (bitmap != null) {
+//                    btnChatRowImage.setImageBitmap(bitmap)
+//                    btnChatRowImage.setOnClickListener {
+//                        onImageClick.invoke(message.mediaId, btnChatRowImage)
+//                    }
+//                } else {
+//                    btnChatRowImage.setImageResource(R.mipmap.ic_image_error)
+//                    btnChatRowImage.setOnClickListener {
+//                        onImageClick.invoke(null, btnChatRowImage)
+//                    }
+//                }
 
                 chatRowTime.text = ChatManager.formatTime(message.time)
             }
