@@ -202,14 +202,14 @@ object ChatManager : CoroutineScope {
         val messageList = arrayListOf<Message>()
         var part = 0
 
-        val path = RecordAudioManager.audioDir(imageName)
-        val base64 = RecordAudioManager.audioBase64(path)
-        var size = base64.length
+        val path = PictureManager.imageDir(imageName)
+        val base64 = PictureManager.getImage(imageName)?.toBase64()
+        var size = base64?.length?: 0
 
         while(size > 0) {
             val actualSize = part * 1023
             if (size > 1024) {
-                val data = base64.slice(actualSize..(actualSize+1024))
+                val data = base64?.slice(actualSize..(actualSize+1024))
                 messageList.add(
                     audioMessage(
                         username,
@@ -221,7 +221,7 @@ object ChatManager : CoroutineScope {
                     )
                 )
             } else {
-                val data = base64.slice(actualSize..base64.length)
+                val data = base64?.slice(actualSize..base64.length)
                 messageList.add(
                     audioMessage(
                         username,
