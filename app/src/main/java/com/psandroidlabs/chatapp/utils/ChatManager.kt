@@ -198,11 +198,53 @@ object ChatManager : CoroutineScope {
         return Pair(fullMessage, messageList)
     }
 
+    fun bufferedImageMessage(username: String, imageName: String): Pair<Message, ArrayList<Message>> {
+        val messageList = arrayListOf<Message>()
+        var part = 0
+
+        val path = RecordAudioManager.audioDir(imageName)
+        val base64 = RecordAudioManager.audioBase64(path)
+        var size = base64.length
+
+        while(size > 0) {
+            val actualSize = part * 1023
+            if (size > 1024) {
+                val data = base64.slice(actualSize..(actualSize+1024))
+                messageList.add(
+                    audioMessage(
+                        username,
+                        imageName,
+                        data,
+                        part++,
+                        if (part == 1) size.toLong() else null,
+                        imageName.toLong()
+                    )
+                )
+            } else {
+                val data = base64.slice(actualSize..base64.length)
+                messageList.add(
+                    audioMessage(
+                        username,
+                        imageName,
+                        data,
+                        part++,
+                        null,
+                        imageName.toLong()
+                    )
+                )
+            }
+
+            size -= 1024
+        }
+
+        val fullMessage = audioMessage(username, imageName)
+        return Pair(fullMessage, messageList)
+    }
+
     fun deductTotalParts(size: Long?): Int {
         if (size != null) {
             return (size / 1024.0).toInt()
         }
-
         return 0
     }
 

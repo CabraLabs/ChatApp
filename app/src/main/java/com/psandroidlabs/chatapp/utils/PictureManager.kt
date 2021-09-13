@@ -101,6 +101,14 @@ object PictureManager {
         return "${UUID.randomUUID()}.jpg"
     }
 
+    fun imageDir(name: String): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            File(MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR), name).toString()
+        } else {
+            File(MainApplication.applicationContext().cacheDir, name).toString()
+        }
+    }
+
     fun getImage(name: String): Bitmap? {
         val file =
             File(

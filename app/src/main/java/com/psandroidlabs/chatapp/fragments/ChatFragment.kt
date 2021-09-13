@@ -98,9 +98,9 @@ class ChatFragment : Fragment(), CoroutineScope {
             imageName = PictureManager.setImageName()
             PictureManager.bitmapToUri(bitmap, imageName)
 
-            //val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
-            //val success = client.writeToSocket(message)
-            //checkDisconnected(success, message)
+            val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
+            val success = client.writeToSocket(message)
+            checkDisconnected(success, message)
         }
     }
 
