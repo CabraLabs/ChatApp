@@ -82,11 +82,13 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.TakePicture()
     ) { isSaved ->
         if (isSaved) {
-            var bitmap = PictureManager.uriToBitmap(imageUri, requireContext().contentResolver)
-            bitmap = PictureManager.compressBitmap(bitmap, 60)
-            val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
-            val success = client.writeToSocket(message)
-            checkDisconnected(success, message)
+            var bitmap = PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)
+            if (bitmap != null) {
+                bitmap = PictureManager.compressBitmap(bitmap, 40)
+                val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
+                val success = client.writeToSocket(message)
+                checkDisconnected(success, message)
+            }
         }
     }
 
@@ -94,12 +96,8 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            val bitmap = PictureManager.compressBitmap(
-                PictureManager.uriToBitmap(
-                    uri,
-                    requireContext().contentResolver
-                ), 60
-            )
+            var bitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
+            bitmap = PictureManager.compressBitmap(bitmap, 40)
             imageName = PictureManager.setImageName()
             PictureManager.bitmapToUri(bitmap, imageName)
 

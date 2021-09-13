@@ -33,12 +33,12 @@
             <ImageView
                 android:id="@+id/btnChatRowImage"
                 android:layout_width="150dp"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 android:adjustViewBounds="true"
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingHorizontal="3dp"
-                android:scaleType="fitCenter"
+                android:scaleType="centerInside"
                 android:transitionName="imageSmall" />
 
             <TextView

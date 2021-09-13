@@ -9,10 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentProfileBinding
@@ -35,7 +33,8 @@ class ProfileFragment : Fragment() {
         ActivityResultContracts.TakePicture()
     ) { isSaved ->
         if (isSaved) {
-            val square = PictureManager.uriToBitmap(imageUri, requireContext().contentResolver).toSquare()
+            val square = PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)?.toSquare()
+
             if (square != null) {
                 userPhoto = square
                 binding.avatar.setImageBitmap(userPhoto)
@@ -47,14 +46,12 @@ class ProfileFragment : Fragment() {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            val square = PictureManager.compressBitmap(
-                PictureManager.uriToBitmap(
-                    uri,
-                    requireContext().contentResolver
-                ), 50
-            ).toSquare()
+            var square = PictureManager.uriToBitmap(uri, requireContext().contentResolver ).toSquare()
+            square = square?.let { PictureManager.compressBitmap(it, 50) }
+
             imageName = PictureManager.setImageName()
             square?.let { PictureManager.bitmapToUri(it, imageName) }
+
             if (square != null) {
                 userPhoto = square
                 binding.avatar.setImageBitmap(userPhoto)
