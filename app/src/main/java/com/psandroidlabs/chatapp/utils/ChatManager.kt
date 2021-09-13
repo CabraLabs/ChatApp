@@ -125,6 +125,7 @@ object ChatManager : CoroutineScope {
      * Creates an audio message
      */
     fun audioMessage(
+        type: MessageType,
         username: String,
         audioName: String?,
         byteBuffer: String? = null,
@@ -134,7 +135,7 @@ object ChatManager : CoroutineScope {
     ): Message {
         audioName?.let {
             return createMessage(
-                type = MessageType.AUDIO,
+                type = type,
                 username = username,
                 partNumber = partNumber,
                 dataSize = dataSize,
@@ -163,6 +164,7 @@ object ChatManager : CoroutineScope {
                 val data = base64.slice(actualSize..(actualSize+1024))
                 messageList.add(
                     audioMessage(
+                        type = MessageType.AUDIO_MULTIPART,
                         username = username,
                         audioName = audioName,
                         byteBuffer = data,
@@ -175,6 +177,7 @@ object ChatManager : CoroutineScope {
                 val data = base64.slice(actualSize until base64.length)
                 messageList.add(
                     audioMessage(
+                        type = MessageType.AUDIO_MULTIPART,
                         username = username,
                         audioName = audioName,
                         byteBuffer = data,
@@ -188,7 +191,7 @@ object ChatManager : CoroutineScope {
             size -= 1024
         }
 
-        val fullMessage = audioMessage(username, audioName)
+        val fullMessage = audioMessage(MessageType.AUDIO, username, audioName)
         return Pair(fullMessage, messageList)
     }
 
@@ -204,7 +207,7 @@ object ChatManager : CoroutineScope {
         val base64 = multipart[id]
         val audioName = RecordAudioManager.base64toAudio(base64?.base64)
         if (username != null) {
-            return audioMessage(username, audioName)
+            return audioMessage(MessageType.AUDIO, username, audioName)
         }
 
         throw Exception("Message needs to provide an username.")
