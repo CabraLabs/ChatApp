@@ -371,7 +371,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 }
 
                 val messageParts = ChatManager.bufferedAudioMessage(clientUsername, audioName)
-                ChatManager.addToAdapter(messageParts.first)
+                notifyAdapterChange(messageParts.first, false)
 
                 messageParts.second.forEach {
                     val success = client.writeToSocket(it)

@@ -377,17 +377,17 @@ class ChatAdapter(
 
     private fun viewTypeTranslator(type: Int, status: Int): Int {
         var number = 0
-        if (status != MessageStatus.SENT.code) number = 8
+        if (status != MessageStatus.SENT.code) number = 12
 
         return when (type) {
-            MessageType.MESSAGE.code -> MessageType.MESSAGE.code + number // 0 | 8
-            MessageType.JOIN.code -> MessageType.JOIN.code + number // 1 | 9
-            MessageType.VIBRATE.code -> MessageType.VIBRATE.code + number  // 2 | 10
-            MessageType.AUDIO.code -> MessageType.AUDIO.code + number // 3 | 11
-            MessageType.IMAGE.code -> MessageType.IMAGE.code + number // 4 | 12
-            MessageType.TIC_INVITE.code -> MessageType.TIC_INVITE.code + number // 5 | 13
-            MessageType.TIC_PLAY.code -> MessageType.TIC_PLAY.code + number // 6 | 14
-            MessageType.LEAVE.code -> MessageType.LEAVE.code + number // 7 | 15
+            MessageType.MESSAGE.code -> MessageType.MESSAGE.code + number // 0 | 12
+            MessageType.JOIN.code -> MessageType.JOIN.code + number // 1 | 13
+            MessageType.VIBRATE.code -> MessageType.VIBRATE.code + number  // 2 | 14
+            MessageType.AUDIO.code -> MessageType.AUDIO.code + number // 3 | 15
+            MessageType.IMAGE.code -> MessageType.IMAGE.code + number // 4 | 16
+            MessageType.TIC_INVITE.code -> MessageType.TIC_INVITE.code + number // 7 | 19
+            MessageType.TIC_PLAY.code -> MessageType.TIC_PLAY.code + number // 8 | 20
+            MessageType.LEAVE.code -> MessageType.LEAVE.code + number // 9 | 21
             else -> 666
         }
     }
@@ -405,7 +405,7 @@ class ChatAdapter(
                 )
             }
 
-            8 -> {
+            12 -> {
                 ViewHolderReceivedMessage(
                     ChatRowMessageReceivedBinding.inflate(
                         LayoutInflater.from(
@@ -426,7 +426,7 @@ class ChatAdapter(
                 )
             }
 
-            9 -> {
+            13 -> {
                 ViewHolderEventMessage(
                     ChatRowJoinBinding.inflate(
                         LayoutInflater.from(viewGroup.context),
@@ -447,7 +447,7 @@ class ChatAdapter(
                 )
             }
 
-            10 -> {
+            14 -> {
                 ViewHolderReceivedVibrate(
                     ChatRowVibrateReceivedBinding.inflate(
                         LayoutInflater.from(
@@ -468,7 +468,7 @@ class ChatAdapter(
                 )
             }
 
-            11 -> {
+            15 -> {
                 ViewHolderAudioReceived(
                     ChatRowAudioReceivedBinding.inflate(
                         LayoutInflater.from(
@@ -489,7 +489,7 @@ class ChatAdapter(
                 )
             }
 
-            12 -> {
+            16 -> {
                 ViewHolderReceivedImage(
                     ChatRowImageReceivedBinding.inflate(
                         LayoutInflater.from(
@@ -510,7 +510,7 @@ class ChatAdapter(
                 )
             }
 
-            15 -> {
+            19 -> {
                 ViewHolderEventMessage(
                     ChatRowJoinBinding.inflate(
                         LayoutInflater.from(viewGroup.context),

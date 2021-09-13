@@ -16,11 +16,10 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import java.io.File
-import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 object ChatManager : CoroutineScope {
@@ -30,6 +29,8 @@ object ChatManager : CoroutineScope {
 
     var chatList: ArrayList<Message> = ArrayList()
     var chatMembersList: ArrayList<Profile> = ArrayList()
+
+    val multipart: HashMap<Int?, Multipart?> = hashMapOf()
 
     private val jsonAdapter by lazy {
         val moshi: Moshi = Moshi.Builder().build()
@@ -188,6 +189,20 @@ object ChatManager : CoroutineScope {
 
         val fullMessage = audioMessage(username, audioName)
         return Pair(fullMessage, messageList)
+    }
+
+    fun deductTotalParts(size: Long?): Int {
+
+    }
+
+    fun createAudio(id: Int?, username: String?): Message {
+        val base64 = multipart[id]
+        val audioName = RecordAudioManager.base64toAudio(base64?.base64)
+        if (username != null) {
+            return audioMessage(username, audioName)
+        }
+
+        throw Exception("Message needs to provide an username.")
     }
 
     /**
