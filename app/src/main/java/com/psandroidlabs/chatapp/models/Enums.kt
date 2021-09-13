@@ -10,11 +10,14 @@ enum class MessageType(val code: Int) {
     VIBRATE(2),
     AUDIO(3),
     IMAGE(4),
-    TIC_INVITE(5),
-    TIC_PLAY(6),
-    LEAVE(7),
-    ACKNOWLEDGE(8),
-    REVOKED(9)
+    AUDIO_MULTIPART(5),
+    IMAGE_MULTIPART(6),
+    TIC_INVITE(7),
+    TIC_PLAY(8),
+    LEAVE(9),
+    ACKNOWLEDGE(10),
+    REVOKED(11),
+    TIC_END(12)
 }
 
 enum class MessageStatus(val code: Int) {

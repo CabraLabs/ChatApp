@@ -19,14 +19,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatAdapter
 import com.psandroidlabs.chatapp.databinding.FragmentChatBinding
-import com.psandroidlabs.chatapp.utils.ChatNotificationManager
 import com.psandroidlabs.chatapp.models.Message
+import com.psandroidlabs.chatapp.models.MessageType
 import com.psandroidlabs.chatapp.models.UserType
 import com.psandroidlabs.chatapp.tictactoe.fragments.TicTacToeFragment
-import com.psandroidlabs.chatapp.utils.ChatManager
-import com.psandroidlabs.chatapp.utils.Constants
-import com.psandroidlabs.chatapp.utils.PictureManager
-import com.psandroidlabs.chatapp.utils.RecordAudioManager
+import com.psandroidlabs.chatapp.utils.*
 import com.psandroidlabs.chatapp.viewmodels.ClientViewModel
 import kotlinx.coroutines.*
 
@@ -101,9 +98,9 @@ class ChatFragment : Fragment(), CoroutineScope {
             imageName = PictureManager.setImageName()
             PictureManager.bitmapToUri(bitmap, imageName)
 
-            val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
-            val success = client.writeToSocket(message)
-            checkDisconnected(success, message)
+            //val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
+            //val success = client.writeToSocket(message)
+            //checkDisconnected(success, message)
         }
     }
 
@@ -244,8 +241,8 @@ class ChatFragment : Fragment(), CoroutineScope {
         sendMessageListener()
         recordAudioListener()
         vibrateListener()
-        sendImageListener()
-        sendPhotoListener()
+//        sendImageListener()
+//        sendPhotoListener()
 
         client.newMessage.observe(viewLifecycleOwner) {
             notifyAdapterChange(it, true)
@@ -317,35 +314,34 @@ class ChatFragment : Fragment(), CoroutineScope {
                 recordButton()
         }
     }
+//
+//    private fun sendPhotoListener() {
+//        with(binding) {
+//            sendPhotoButton.setOnClickListener {
+//                if (ChatManager.requestPermission(
+//                        activity,
+//                        android.Manifest.permission.CAMERA,
+//                        Constants.CAMERA_PERMISSION
+//                    )
+//                )
+//                    takePhoto()
+//            }
+//        }
+//    }
 
-    private fun sendPhotoListener() {
-        with(binding) {
-            sendPhotoButton.setOnClickListener {
-                if (ChatManager.requestPermission(
-                        activity,
-                        android.Manifest.permission.CAMERA,
-                        Constants.CAMERA_PERMISSION
-                    )
-                )
-                    takePhoto()
-
-            }
-        }
-    }
-
-    private fun sendImageListener() {
-        with(binding) {
-            sendImageButton.setOnClickListener {
-                if (ChatManager.requestPermission(
-                        activity,
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Constants.CHOOSE_IMAGE_GALLERY
-                    )
-                )
-                    choosePicture()
-            }
-        }
-    }
+//    private fun sendImageListener() {
+//        with(binding) {
+//            sendImageButton.setOnClickListener {
+//                if (ChatManager.requestPermission(
+//                        activity,
+//                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
+//                        Constants.CHOOSE_IMAGE_GALLERY
+//                    )
+//                )
+//                    choosePicture()
+//            }
+//        }
+//    }
 
     private fun recordButton() {
         with(binding) {
@@ -372,13 +368,13 @@ class ChatFragment : Fragment(), CoroutineScope {
                     release()
                 }
 
-                val message = ChatManager.audioMessage(
-                    clientUsername,
-                    audioName
-                )
-                val success = client.writeToSocket(message)
+                val messageParts = ChatManager.bufferedAudioMessage(clientUsername, audioName)
+                notifyAdapterChange(messageParts.first, false)
 
-                checkDisconnected(success, message)
+                messageParts.second.forEach {
+                    val success = client.writeToSocket(it)
+                    checkDisconnected(success)
+                }
 
                 audioName = ""
                 recorder = null
@@ -416,8 +412,10 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun checkDisconnected(success: Boolean, message: Message? = null) {
         if (success) {
             if (message != null) {
-                eraseTextField()
-                notifyAdapterChange(message)
+                if (message.type != MessageType.AUDIO_MULTIPART.code && message.type != MessageType.IMAGE_MULTIPART.code) {
+                    eraseTextField()
+                    notifyAdapterChange(message)
+                }
             }
         } else {
             disconnectedSnackBar()
@@ -469,13 +467,13 @@ class ChatFragment : Fragment(), CoroutineScope {
         chatAdapter.notifyItemChanged(ChatManager.chatList.size)
     }
 
-    private fun takePhoto() {
-        imageName = PictureManager.setImageName()
-        imageUri = PictureManager.createUri(imageName)
-        registerTakePhoto.launch(imageUri)
-    }
-
-    private fun choosePicture() {
-        registerChoosePhoto.launch("image/")
-    }
+//    private fun takePhoto() {
+//        imageName = PictureManager.setImageName()
+//        imageUri = PictureManager.createUri(imageName)
+//        registerTakePhoto.launch(imageUri)
+//    }
+//
+//    private fun choosePicture() {
+//        registerChoosePhoto.launch("image/")
+//    }
 }

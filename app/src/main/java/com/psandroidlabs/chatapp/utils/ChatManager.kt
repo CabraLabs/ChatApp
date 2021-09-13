@@ -2,7 +2,6 @@ package com.psandroidlabs.chatapp.utils
 
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
@@ -12,9 +11,7 @@ import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.models.Message
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
+import com.squareup.moshi.*
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +19,7 @@ import kotlinx.coroutines.Job
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 object ChatManager : CoroutineScope {
@@ -32,9 +30,11 @@ object ChatManager : CoroutineScope {
     var chatList: ArrayList<Message> = ArrayList()
     var chatMembersList: ArrayList<Profile> = ArrayList()
 
+    val multipart: HashMap<Int?, Multipart?> = hashMapOf()
+
     private val jsonAdapter by lazy {
         val moshi: Moshi = Moshi.Builder().build()
-        moshi.adapter(Message::class.java).lenient()
+        moshi.adapter(Message::class.java)
     }
 
     private val jsonProfileAdapter by lazy {
@@ -97,9 +97,11 @@ object ChatManager : CoroutineScope {
         status: MessageStatus = MessageStatus.RECEIVED,
         username: String? = null,
         text: String? = null,
-        base64Data: String? = null,
+        partNumber: Int? = null,
+        dataSize: Long? = null,
+        dataBuffer: String? = null,
         mediaId: String? = null,
-        date: Long = getEpoch(),
+        date: Long? = null,
         id: Int? = null,
         avatar: String? = null,
         password: String? = null,
@@ -109,26 +111,98 @@ object ChatManager : CoroutineScope {
         status = status.code,
         username = username,
         text = text,
-        base64Data = base64Data,
+        partNumber = partNumber,
+        dataSize = dataSize,
+        dataBuffer = dataBuffer,
         mediaId = mediaId,
-        time = date,
+        time = date ?: getEpoch(),
         id = id,
         join = Join(avatar, password, isAdmin)
     )
 
     /**
-     * Creates an audio message and manipulate it's text and base64Data to be correctly
-     * sent to the user and the server.
+     * Creates an audio message
      */
-    fun audioMessage(username: String, audioName: String?): Message {
+    fun audioMessage(
+        username: String,
+        audioName: String?,
+        byteBuffer: String? = null,
+        partNumber: Int? = null,
+        dataSize: Long? = null,
+        date: Long? = null
+    ): Message {
         audioName?.let {
             return createMessage(
                 type = MessageType.AUDIO,
                 username = username,
-                base64Data = RecordAudioManager.audioBase64(RecordAudioManager.audioDir(audioName)),
+                partNumber = partNumber,
+                dataSize = dataSize,
+                dataBuffer = byteBuffer,
                 mediaId = audioName,
+                date = date
             )
         } ?: throw Exception("Audio message needs to have a full path.")
+    }
+
+    /**
+     * Creates a buffered audio message which returns an arraylist of messages with all
+     * the audio parts.
+     */
+    fun bufferedAudioMessage(username: String, audioName: String): Pair<Message, ArrayList<Message>> {
+        val messageList = arrayListOf<Message>()
+        var part = 0
+
+        val path = RecordAudioManager.audioDir(audioName)
+        val base64 = RecordAudioManager.audioBase64(path)
+        var size = base64.length
+
+        while(size > 0) {
+            val actualSize = part * 1023
+            if (size > 1024) {
+                val data = base64.slice(actualSize..(actualSize+1024))
+                messageList.add(
+                    audioMessage(
+                        username,
+                        audioName,
+                        data,
+                        part++,
+                        if (part == 1) size.toLong() else null,
+                        audioName.toLong()
+                    )
+                )
+            } else {
+                val data = base64.slice(actualSize..base64.length)
+                messageList.add(
+                    audioMessage(
+                        username,
+                        audioName,
+                        data,
+                        part++,
+                        null,
+                        audioName.toLong()
+                    )
+                )
+            }
+
+            size -= 1024
+        }
+
+        val fullMessage = audioMessage(username, audioName)
+        return Pair(fullMessage, messageList)
+    }
+
+    fun deductTotalParts(size: Long?): Int {
+
+    }
+
+    fun createAudio(id: Int?, username: String?): Message {
+        val base64 = multipart[id]
+        val audioName = RecordAudioManager.base64toAudio(base64?.base64)
+        if (username != null) {
+            return audioMessage(username, audioName)
+        }
+
+        throw Exception("Message needs to provide an username.")
     }
 
     /**
@@ -160,16 +234,16 @@ object ChatManager : CoroutineScope {
         id = id
     )
 
-    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap): Message {
-        imagePath?.let {
-            return  createMessage(
-                type = MessageType.IMAGE,
-                username = username,
-                base64Data = bitmap.toBase64(),
-                mediaId = imagePath
-            )
-        } ?: throw Exception("Image message needs to have a full path.")
-    }
+//    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap): Message {
+//        imagePath?.let {
+//            return createMessage(
+//                type = MessageType.IMAGE,
+//                username = username,
+//                base64Data = bitmap.toBase64(),
+//                mediaId = imagePath
+//            )
+//        } ?: throw Exception("Image message needs to have a full path.")
+//    }
 
     /**
      * Parse the message to a valid REVOKED or ACKNOWLEDGE message.

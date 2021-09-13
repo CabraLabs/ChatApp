@@ -185,32 +185,48 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                 ChatManager.startVibrate()
                                             }
 
-                                            MessageType.AUDIO.code -> {
-                                                if (message.base64Data != null) {
-                                                    val path =
-                                                        RecordAudioManager.base64toAudio(message.base64Data)
-                                                    message.mediaId = path
-                                                }
-                                            }
+                                            MessageType.AUDIO_MULTIPART.code -> {
+                                                if (message.partNumber != null) {
+                                                    if (message.partNumber == 1) {
+                                                        ChatManager.multipart[message.id] =
+                                                            Multipart(message.partNumber, ChatManager.deductTotalParts(message.dataSize), message.text)
+                                                    } else {
+                                                        val value = ChatManager.multipart[message.id]
 
-                                            MessageType.IMAGE.code -> {
-                                                message.base64Data.let {
-                                                    if (it != null) {
-                                                        val bitmap = PictureManager.base64ToBitmap(it)
-                                                        var mediaId = message.mediaId
+                                                        value?.apply {
+                                                            actualPart = message.partNumber
+                                                            base64 += message.text
+                                                        }
 
-                                                        if (bitmap != null) {
-                                                            if (!mediaId.isNullOrBlank()) {
-                                                                PictureManager.bitmapToUri(bitmap, mediaId)
-                                                            } else {
-                                                                mediaId = PictureManager.setImageName()
-                                                                PictureManager.bitmapToUri(bitmap, mediaId)
-                                                                message.mediaId = mediaId
-                                                            }
+                                                        ChatManager.multipart[message.id] = value
+
+                                                        if (value?.actualPart == value?.totalParts) {
+                                                            val finalAudio = ChatManager.createAudio(message.id, message.username)
+                                                            ChatManager.multipart.remove(message.id)
+                                                            updateMessage(finalAudio)
                                                         }
                                                     }
                                                 }
                                             }
+
+//                                            MessageType.IMAGE.code -> {
+//                                                message.partNumber.let {
+//                                                    if (it != null) {
+//                                                        val bitmap = PictureManager.base64ToBitmap(it)
+//                                                        var mediaId = message.mediaId
+//
+//                                                        if (bitmap != null) {
+//                                                            if (!mediaId.isNullOrBlank()) {
+//                                                                PictureManager.bitmapToUri(bitmap, mediaId)
+//                                                            } else {
+//                                                                mediaId = PictureManager.setImageName()
+//                                                                PictureManager.bitmapToUri(bitmap, mediaId)
+//                                                                message.mediaId = mediaId
+//                                                            }
+//                                                        }
+//                                                    }
+//                                                }
+//                                            }
 
                                             MessageType.LEAVE.code -> {
                                                 var toRemove = Profile()
