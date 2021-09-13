@@ -2,6 +2,7 @@ package com.psandroidlabs.chatapp.utils
 
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
@@ -162,24 +163,24 @@ object ChatManager : CoroutineScope {
                 val data = base64.slice(actualSize..(actualSize+1024))
                 messageList.add(
                     audioMessage(
-                        username,
-                        audioName,
-                        data,
-                        part++,
-                        if (part == 1) size.toLong() else null,
-                        audioName.toLong()
+                        username = username,
+                        audioName = audioName,
+                        byteBuffer = data,
+                        partNumber = part++,
+                        dataSize = if (part == 1) size.toLong() else null,
+                        date = getEpoch(),
                     )
                 )
             } else {
-                val data = base64.slice(actualSize..base64.length)
+                val data = base64.slice(actualSize until base64.length)
                 messageList.add(
                     audioMessage(
-                        username,
-                        audioName,
-                        data,
-                        part++,
-                        null,
-                        audioName.toLong()
+                        username = username,
+                        audioName = audioName,
+                        byteBuffer = data,
+                        partNumber = part++,
+                        dataSize = if (part == 1) size.toLong() else null,
+                        date = getEpoch(),
                     )
                 )
             }
@@ -192,7 +193,11 @@ object ChatManager : CoroutineScope {
     }
 
     fun deductTotalParts(size: Long?): Int {
+        if (size != null) {
+            return (size / 1024.0).toInt() + 1
+        }
 
+        return 0
     }
 
     fun createAudio(id: Int?, username: String?): Message {
@@ -234,16 +239,16 @@ object ChatManager : CoroutineScope {
         id = id
     )
 
-//    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap): Message {
-//        imagePath?.let {
-//            return createMessage(
-//                type = MessageType.IMAGE,
-//                username = username,
-//                base64Data = bitmap.toBase64(),
-//                mediaId = imagePath
-//            )
-//        } ?: throw Exception("Image message needs to have a full path.")
-//    }
+    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap): Message {
+        imagePath?.let {
+            return createMessage(
+                type = MessageType.IMAGE,
+                username = username,
+                //base64Data = bitmap.toBase64(),
+                mediaId = imagePath
+            )
+        } ?: throw Exception("Image message needs to have a full path.")
+    }
 
     /**
      * Parse the message to a valid REVOKED or ACKNOWLEDGE message.
