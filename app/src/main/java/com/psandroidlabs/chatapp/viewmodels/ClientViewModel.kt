@@ -185,11 +185,27 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                                 ChatManager.startVibrate()
                                             }
 
-                                            MessageType.AUDIO.code -> {
+                                            MessageType.AUDIO_MULTIPART.code -> {
                                                 if (message.partNumber != null) {
-                                                    val path =
-                                                        RecordAudioManager.base64toAudio(message.base64Data)
-                                                    message.mediaId = path
+                                                    if (message.partNumber == 1) {
+                                                        ChatManager.multipart[message.id] =
+                                                            Multipart(message.partNumber, ChatManager.deductTotalParts(message.dataSize), message.text)
+                                                    } else {
+                                                        val value = ChatManager.multipart[message.id]
+
+                                                        value?.apply {
+                                                            actualPart = message.partNumber
+                                                            base64 += message.text
+                                                        }
+
+                                                        ChatManager.multipart[message.id] = value
+
+                                                        if (value?.actualPart == value?.totalParts) {
+                                                            val finalAudio = ChatManager.createAudio(message.id, message.username)
+                                                            ChatManager.multipart.remove(message.id)
+                                                            updateMessage(finalAudio)
+                                                        }
+                                                    }
                                                 }
                                             }
 
