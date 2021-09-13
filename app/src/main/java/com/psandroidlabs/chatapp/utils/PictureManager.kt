@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
+import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import android.util.Base64
 import androidx.core.content.FileProvider
@@ -14,10 +15,10 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.FragmentManager
 import com.psandroidlabs.chatapp.MainApplication
 import com.psandroidlabs.chatapp.fragments.ImageFragment
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
+import java.lang.Exception
+import java.net.URL
+import java.nio.channels.FileChannel
 import java.util.*
 
 object PictureManager {
@@ -25,7 +26,6 @@ object PictureManager {
     fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
         val bmp = bitmap.toDrawable(Resources.getSystem()).bitmap
         val stream = ByteArrayOutputStream()
-        bmp.compress(Bitmap.CompressFormat.JPEG, 90, stream)
         return stream.toByteArray()
     }
 
@@ -120,14 +120,6 @@ object PictureManager {
         }
     }
 
-    fun fileToBitmap(path: String): Bitmap? {
-        return if (File(path).exists()) {
-            return BitmapFactory.decodeFile(File(path).absolutePath)
-        } else {
-            null
-        }
-    }
-
     fun loadMyAvatar(): Bitmap? {
         val preference = AppPreferences.getClient(MainApplication.applicationContext())
         return if (preference.isNotEmpty() && !preference[3].isNullOrBlank()) {
@@ -159,5 +151,18 @@ object PictureManager {
             val imageFragment = ImageFragment(null)
             imageFragment.show(supportFragmentManager, Constants.IMAGE_TAG)
         }
+    }
+
+    fun getPhotoBitmap (uri: Uri, contentResolver: ContentResolver): Bitmap? {
+        try {
+            val parcelFileDescriptor: ParcelFileDescriptor? = contentResolver.openFileDescriptor(uri, "r")
+            val fileDescriptor: FileDescriptor? = parcelFileDescriptor?.fileDescriptor
+            return BitmapFactory.decodeFileDescriptor(fileDescriptor)
+
+            parcelFileDescriptor?.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
     }
 }
