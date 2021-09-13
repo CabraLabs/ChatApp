@@ -23,12 +23,6 @@ import java.util.*
 
 object PictureManager {
 
-    fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val bmp = bitmap.toDrawable(Resources.getSystem()).bitmap
-        val stream = ByteArrayOutputStream()
-        return stream.toByteArray()
-    }
-
     private fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }

@@ -256,6 +256,10 @@ object ChatManager : CoroutineScope {
         } ?: throw Exception("Image message needs to have a full path.")
     }
 
+    fun imageMessageParts(message: Message) {
+
+    }
+
     /**
      * Parse the message to a valid REVOKED or ACKNOWLEDGE message.
      */
