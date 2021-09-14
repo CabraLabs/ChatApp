@@ -15,10 +15,14 @@ import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.adapters.ChatMembersAdapter
 import com.psandroidlabs.chatapp.models.*
-import com.psandroidlabs.chatapp.utils.*
+import com.psandroidlabs.chatapp.utils.ChatManager
+import com.psandroidlabs.chatapp.utils.ChatNotificationManager
+import com.psandroidlabs.chatapp.utils.Constants
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonEncodingException
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -33,6 +37,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
+
+    private val outputMutex = Mutex()
 
     private lateinit var userName: String
     var id = 0
@@ -88,25 +94,22 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         }
     }
 
-    @Synchronized
-    fun writeToSocket(message: Message): Boolean {
+    fun writeToSocket(message: Message) {
         message.id = id
         val messageByte = ChatManager.parseToJson(message)
         Log.d("Sent Message", messageByte)
 
-        return try {
-            runBlocking {
-                launch(Dispatchers.IO) {
+        try {
+            launch(Dispatchers.IO) {
+                outputMutex.withLock {
                     if (socketList.isNotEmpty()) {
                         socketList[0]?.getOutputStream()
                             ?.write(messageByte.toByteArray(Charsets.UTF_8))
                     }
                 }
             }
-
-            true
         } catch (e: java.net.SocketException) {
-            false
+            Log.e("Cant send client message", "Error")
         }
     }
 
@@ -186,25 +189,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                             }
 
                                             MessageType.AUDIO_MULTIPART.code -> {
-                                                if (message.partNumber != null) {
-                                                    if (message.partNumber == 1) {
-                                                        ChatManager.multipart[message.id] =
-                                                            Multipart(message.partNumber, ChatManager.deductTotalParts(message.dataSize), message.text)
-                                                    } else {
-                                                        val value = ChatManager.multipart[message.id]
-
-                                                        value?.apply {
-                                                            actualPart = message.partNumber
-                                                            base64 += message.text
-                                                        }
-
-                                                        ChatManager.multipart[message.id] = value
-
-                                                        if (value?.actualPart == value?.totalParts) {
-                                                            val finalAudio = ChatManager.createAudio(message.id, message.username)
-                                                            ChatManager.multipart.remove(message.id)
-                                                            updateMessage(finalAudio)
-                                                        }
+                                                ChatManager.hashMapMutex.withLock {
+                                                    launch(Dispatchers.Default) {
+                                                        processAudio(message)
                                                     }
                                                 }
                                             }
@@ -258,6 +245,30 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                     } catch (e: JsonEncodingException) {
                         Log.e("JsonEncodingException", receivedJson)
                     }
+                }
+            }
+        }
+    }
+
+    private fun processAudio(message: Message) {
+        if (message.partNumber != null) {
+            if (message.partNumber == 0) {
+                ChatManager.multipart[message.id] =
+                    Multipart(message.partNumber, ChatManager.deductTotalParts(message.dataSize), message.dataBuffer)
+            } else {
+                val value = ChatManager.multipart[message.id]
+
+                value?.apply {
+                    actualPart = message.partNumber
+                    base64 += message.dataBuffer
+                }
+
+                ChatManager.multipart[message.id] = value
+
+                if (value?.actualPart == value?.totalParts) {
+                    val finalAudio = ChatManager.createAudio(message.id, message.username)
+                    ChatManager.multipart.remove(message.id)
+                    updateMessage(finalAudio)
                 }
             }
         }

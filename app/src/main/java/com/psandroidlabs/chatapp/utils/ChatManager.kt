@@ -17,6 +17,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.sync.Mutex
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -32,6 +33,7 @@ object ChatManager : CoroutineScope {
     var chatMembersList: ArrayList<Profile> = ArrayList()
 
     val multipart: HashMap<Int?, Multipart?> = hashMapOf()
+    val hashMapMutex = Mutex()
 
     private val jsonAdapter by lazy {
         val moshi: Moshi = Moshi.Builder().build()
@@ -124,7 +126,7 @@ object ChatManager : CoroutineScope {
     /**
      * Creates an audio message
      */
-    fun audioMessage(
+    private fun audioMessage(
         type: MessageType,
         username: String,
         audioName: String?,
@@ -159,35 +161,36 @@ object ChatManager : CoroutineScope {
         var size = base64.length
 
         while(size > 0) {
-            val actualSize = part * 1023
-            if (size > 1024) {
-                val data = base64.slice(actualSize..(actualSize+1024))
+            val actualSize = part * 1024
+            if (size >= 1024) {
+                val data = base64.slice(actualSize until (actualSize+1024))
                 messageList.add(
                     audioMessage(
                         type = MessageType.AUDIO_MULTIPART,
                         username = username,
                         audioName = audioName,
                         byteBuffer = data,
-                        partNumber = part++,
-                        dataSize = if (part == 1) size.toLong() else null,
+                        partNumber = part,
+                        dataSize = if (part == 0) size.toLong() else null,
                         date = getEpoch(),
                     )
                 )
             } else {
-                val data = base64.slice(actualSize until base64.length)
+                val data = base64.slice(actualSize until (actualSize+size))
                 messageList.add(
                     audioMessage(
                         type = MessageType.AUDIO_MULTIPART,
                         username = username,
                         audioName = audioName,
                         byteBuffer = data,
-                        partNumber = part++,
+                        partNumber = part,
                         dataSize = if (part == 1) size.toLong() else null,
                         date = getEpoch(),
                     )
                 )
             }
 
+            part++
             size -= 1024
         }
 
@@ -197,7 +200,7 @@ object ChatManager : CoroutineScope {
 
     fun deductTotalParts(size: Long?): Int {
         if (size != null) {
-            return (size / 1024.0).toInt() + 1
+            return (size / 1024.0).toInt()
         }
 
         return 0
