@@ -500,7 +500,7 @@ class ChatAdapter(
             }
 
             /** Leave Views **/
-            7 -> {
+            9 -> {
                 ViewHolderEventMessage(
                     ChatRowJoinBinding.inflate(
                         LayoutInflater.from(viewGroup.context),
@@ -510,7 +510,7 @@ class ChatAdapter(
                 )
             }
 
-            19 -> {
+            21 -> {
                 ViewHolderEventMessage(
                     ChatRowJoinBinding.inflate(
                         LayoutInflater.from(viewGroup.context),
