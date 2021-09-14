@@ -83,8 +83,8 @@ class ChatFragment : Fragment(), CoroutineScope {
             if (bitmap != null) {
                 bitmap = PictureManager.compressBitmap(bitmap, 40)
                 val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
-                val success = client.writeToSocket(message)
-                checkDisconnected(success, message)
+                client.writeToSocket(message)
+                checkDisconnected(true, message)
             }
         }
     }
@@ -372,8 +372,8 @@ class ChatFragment : Fragment(), CoroutineScope {
                 notifyAdapterChange(messageParts.first, false)
 
                 messageParts.second.forEach {
-                    val success = client.writeToSocket(it)
-                    checkDisconnected(success)
+                    client.writeToSocket(it)
+                    checkDisconnected(true)
                 }
 
                 audioName = ""
@@ -389,11 +389,11 @@ class ChatFragment : Fragment(), CoroutineScope {
                 username = clientUsername,
                 id = client.id
             )
-            val success = client.writeToSocket(message)
+            client.writeToSocket(message)
 
             disableAttention()
 
-            checkDisconnected(success, message)
+            checkDisconnected(true, message)
         }
     }
 
@@ -402,9 +402,9 @@ class ChatFragment : Fragment(), CoroutineScope {
             if (getTextFieldString().isNotBlank()) {
                 val message =
                     ChatManager.parseMessageType(clientUsername, getTextFieldString(), client.id)
-                val success = client.writeToSocket(message)
+                client.writeToSocket(message)
 
-                checkDisconnected(success, message)
+                checkDisconnected(true, message)
             }
         }
     }
@@ -455,16 +455,18 @@ class ChatFragment : Fragment(), CoroutineScope {
     }
 
     private fun notifyAdapterChange(message: Message? = null, received: Boolean = false) {
-        if (message != null) {
-            if (received) {
-                ChatManager.addToAdapter(message, received)
-            } else {
-                ChatManager.addToAdapter(message)
+        if (message?.type != MessageType.AUDIO_MULTIPART.code && message?.type != MessageType.IMAGE_MULTIPART.code) {
+            if (message != null) {
+                if (received) {
+                    ChatManager.addToAdapter(message, received)
+                } else {
+                    ChatManager.addToAdapter(message)
+                }
             }
-        }
 
-        binding.chatRecycler.scrollToPosition(list.size - 1)
-        chatAdapter.notifyItemChanged(ChatManager.chatList.size)
+            binding.chatRecycler.scrollToPosition(list.size - 1)
+            chatAdapter.notifyItemChanged(ChatManager.chatList.size)
+        }
     }
 
 //    private fun takePhoto() {
