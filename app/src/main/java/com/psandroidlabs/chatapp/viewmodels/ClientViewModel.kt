@@ -191,29 +191,24 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                             MessageType.AUDIO_MULTIPART.code -> {
                                                 ChatManager.hashMapMutex.withLock {
                                                     launch(Dispatchers.Default) {
-                                                        processAudio(message)
+                                                        processMultipart(
+                                                            message,
+                                                            MessageType.AUDIO_MULTIPART.code
+                                                        )
                                                     }
                                                 }
                                             }
 
-//                                            MessageType.IMAGE.code -> {
-//                                                message.partNumber.let {
-//                                                    if (it != null) {
-//                                                        val bitmap = PictureManager.base64ToBitmap(it)
-//                                                        var mediaId = message.mediaId
-//
-//                                                        if (bitmap != null) {
-//                                                            if (!mediaId.isNullOrBlank()) {
-//                                                                PictureManager.bitmapToUri(bitmap, mediaId)
-//                                                            } else {
-//                                                                mediaId = PictureManager.setImageName()
-//                                                                PictureManager.bitmapToUri(bitmap, mediaId)
-//                                                                message.mediaId = mediaId
-//                                                            }
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
+                                            MessageType.IMAGE_MULTIPART.code -> {
+                                                ChatManager.hashMapMutex.withLock {
+                                                    launch(Dispatchers.Default) {
+                                                        processMultipart(
+                                                            message,
+                                                            MessageType.IMAGE_MULTIPART.code
+                                                        )
+                                                    }
+                                                }
+                                            }
 
                                             MessageType.LEAVE.code -> {
                                                 var toRemove = Profile()
@@ -250,11 +245,15 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         }
     }
 
-    private fun processAudio(message: Message) {
+    private fun processMultipart(message: Message, messageType: Int) {
         if (message.partNumber != null) {
             if (message.partNumber == 0) {
                 ChatManager.multipart[message.id] =
-                    Multipart(message.partNumber, ChatManager.deductTotalParts(message.dataSize), message.dataBuffer)
+                    Multipart(
+                        message.partNumber,
+                        ChatManager.deductTotalParts(message.dataSize),
+                        message.dataBuffer
+                    )
             } else {
                 val value = ChatManager.multipart[message.id]
 
@@ -266,9 +265,15 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                 ChatManager.multipart[message.id] = value
 
                 if (value?.actualPart == value?.totalParts) {
-                    val finalAudio = ChatManager.createAudio(message.id, message.username)
+                    if (messageType == MessageType.IMAGE_MULTIPART.code) {
+                        val finalImage = ChatManager.createImage(message.id, message.username)
+                        updateMessage(finalImage)
+                    } else {
+                        val finalAudio = ChatManager.createAudio(message.id, message.username)
+                        updateMessage(finalAudio)
+                    }
+
                     ChatManager.multipart.remove(message.id)
-                    updateMessage(finalAudio)
                 }
             }
         }

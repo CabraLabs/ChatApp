@@ -23,12 +23,6 @@ import java.util.*
 
 object PictureManager {
 
-    fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val bmp = bitmap.toDrawable(Resources.getSystem()).bitmap
-        val stream = ByteArrayOutputStream()
-        return stream.toByteArray()
-    }
-
     private fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
@@ -96,15 +90,21 @@ object PictureManager {
                     Base64.decode(string, Base64.NO_WRAP).size
                 )
             }
-
             return bitmap
         }
-
         return null
     }
 
     fun setImageName(): String {
         return "${UUID.randomUUID()}.jpg"
+    }
+
+    fun imageDir(name: String): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            File(MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR), name).toString()
+        } else {
+            File(MainApplication.applicationContext().cacheDir, name).toString()
+        }
     }
 
     fun getImage(name: String): Bitmap? {
