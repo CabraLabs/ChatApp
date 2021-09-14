@@ -100,7 +100,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 imageBitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
                 var bitmap = imageBitmap
 
-                if(bitmap != null) {
+                if (bitmap != null) {
                     bitmap = PictureManager.compressBitmap(bitmap, 40)
                     imageName = PictureManager.setImageName()
                     PictureManager.bitmapToUri(bitmap, imageName)
