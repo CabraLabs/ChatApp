@@ -93,14 +93,15 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            var bitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
-            bitmap = PictureManager.compressBitmap(bitmap, 40)
-            imageName = PictureManager.setImageName()
-            PictureManager.bitmapToUri(bitmap, imageName)
-
-            val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
-            val success = client.writeToSocket(message)
-            checkDisconnected(success, message)
+            launch (Dispatchers.Default) {
+                var bitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
+                bitmap = PictureManager.compressBitmap(bitmap, 40)
+                imageName = PictureManager.setImageName()
+                PictureManager.bitmapToUri(bitmap, imageName)
+                val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
+                val success = client.writeToSocket(message)
+                checkDisconnected(success, message)
+            }
         }
     }
 
@@ -241,8 +242,8 @@ class ChatFragment : Fragment(), CoroutineScope {
         sendMessageListener()
         recordAudioListener()
         vibrateListener()
-//        sendImageListener()
-//        sendPhotoListener()
+        sendImageListener()
+        sendPhotoListener()
 
         client.newMessage.observe(viewLifecycleOwner) {
             notifyAdapterChange(it, true)
@@ -314,34 +315,34 @@ class ChatFragment : Fragment(), CoroutineScope {
                 recordButton()
         }
     }
-//
-//    private fun sendPhotoListener() {
-//        with(binding) {
-//            sendPhotoButton.setOnClickListener {
-//                if (ChatManager.requestPermission(
-//                        activity,
-//                        android.Manifest.permission.CAMERA,
-//                        Constants.CAMERA_PERMISSION
-//                    )
-//                )
-//                    takePhoto()
-//            }
-//        }
-//    }
 
-//    private fun sendImageListener() {
-//        with(binding) {
-//            sendImageButton.setOnClickListener {
-//                if (ChatManager.requestPermission(
-//                        activity,
-//                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
-//                        Constants.CHOOSE_IMAGE_GALLERY
-//                    )
-//                )
-//                    choosePicture()
-//            }
-//        }
-//    }
+    private fun sendPhotoListener() {
+        with(binding) {
+            sendPhotoButton.setOnClickListener {
+                if (ChatManager.requestPermission(
+                        activity,
+                        android.Manifest.permission.CAMERA,
+                        Constants.CAMERA_PERMISSION
+                    )
+                )
+                    takePhoto()
+            }
+        }
+    }
+
+    private fun sendImageListener() {
+        with(binding) {
+            sendImageButton.setOnClickListener {
+                if (ChatManager.requestPermission(
+                        activity,
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Constants.CHOOSE_IMAGE_GALLERY
+                    )
+                )
+                    choosePicture()
+            }
+        }
+    }
 
     private fun recordButton() {
         with(binding) {
@@ -469,13 +470,13 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-//    private fun takePhoto() {
-//        imageName = PictureManager.setImageName()
-//        imageUri = PictureManager.createUri(imageName)
-//        registerTakePhoto.launch(imageUri)
-//    }
-//
-//    private fun choosePicture() {
-//        registerChoosePhoto.launch("image/")
-//    }
+    private fun takePhoto() {
+        imageName = PictureManager.setImageName()
+        imageUri = PictureManager.createUri(imageName)
+        registerTakePhoto.launch(imageUri)
+    }
+
+    private fun choosePicture() {
+        registerChoosePhoto.launch("image/")
+    }
 }

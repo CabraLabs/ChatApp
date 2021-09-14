@@ -176,7 +176,7 @@ object ChatManager : CoroutineScope {
                     )
                 )
             } else {
-                val data = base64.slice(actualSize until (actualSize+size))
+                val data = base64.slice(actualSize until (actualSize + size))
                 messageList.add(
                     audioMessage(
                         type = MessageType.AUDIO_MULTIPART,
@@ -198,48 +198,48 @@ object ChatManager : CoroutineScope {
         return Pair(fullMessage, messageList)
     }
 
-    fun bufferedImageMessage(username: String, imageName: String): Pair<Message, ArrayList<Message>> {
-        val messageList = arrayListOf<Message>()
-        var part = 0
-
-        val path = PictureManager.imageDir(imageName)
-        val base64 = PictureManager.getImage(imageName)?.toBase64()
-        var size = base64?.length?: 0
-
-        while(size > 0) {
-            val actualSize = part * 1023
-            if (size > 1024) {
-                val data = base64?.slice(actualSize..(actualSize+1024))
-                messageList.add(
-                    audioMessage(
-                        username,
-                        imageName,
-                        data,
-                        part++,
-                        if (part == 1) size.toLong() else null,
-                        imageName.toLong()
-                    )
-                )
-            } else {
-                val data = base64?.slice(actualSize..base64.length)
-                messageList.add(
-                    audioMessage(
-                        username,
-                        imageName,
-                        data,
-                        part++,
-                        null,
-                        imageName.toLong()
-                    )
-                )
-            }
-
-            size -= 1024
-        }
-
-        val fullMessage = audioMessage(username, imageName)
-        return Pair(fullMessage, messageList)
-    }
+//    fun bufferedImageMessage(username: String, imageName: String): Pair<Message, ArrayList<Message>> {
+//        val messageList = arrayListOf<Message>()
+//        var part = 0
+//
+//        val path = PictureManager.imageDir(imageName)
+//        val base64 = PictureManager.getImage(imageName)?.toBase64()
+//        var size = base64?.length?: 0
+//
+//        while(size > 0) {
+//            val actualSize = part * 1023
+//            if (size > 1024) {
+//                val data = base64?.slice(actualSize..(actualSize+1024))
+//                messageList.add(
+//                    audioMessage(
+//                        username,
+//                        imageName,
+//                        data,
+//                        part++,
+//                        if (part == 1) size.toLong() else null,
+//                        imageName.toLong()
+//                    )
+//                )
+//            } else {
+//                val data = base64?.slice(actualSize..base64.length)
+//                messageList.add(
+//                    audioMessage(
+//                        username,
+//                        imageName,
+//                        data,
+//                        part++,
+//                        null,
+//                        imageName.toLong()
+//                    )
+//                )
+//            }
+//
+//            size -= 1024
+//        }
+//
+//        val fullMessage = audioMessage(username, imageName)
+//        return Pair(fullMessage, messageList)
+//    }
 
     fun deductTotalParts(size: Long?): Int {
         if (size != null) {
