@@ -90,10 +90,8 @@ object PictureManager {
                     Base64.decode(string, Base64.NO_WRAP).size
                 )
             }
-
             return bitmap
         }
-
         return null
     }
 

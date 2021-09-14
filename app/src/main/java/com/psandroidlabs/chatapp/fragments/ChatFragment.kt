@@ -79,12 +79,19 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.TakePicture()
     ) { isSaved ->
         if (isSaved) {
-            var bitmap = PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)
-            if (bitmap != null) {
-                bitmap = PictureManager.compressBitmap(bitmap, 40)
-                val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
-                client.writeToSocket(message)
-                checkDisconnected(true, message)
+            launch(Dispatchers.Default) {
+                val bitmap = PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)
+                if (bitmap != null) {
+                    PictureManager.compressBitmap(bitmap, 40)
+
+                    val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
+                    notifyAdapterChange(messageParts.first, false)
+
+                    messageParts.second.forEach {
+                        client.writeToSocket(it)
+                        checkDisconnected(true)
+                    }
+                }
             }
         }
     }
@@ -93,15 +100,20 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            launch (Dispatchers.Default) {
+
                 var bitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
                 bitmap = PictureManager.compressBitmap(bitmap, 40)
                 imageName = PictureManager.setImageName()
                 PictureManager.bitmapToUri(bitmap, imageName)
-                val message = ChatManager.imageMessage(clientUsername, imageName, bitmap)
-                val success = client.writeToSocket(message)
-                checkDisconnected(success, message)
-            }
+
+                val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
+                notifyAdapterChange(messageParts.first, false)
+
+                messageParts.second.forEach {
+                    client.writeToSocket(it)
+                    checkDisconnected(true)
+                }
+
         }
     }
 

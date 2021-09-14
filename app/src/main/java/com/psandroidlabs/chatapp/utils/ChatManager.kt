@@ -2,7 +2,6 @@ package com.psandroidlabs.chatapp.utils
 
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.*
@@ -198,48 +197,51 @@ object ChatManager : CoroutineScope {
         return Pair(fullMessage, messageList)
     }
 
-//    fun bufferedImageMessage(username: String, imageName: String): Pair<Message, ArrayList<Message>> {
-//        val messageList = arrayListOf<Message>()
-//        var part = 0
-//
-//        val path = PictureManager.imageDir(imageName)
-//        val base64 = PictureManager.getImage(imageName)?.toBase64()
-//        var size = base64?.length?: 0
-//
-//        while(size > 0) {
-//            val actualSize = part * 1023
-//            if (size > 1024) {
-//                val data = base64?.slice(actualSize..(actualSize+1024))
-//                messageList.add(
-//                    audioMessage(
-//                        username,
-//                        imageName,
-//                        data,
-//                        part++,
-//                        if (part == 1) size.toLong() else null,
-//                        imageName.toLong()
-//                    )
-//                )
-//            } else {
-//                val data = base64?.slice(actualSize..base64.length)
-//                messageList.add(
-//                    audioMessage(
-//                        username,
-//                        imageName,
-//                        data,
-//                        part++,
-//                        null,
-//                        imageName.toLong()
-//                    )
-//                )
-//            }
-//
-//            size -= 1024
-//        }
-//
-//        val fullMessage = audioMessage(username, imageName)
-//        return Pair(fullMessage, messageList)
-//    }
+    fun bufferedImageMessage(username: String, imageName: String): Pair<Message, ArrayList<Message>> {
+        val messageList = arrayListOf<Message>()
+        var part = 0
+
+        val base64 = PictureManager.getImage(imageName)?.toBase64()?: ""
+        val bitmap = PictureManager.getImage(imageName)
+        var size = base64.length
+
+        while(size > 0) {
+            val actualSize = part * 1024
+            if (size >= 1024) {
+                val data = base64.slice(actualSize until (actualSize+1024))
+                messageList.add(
+                    imageMessage(
+                        type = MessageType.IMAGE_MULTIPART,
+                        username = username,
+                        imageName = imageName,
+                        byteBuffer = data,
+                        partNumber = part,
+                        dataSize = if (part == 0) size.toLong() else null,
+                        date = getEpoch(),
+                    )
+                )
+            } else {
+                val data = base64.slice(actualSize until (actualSize + size))
+                messageList.add(
+                    imageMessage(
+                        type = MessageType.IMAGE_MULTIPART,
+                        username = username,
+                        imageName = imageName,
+                        byteBuffer = data,
+                        partNumber = part,
+                        dataSize = if (part == 1) size.toLong() else null,
+                        date = getEpoch(),
+                    )
+                )
+            }
+
+            part++
+            size -= 1024
+        }
+
+        val fullMessage = imageMessage(MessageType.IMAGE, username, imageName)
+        return Pair(fullMessage, messageList)
+    }
 
     fun deductTotalParts(size: Long?): Int {
         if (size != null) {
@@ -253,6 +255,20 @@ object ChatManager : CoroutineScope {
         val audioName = RecordAudioManager.base64toAudio(base64?.base64)
         if (username != null) {
             return audioMessage(MessageType.AUDIO, username, audioName)
+        }
+
+        throw Exception("Message needs to provide an username.")
+    }
+
+    fun createImage(id: Int?, username: String?): Message {
+        val base64 = multipart[id]
+        val bitmap = base64?.base64?.let { PictureManager.base64ToBitmap(it) }
+        val imageName = PictureManager.setImageName()
+        if (bitmap != null) {
+            PictureManager.bitmapToUri(bitmap, imageName)
+        }
+        if (username != null) {
+            return imageMessage(MessageType.IMAGE, username, imageName)
         }
 
         throw Exception("Message needs to provide an username.")
@@ -287,19 +303,26 @@ object ChatManager : CoroutineScope {
         id = id
     )
 
-    fun imageMessage(username: String, imagePath: String?, bitmap: Bitmap): Message {
-        imagePath?.let {
+    fun imageMessage(
+        type: MessageType,
+        username: String,
+        imageName: String?,
+        byteBuffer: String? = null,
+        partNumber: Int? = null,
+        dataSize: Long? = null,
+        date: Long? = null
+    ): Message {
+        imageName?.let {
             return createMessage(
-                type = MessageType.IMAGE,
+                type = type,
                 username = username,
-                //base64Data = bitmap.toBase64(),
-                mediaId = imagePath
+                partNumber = partNumber,
+                dataSize = dataSize,
+                dataBuffer = byteBuffer,
+                mediaId = imageName,
+                date = date
             )
         } ?: throw Exception("Image message needs to have a full path.")
-    }
-
-    fun imageMessageParts(message: Message) {
-
     }
 
     /**
