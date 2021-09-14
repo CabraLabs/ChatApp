@@ -1,5 +1,6 @@
 package com.psandroidlabs.chatapp.fragments
 
+import android.graphics.Bitmap
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -50,6 +51,7 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private lateinit var imageUri: Uri
     private lateinit var imageName: String
+    private var imageBitmap: Bitmap? = null
 
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -79,21 +81,12 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.TakePicture()
     ) { isSaved ->
         if (isSaved) {
-            runBlocking {
-                launch(Dispatchers.Default) {
-                    val bitmap =
-                        PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)
-                    if (bitmap != null) {
-                        PictureManager.compressBitmap(bitmap, 40)
-                    }
-
-                    val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
-                    notifyAdapterChange(messageParts.first, false)
-
-                    messageParts.second.forEach {
-                        client.writeToSocket(it)
-                        checkDisconnected(true)
-                    }
+            launch(Dispatchers.Default) {
+                imageBitmap =
+                    PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)
+                val bitmap = imageBitmap
+                if (bitmap != null) {
+                    PictureManager.compressBitmap(bitmap, 40)
                 }
             }
         }
@@ -103,20 +96,14 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            runBlocking {
-                launch(Dispatchers.Default) {
-                    var bitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
+            launch(Dispatchers.Default) {
+                imageBitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
+                var bitmap = imageBitmap
+
+                if(bitmap != null) {
                     bitmap = PictureManager.compressBitmap(bitmap, 40)
                     imageName = PictureManager.setImageName()
                     PictureManager.bitmapToUri(bitmap, imageName)
-
-                    val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
-                    notifyAdapterChange(messageParts.first, false)
-
-                    messageParts.second.forEach {
-                        client.writeToSocket(it)
-                        checkDisconnected(true)
-                    }
                 }
             }
         }
@@ -492,9 +479,27 @@ class ChatFragment : Fragment(), CoroutineScope {
         imageName = PictureManager.setImageName()
         imageUri = PictureManager.createUri(imageName)
         registerTakePhoto.launch(imageUri)
+
+        val messageParts =
+            ChatManager.bufferedImageMessage(clientUsername, imageName)
+        notifyAdapterChange(messageParts.first, false)
+
+        messageParts.second.forEach {
+            client.writeToSocket(it)
+            checkDisconnected(true)
+        }
     }
 
     private fun choosePicture() {
         registerChoosePhoto.launch("image/")
+
+        val messageParts =
+            ChatManager.bufferedImageMessage(clientUsername, imageName)
+        notifyAdapterChange(messageParts.first, false)
+
+        messageParts.second.forEach {
+            client.writeToSocket(it)
+            checkDisconnected(true)
+        }
     }
 }
