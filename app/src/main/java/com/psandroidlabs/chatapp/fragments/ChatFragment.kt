@@ -377,9 +377,12 @@ class ChatFragment : Fragment(), CoroutineScope {
                 val messageParts = ChatManager.bufferedAudioMessage(clientUsername, audioName)
                 notifyAdapterChange(messageParts.first, false)
 
-                messageParts.second.forEach {
-                    client.writeToSocket(it)
-                    checkDisconnected(true)
+                launch(Dispatchers.Default) {
+                    messageParts.second.forEach {
+                        delay(50)
+                        client.writeToSocket(it)
+                        checkDisconnected(true)
+                    }
                 }
 
                 audioName = ""
