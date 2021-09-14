@@ -85,13 +85,11 @@ class ChatFragment : Fragment(), CoroutineScope {
                         PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)
                     if (bitmap != null) {
                         PictureManager.compressBitmap(bitmap, 40)
-                }
-            }
+                    }
 
-                val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
-                notifyAdapterChange(messageParts.first, false)
+                    val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
+                    notifyAdapterChange(messageParts.first, false)
 
-                launch(Dispatchers.Default) {
                     messageParts.second.forEach {
                         client.writeToSocket(it)
                         checkDisconnected(true)
@@ -111,16 +109,14 @@ class ChatFragment : Fragment(), CoroutineScope {
                     bitmap = PictureManager.compressBitmap(bitmap, 40)
                     imageName = PictureManager.setImageName()
                     PictureManager.bitmapToUri(bitmap, imageName)
-                }
-            }
 
-            val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
-            notifyAdapterChange(messageParts.first, false)
+                    val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
+                    notifyAdapterChange(messageParts.first, false)
 
-            launch(Dispatchers.Default) {
-                messageParts.second.forEach {
-                    client.writeToSocket(it)
-                    checkDisconnected(true)
+                    messageParts.second.forEach {
+                        client.writeToSocket(it)
+                        checkDisconnected(true)
+                    }
                 }
             }
         }
