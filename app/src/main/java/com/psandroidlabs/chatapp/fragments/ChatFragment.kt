@@ -79,14 +79,19 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.TakePicture()
     ) { isSaved ->
         if (isSaved) {
-            launch(Dispatchers.Default) {
-                val bitmap = PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)
-                if (bitmap != null) {
-                    PictureManager.compressBitmap(bitmap, 40)
+            runBlocking {
+                launch(Dispatchers.Default) {
+                    val bitmap =
+                        PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)
+                    if (bitmap != null) {
+                        PictureManager.compressBitmap(bitmap, 40)
+                }
+            }
 
-                    val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
-                    notifyAdapterChange(messageParts.first, false)
+                val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
+                notifyAdapterChange(messageParts.first, false)
 
+                launch(Dispatchers.Default) {
                     messageParts.second.forEach {
                         client.writeToSocket(it)
                         checkDisconnected(true)
@@ -100,20 +105,24 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
+            runBlocking {
+                launch(Dispatchers.Default) {
+                    var bitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
+                    bitmap = PictureManager.compressBitmap(bitmap, 40)
+                    imageName = PictureManager.setImageName()
+                    PictureManager.bitmapToUri(bitmap, imageName)
+                }
+            }
 
-                var bitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
-                bitmap = PictureManager.compressBitmap(bitmap, 40)
-                imageName = PictureManager.setImageName()
-                PictureManager.bitmapToUri(bitmap, imageName)
+            val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
+            notifyAdapterChange(messageParts.first, false)
 
-                val messageParts = ChatManager.bufferedImageMessage(clientUsername, imageName)
-                notifyAdapterChange(messageParts.first, false)
-
+            launch(Dispatchers.Default) {
                 messageParts.second.forEach {
                     client.writeToSocket(it)
                     checkDisconnected(true)
                 }
-
+            }
         }
     }
 
@@ -287,9 +296,10 @@ class ChatFragment : Fragment(), CoroutineScope {
                         duration = 200
                     }
 
-                    sendImageButton.animate().translationX(sendImageButton.width.toFloat() * 2).apply {
-                        duration = 200
-                    }
+                    sendImageButton.animate().translationX(sendImageButton.width.toFloat() * 2)
+                        .apply {
+                            duration = 200
+                        }
 
                     ChatManager.delay(200) {
                         if (messageField.text.toString() != "") {
