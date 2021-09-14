@@ -238,7 +238,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                     } catch (e: JsonDataException) {
                         Log.e("ClientViewModel", receivedJson)
                     } catch (e: JsonEncodingException) {
-                        Log.e("JsonEncodingException", receivedJson)
+                        if (receivedJson != Constants.PING) {
+                            Log.e("JsonEncodingException", receivedJson)
+                        }
                     }
                 }
             }
