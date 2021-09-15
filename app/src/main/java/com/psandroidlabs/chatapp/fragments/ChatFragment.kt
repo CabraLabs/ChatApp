@@ -50,7 +50,7 @@ class ChatFragment : Fragment(), CoroutineScope {
     private var audioName: String = ""
 
     private lateinit var imageUri: Uri
-    private lateinit var imageName: String
+    private var imageName = ""
     private var imageBitmap: Bitmap? = null
 
     private val chatNotification by lazy {
@@ -100,7 +100,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                 imageBitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
                 var bitmap = imageBitmap
 
-                if(bitmap != null) {
+                if (bitmap != null) {
                     bitmap = PictureManager.compressBitmap(bitmap, 40)
                     imageName = PictureManager.setImageName()
                     PictureManager.bitmapToUri(bitmap, imageName)
@@ -124,8 +124,6 @@ class ChatFragment : Fragment(), CoroutineScope {
             client.writeToSocket(ChatManager.leaveMessage(clientUsername))
             ChatManager.addToAdapter(message)
         }
-
-        client.closeSocket()
 
         if (arg.user == UserType.SERVER) {
             activity?.title = getString(R.string.server_app_bar_name)
@@ -375,10 +373,10 @@ class ChatFragment : Fragment(), CoroutineScope {
                 }
 
                 val messageParts = ChatManager.bufferedAudioMessage(clientUsername, audioName)
-                notifyAdapterChange(messageParts.first, false)
 
-                messageParts.second.forEach {
-                    client.writeToSocket(it)
+                launch(Dispatchers.Default) {
+                    notifyAdapterChange(messageParts.first, false)
+                    client.sendMultipart(messageParts.second)
                     checkDisconnected(true)
                 }
 
@@ -493,13 +491,15 @@ class ChatFragment : Fragment(), CoroutineScope {
     private fun choosePicture() {
         registerChoosePhoto.launch("image/")
 
-        val messageParts =
-            ChatManager.bufferedImageMessage(clientUsername, imageName)
-        notifyAdapterChange(messageParts.first, false)
+        if (imageName.isNotBlank()) {
+            val messageParts =
+                ChatManager.bufferedImageMessage(clientUsername, imageName)
+            notifyAdapterChange(messageParts.first, false)
 
-        messageParts.second.forEach {
-            client.writeToSocket(it)
-            checkDisconnected(true)
+            messageParts.second.forEach {
+                client.writeToSocket(it)
+                checkDisconnected(true)
+            }
         }
     }
 }

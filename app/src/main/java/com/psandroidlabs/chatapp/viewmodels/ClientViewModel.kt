@@ -202,6 +202,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                             MessageType.IMAGE_MULTIPART.code -> {
                                                 ChatManager.hashMapMutex.withLock {
                                                     launch(Dispatchers.Default) {
+                                                        delay(50)
                                                         processMultipart(
                                                             message,
                                                             MessageType.IMAGE_MULTIPART.code
@@ -238,42 +239,53 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                     } catch (e: JsonDataException) {
                         Log.e("ClientViewModel", receivedJson)
                     } catch (e: JsonEncodingException) {
-                        Log.e("JsonEncodingException", receivedJson)
+                        if (receivedJson != Constants.PING) {
+                            Log.e("JsonEncodingException", receivedJson)
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun processMultipart(message: Message, messageType: Int) {
-        if (message.partNumber != null) {
-            if (message.partNumber == 0) {
-                ChatManager.multipart[message.id] =
-                    Multipart(
-                        message.partNumber,
-                        ChatManager.deductTotalParts(message.dataSize),
-                        message.dataBuffer
-                    )
-            } else {
-                val value = ChatManager.multipart[message.id]
+    suspend inline fun sendMultipart(messageParts: ArrayList<Message>) {
+        messageParts.forEach {
+            delay(50)
+            writeToSocket(it)
+        }
+    }
 
-                value?.apply {
-                    actualPart = message.partNumber
-                    base64 += message.dataBuffer
-                }
+    private suspend fun processMultipart(message: Message, messageType: Int) {
+        withContext(Dispatchers.Default) {
+            if (message.partNumber != null) {
+                if (message.partNumber == 0) {
+                    ChatManager.multipart[message.id] =
+                        Multipart(
+                            message.partNumber,
+                            ChatManager.deductTotalParts(message.dataSize),
+                            message.dataBuffer
+                        )
+                } else {
+                    val value = ChatManager.multipart[message.id]
 
-                ChatManager.multipart[message.id] = value
-
-                if (value?.actualPart == value?.totalParts) {
-                    if (messageType == MessageType.IMAGE_MULTIPART.code) {
-                        val finalImage = ChatManager.createImage(message.id, message.username)
-                        updateMessage(finalImage)
-                    } else {
-                        val finalAudio = ChatManager.createAudio(message.id, message.username)
-                        updateMessage(finalAudio)
+                    value?.apply {
+                        actualPart = message.partNumber
+                        base64 += message.dataBuffer
                     }
 
-                    ChatManager.multipart.remove(message.id)
+                    ChatManager.multipart[message.id] = value
+
+                    if (value?.actualPart == value?.totalParts) {
+                        if (messageType == MessageType.IMAGE_MULTIPART.code) {
+                            val finalImage = ChatManager.createImage(message.id, message.username)
+                            updateMessage(finalImage)
+                        } else {
+                            val finalAudio = ChatManager.createAudio(message.id, message.username)
+                            updateMessage(finalAudio)
+                        }
+
+                        ChatManager.multipart.remove(message.id)
+                    }
                 }
             }
         }
