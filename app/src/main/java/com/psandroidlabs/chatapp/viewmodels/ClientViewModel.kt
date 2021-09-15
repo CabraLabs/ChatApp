@@ -224,7 +224,10 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                             }
                                         }
 
-                                        if (background) {
+                                        if (background &&
+                                            message.type != MessageType.IMAGE_MULTIPART.code &&
+                                            message.type != MessageType.AUDIO_MULTIPART.code
+                                        ) {
                                             chatNotification.sendMessage(
                                                 message.username ?: "",
                                                 message.text ?: ""

@@ -316,7 +316,7 @@ class ChatAdapter(
                     userAvatar.setImageBitmap(PictureManager.loadMyAvatar())
                 }
 
-                val bitmap = message?.mediaId?.let { PictureManager.getImage(it) }
+                val bitmap = message.mediaId?.let { PictureManager.getImage(it) }
 
                 if (bitmap != null) {
                     btnChatRowImage.setImageBitmap(bitmap)

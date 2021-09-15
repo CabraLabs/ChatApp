@@ -373,11 +373,10 @@ class ChatFragment : Fragment(), CoroutineScope {
                 }
 
                 val messageParts = ChatManager.bufferedAudioMessage(clientUsername, audioName)
+                notifyAdapterChange(messageParts.first, false)
 
                 launch(Dispatchers.Default) {
-                    notifyAdapterChange(messageParts.first, false)
                     client.sendMultipart(messageParts.second)
-                    checkDisconnected(true)
                 }
 
                 audioName = ""
@@ -396,8 +395,7 @@ class ChatFragment : Fragment(), CoroutineScope {
             client.writeToSocket(message)
 
             disableAttention()
-
-            checkDisconnected(true, message)
+            notifyAdapterChange(message)
         }
     }
 
@@ -408,21 +406,9 @@ class ChatFragment : Fragment(), CoroutineScope {
                     ChatManager.parseMessageType(clientUsername, getTextFieldString(), client.id)
                 client.writeToSocket(message)
 
-                checkDisconnected(true, message)
+                eraseTextField()
+                notifyAdapterChange(message)
             }
-        }
-    }
-
-    private fun checkDisconnected(success: Boolean, message: Message? = null) {
-        if (success) {
-            if (message != null) {
-                if (message.type != MessageType.AUDIO_MULTIPART.code && message.type != MessageType.IMAGE_MULTIPART.code) {
-                    eraseTextField()
-                    notifyAdapterChange(message)
-                }
-            }
-        } else {
-            disconnectedSnackBar()
         }
     }
 
@@ -446,6 +432,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
+    // TODO implement ping and use this function
     private fun disconnectedSnackBar() {
         disconnect = true
         disableChat(true)
@@ -484,7 +471,6 @@ class ChatFragment : Fragment(), CoroutineScope {
 
         messageParts.second.forEach {
             client.writeToSocket(it)
-            checkDisconnected(true)
         }
     }
 
@@ -498,7 +484,6 @@ class ChatFragment : Fragment(), CoroutineScope {
 
             messageParts.second.forEach {
                 client.writeToSocket(it)
-                checkDisconnected(true)
             }
         }
     }

@@ -123,6 +123,7 @@ class ServerService : Service(), CoroutineScope {
             while (isActive) {
                 if (scanner.hasNextLine()) {
                     val json = scanner.nextLine() + "\n"
+                    Log.d("Server received:", json)
 
                     try {
                         val message = ChatManager.serializeMessage(json)
