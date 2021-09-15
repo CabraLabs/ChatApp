@@ -1,6 +1,5 @@
 package com.psandroidlabs.chatapp.fragments
 
-import android.graphics.Bitmap
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -51,7 +50,6 @@ class ChatFragment : Fragment(), CoroutineScope {
 
     private lateinit var imageUri: Uri
     private var imageName = ""
-    private var imageBitmap: Bitmap? = null
 
     private val chatNotification by lazy {
         ChatNotificationManager(requireContext(), Constants.PRIMARY_CHAT_CHANNEL)
@@ -81,12 +79,29 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.TakePicture()
     ) { isSaved ->
         if (isSaved) {
-            launch(Dispatchers.Default) {
-                imageBitmap =
-                    PictureManager.getPhotoBitmap(imageUri, requireContext().contentResolver)
-                val bitmap = imageBitmap
+            launch(Dispatchers.Main) {
+                val resultBitmap = async {
+                    PictureManager.getPhotoBitmap(
+                        imageUri,
+                        requireContext().contentResolver
+                    )
+                }
+                var bitmap = resultBitmap.await()?.let { PictureManager.compressBitmap(it,1) }
+                bitmap = bitmap?.let { PictureManager.compressBitmap(it, 1) }
+
                 if (bitmap != null) {
-                    PictureManager.compressBitmap(bitmap, 40)
+                    if (imageName.isNotBlank()) {
+                        val messageParts =
+                            ChatManager.bufferedImageMessage(clientUsername, imageName)
+                        notifyAdapterChange(messageParts.first, false)
+
+                        withContext(Dispatchers.Default) {
+                            messageParts.second.forEach {
+                                delay(500)
+                                client.writeToSocket(it)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -96,14 +111,28 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            launch(Dispatchers.Default) {
-                imageBitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
-                var bitmap = imageBitmap
+            launch(Dispatchers.Main) {
+                val resultBitmap =
+                    async { PictureManager.uriToBitmap(uri, requireContext().contentResolver) }
+                var bitmap = resultBitmap.await()
 
-                if (bitmap != null) {
-                    bitmap = PictureManager.compressBitmap(bitmap, 40)
-                    imageName = PictureManager.setImageName()
-                    PictureManager.bitmapToUri(bitmap, imageName)
+                bitmap = PictureManager.compressBitmap(bitmap, 20)
+
+                imageName = PictureManager.setImageName()
+                PictureManager.bitmapToUri(bitmap, imageName)
+
+
+                if (imageName.isNotBlank()) {
+                    val messageParts =
+                        ChatManager.bufferedImageMessage(clientUsername, imageName)
+                    notifyAdapterChange(messageParts.first, false)
+
+                    withContext(Dispatchers.Default) {
+                        messageParts.second.forEach {
+                            delay(500)
+                            client.writeToSocket(it)
+                        }
+                    }
                 }
             }
         }
@@ -257,7 +286,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun onImageClick(name: String?, view: View) {
+    private fun onImageClick(name: String?) {
         if (name != null) {
             activity?.supportFragmentManager?.let { PictureManager.showDialogImage(name, it) }
         }
@@ -464,27 +493,9 @@ class ChatFragment : Fragment(), CoroutineScope {
         imageName = PictureManager.setImageName()
         imageUri = PictureManager.createUri(imageName)
         registerTakePhoto.launch(imageUri)
-
-        val messageParts =
-            ChatManager.bufferedImageMessage(clientUsername, imageName)
-        notifyAdapterChange(messageParts.first, false)
-
-        messageParts.second.forEach {
-            client.writeToSocket(it)
-        }
     }
 
     private fun choosePicture() {
         registerChoosePhoto.launch("image/")
-
-        if (imageName.isNotBlank()) {
-            val messageParts =
-                ChatManager.bufferedImageMessage(clientUsername, imageName)
-            notifyAdapterChange(messageParts.first, false)
-
-            messageParts.second.forEach {
-                client.writeToSocket(it)
-            }
-        }
     }
 }

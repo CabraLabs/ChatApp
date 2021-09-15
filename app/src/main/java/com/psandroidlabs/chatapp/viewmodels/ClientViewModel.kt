@@ -97,12 +97,12 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     fun writeToSocket(message: Message) {
         message.id = id
         val messageByte = ChatManager.parseToJson(message)
-        Log.d("Sent Message", messageByte)
 
         try {
             launch(Dispatchers.IO) {
                 outputMutex.withLock {
                     if (socketList.isNotEmpty()) {
+                        Log.d("Sent Message", messageByte)
                         socketList[0]?.getOutputStream()
                             ?.write(messageByte.toByteArray(Charsets.UTF_8))
                     }
@@ -202,7 +202,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                                             MessageType.IMAGE_MULTIPART.code -> {
                                                 ChatManager.hashMapMutex.withLock {
                                                     launch(Dispatchers.Default) {
-                                                        delay(50)
                                                         processMultipart(
                                                             message,
                                                             MessageType.IMAGE_MULTIPART.code

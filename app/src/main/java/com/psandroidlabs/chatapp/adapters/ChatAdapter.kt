@@ -23,7 +23,7 @@ import java.util.*
 
 
 class ChatAdapter(
-    private val dataSet: ArrayList<Message>, private val onImageClick: (String?, View) -> Unit
+    private val dataSet: ArrayList<Message>, private val onImageClick: (String?) -> Unit
 ) :
     RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
@@ -321,12 +321,12 @@ class ChatAdapter(
                 if (bitmap != null) {
                     btnChatRowImage.setImageBitmap(bitmap)
                     btnChatRowImage.setOnClickListener {
-                        onImageClick.invoke(message.mediaId, btnChatRowImage)
+                        onImageClick.invoke(message.mediaId)
                     }
                 } else {
                     btnChatRowImage.setImageResource(R.mipmap.ic_image_error)
                     btnChatRowImage.setOnClickListener {
-                        onImageClick.invoke(null, btnChatRowImage)
+                        onImageClick.invoke(null)
                     }
                 }
 
@@ -356,13 +356,13 @@ class ChatAdapter(
                         btnChatRowImage.setImageBitmap(bitmap)
 
                         btnChatRowImage.setOnClickListener {
-                            onImageClick.invoke(mediaId, btnChatRowImage)
+                            onImageClick.invoke(mediaId)
                         }
                     }
                 } else {
                     btnChatRowImage.setImageResource(R.mipmap.ic_image_error)
                     btnChatRowImage.setOnClickListener {
-                        onImageClick.invoke(null, btnChatRowImage)
+                        onImageClick.invoke(null)
                     }
                 }
 
