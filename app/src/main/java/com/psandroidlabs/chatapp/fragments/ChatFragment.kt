@@ -99,7 +99,6 @@ class ChatFragment : Fragment(), CoroutineScope {
                             messageParts.second.forEach {
                                 delay(500)
                                 client.writeToSocket(it)
-                                checkDisconnected(true)
                             }
                         }
                     }
@@ -132,7 +131,6 @@ class ChatFragment : Fragment(), CoroutineScope {
                         messageParts.second.forEach {
                             delay(500)
                             client.writeToSocket(it)
-                            checkDisconnected(true)
                         }
                     }
                 }
@@ -288,7 +286,7 @@ class ChatFragment : Fragment(), CoroutineScope {
         }
     }
 
-    private fun onImageClick(name: String?, view: View) {
+    private fun onImageClick(name: String?) {
         if (name != null) {
             activity?.supportFragmentManager?.let { PictureManager.showDialogImage(name, it) }
         }
