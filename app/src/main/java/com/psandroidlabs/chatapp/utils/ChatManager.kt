@@ -202,7 +202,6 @@ object ChatManager : CoroutineScope {
         var part = 0
 
         val base64 = PictureManager.getImage(imageName)?.toBase64()?: ""
-        val bitmap = PictureManager.getImage(imageName)
         var size = base64.length
 
         while(size > 0) {

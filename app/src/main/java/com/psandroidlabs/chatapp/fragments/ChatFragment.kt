@@ -96,9 +96,25 @@ class ChatFragment : Fragment(), CoroutineScope {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
+            var bitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
+            imageBitmap = bitmap
+
             launch(Dispatchers.Default) {
-                imageBitmap = PictureManager.uriToBitmap(uri, requireContext().contentResolver)
-                var bitmap = imageBitmap
+                val result = async() { PictureManager.compressBitmap(bitmap, 40) }
+                bitmap = result.await()
+                imageName = PictureManager.setImageName()
+                PictureManager.bitmapToUri(bitmap, imageName)
+
+                if (imageName.isNotBlank()) {
+                    val messageParts =
+                        ChatManager.bufferedImageMessage(clientUsername, imageName)
+                    notifyAdapterChange(messageParts.first, false)
+
+                    messageParts.second.forEach {
+                        delay(50)
+                        client.writeToSocket(it)
+                        checkDisconnected(true)
+                    }
 
                 if (bitmap != null) {
                     bitmap = PictureManager.compressBitmap(bitmap, 40)
@@ -464,27 +480,9 @@ class ChatFragment : Fragment(), CoroutineScope {
         imageName = PictureManager.setImageName()
         imageUri = PictureManager.createUri(imageName)
         registerTakePhoto.launch(imageUri)
-
-        val messageParts =
-            ChatManager.bufferedImageMessage(clientUsername, imageName)
-        notifyAdapterChange(messageParts.first, false)
-
-        messageParts.second.forEach {
-            client.writeToSocket(it)
-        }
     }
 
     private fun choosePicture() {
         registerChoosePhoto.launch("image/")
-
-        if (imageName.isNotBlank()) {
-            val messageParts =
-                ChatManager.bufferedImageMessage(clientUsername, imageName)
-            notifyAdapterChange(messageParts.first, false)
-
-            messageParts.second.forEach {
-                client.writeToSocket(it)
-            }
-        }
     }
 }
