@@ -103,11 +103,12 @@ class ServerService : Service(), CoroutineScope {
     private fun ping(user: User) {
         launch(Dispatchers.IO) {
             val bytePing = Constants.PING.toByteArray(Charsets.UTF_8)
+            val userSocket = user.socket.getOutputStream()
 
             while (isActive) {
                 delay(1000)
                 try {
-                    user.socket.getOutputStream()?.write(bytePing)
+                    userSocket.write(bytePing)
                 } catch (e: java.net.SocketException) {
                     removeSocket(user)
                     return@launch
@@ -139,7 +140,7 @@ class ServerService : Service(), CoroutineScope {
                             }
 
                             MessageType.TIC_INVITE.code -> {
-
+                                TODO()
                             }
 
                             else -> {
@@ -246,7 +247,7 @@ class ServerService : Service(), CoroutineScope {
         var id = codeGenerator()
 
         runBlocking {
-            launch(Dispatchers.IO) {
+            launch(Dispatchers.Default) {
                 listMutex.withLock {
                     userList.forEach { user ->
                         if (id == user.profile.id) {
@@ -268,7 +269,7 @@ class ServerService : Service(), CoroutineScope {
         val profileList: ArrayList<Profile> = arrayListOf()
 
         runBlocking {
-            launch(Dispatchers.IO) {
+            launch(Dispatchers.Default) {
                 listMutex.withLock {
                     userList.forEach { user ->
                         user.profile.let { profileList.add(it) }
