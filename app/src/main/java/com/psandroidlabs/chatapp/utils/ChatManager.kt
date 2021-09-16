@@ -31,7 +31,7 @@ object ChatManager : CoroutineScope {
     var chatList: ArrayList<Message> = ArrayList()
     var chatMembersList: ArrayList<Profile> = ArrayList()
 
-    val multipart: HashMap<Int?, Multipart?> = hashMapOf()
+    val multiPart: HashMap<Int?, Multi?> = hashMapOf()
     val hashMapMutex = Mutex()
 
     private val jsonAdapter by lazy {
@@ -249,9 +249,8 @@ object ChatManager : CoroutineScope {
         return 0
     }
 
-    fun createAudio(id: Int?, username: String?): Message {
-        val base64 = multipart[id]
-        val audioName = RecordAudioManager.base64toAudio(base64?.base64)
+    fun createAudio(base64: String, username: String?): Message {
+        val audioName = RecordAudioManager.base64toAudio(base64)
         if (username != null) {
             return audioMessage(MessageType.AUDIO, username, audioName)
         }
@@ -259,13 +258,13 @@ object ChatManager : CoroutineScope {
         throw Exception("Message needs to provide an username.")
     }
 
-    fun createImage(id: Int?, username: String?): Message {
-        val base64 = multipart[id]
-        val bitmap = base64?.base64?.let { PictureManager.base64ToBitmap(it) }
+    fun createImage(base64: String, username: String?): Message {
+        val bitmap = base64.let { PictureManager.base64ToBitmap(it) }
         val imageName = PictureManager.setImageName()
         if (bitmap != null) {
             PictureManager.bitmapToUri(bitmap, imageName)
         }
+
         if (username != null) {
             return imageMessage(MessageType.IMAGE, username, imageName)
         }
