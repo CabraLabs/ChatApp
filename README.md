@@ -17,7 +17,7 @@ people who have the app installed (or any compatible implementation of the proto
 It works via the standard IPv4:Port connection.
 
 ### License
-ChatApp is licensed under the BSD-3 clause [license](./LICENSE).
+ChatApp is licensed under the BSD 3-Clause [license](./LICENSE).
 
 ### Supported languages
 - English (US)

@@ -139,7 +139,7 @@ class ServerService : Service(), CoroutineScope {
                             }
 
                             MessageType.TIC_INVITE.code -> {
-
+                                TODO()
                             }
 
                             else -> {
@@ -246,7 +246,7 @@ class ServerService : Service(), CoroutineScope {
         var id = codeGenerator()
 
         runBlocking {
-            launch(Dispatchers.IO) {
+            launch(Dispatchers.Default) {
                 listMutex.withLock {
                     userList.forEach { user ->
                         if (id == user.profile.id) {
@@ -268,7 +268,7 @@ class ServerService : Service(), CoroutineScope {
         val profileList: ArrayList<Profile> = arrayListOf()
 
         runBlocking {
-            launch(Dispatchers.IO) {
+            launch(Dispatchers.Default) {
                 listMutex.withLock {
                     userList.forEach { user ->
                         user.profile.let { profileList.add(it) }

@@ -128,46 +128,11 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                         if (message != null) {
                             when (message.type) {
                                 MessageType.ACKNOWLEDGE.code -> {
-                                    if (message.text != null) {
-                                        try {
-                                            ChatManager.chatMembersList =
-                                                ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
-                                        } catch (e: JsonDataException) {
-                                            Log.e(
-                                                "Bad acknowledge profile list",
-                                                "Server sent an incorrect profile list: ${message.text}"
-                                            )
-                                        }
-                                    }
-
-                                    if (message.id != null) {
-                                        updateAccepted(AcceptedStatus.ACCEPTED)
-
-                                        id = message.id
-                                            ?: throw Exception(
-                                                "id cannot be changed to null, " +
-                                                        "it is useful to have it as nullable but" +
-                                                        " changing it's value to null is a mistake."
-                                            )
-                                    } else {
-                                        updateAccepted(AcceptedStatus.MISSING_ID)
-                                    }
+                                    accept(message)
                                 }
 
                                 MessageType.REVOKED.code -> {
-                                    when (message.id) {
-                                        AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(
-                                            AcceptedStatus.WRONG_PASSWORD
-                                        )
-                                        AcceptedStatus.SECURITY_KICK.code -> updateAccepted(
-                                            AcceptedStatus.SECURITY_KICK
-                                        )
-                                        AcceptedStatus.ADMIN_KICK.code -> updateAccepted(
-                                            AcceptedStatus.ADMIN_KICK
-                                        )
-                                    }
-
-                                    closeSocket()
+                                    revoke(message)
                                 }
 
                                 else -> {
@@ -250,6 +215,49 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         }
     }
 
+    private fun accept(message: Message) {
+        if (message.text != null) {
+            try {
+                ChatManager.chatMembersList =
+                    ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
+            } catch (e: JsonDataException) {
+                Log.e(
+                    "Bad acknowledge profile list",
+                    "Server sent an incorrect profile list: ${message.text}"
+                )
+            }
+        }
+
+        if (message.id != null) {
+            updateAccepted(AcceptedStatus.ACCEPTED)
+
+            id = message.id
+                ?: throw Exception(
+                    "id cannot be changed to null, " +
+                            "it is useful to have it as nullable but" +
+                            " changing it's value to null is a mistake."
+                )
+        } else {
+            updateAccepted(AcceptedStatus.MISSING_ID)
+        }
+    }
+
+    private fun revoke(message: Message) {
+        when (message.id) {
+            AcceptedStatus.WRONG_PASSWORD.code -> updateAccepted(
+                AcceptedStatus.WRONG_PASSWORD
+            )
+            AcceptedStatus.SECURITY_KICK.code -> updateAccepted(
+                AcceptedStatus.SECURITY_KICK
+            )
+            AcceptedStatus.ADMIN_KICK.code -> updateAccepted(
+                AcceptedStatus.ADMIN_KICK
+            )
+        }
+
+        closeSocket()
+    }
+
     suspend inline fun sendMultipart(messageParts: ArrayList<Message>) {
         messageParts.forEach {
             delay(50)
@@ -260,38 +268,75 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     private suspend fun processMultipart(message: Message, messageType: Int) {
         withContext(Dispatchers.Default) {
             if (message.partNumber != null) {
-                if (message.partNumber == 0) {
-                    ChatManager.multipart[message.id] =
-                        Multipart(
-                            message.partNumber,
-                            ChatManager.deductTotalParts(message.dataSize),
-                            message.dataBuffer
-                        )
-                } else {
-                    val value = ChatManager.multipart[message.id]
-
-                    value?.apply {
-                        actualPart = message.partNumber
-                        base64 += message.dataBuffer
+                if (ChatManager.multiPart.containsKey(message.id)) {
+                    ChatManager.multiPart[message.id]?.apply {
+                        parts.add(Part(message.partNumber, message.dataBuffer))
                     }
 
-                    ChatManager.multipart[message.id] = value
+                    if (ChatManager.multiPart[message.id]?.parts?.size == ChatManager.multiPart[message.id]?.totalParts) {
+                        val sortedBase64 = ChatManager.multiPart[message.id]?.parts?.sortedWith(compareBy { it.partNumber })
+                        var finalBase64 = ""
 
-                    if (value?.actualPart == value?.totalParts) {
+                        sortedBase64?.forEach {
+                            finalBase64 += it.base64
+                        }
+
                         if (messageType == MessageType.IMAGE_MULTIPART.code) {
-                            val finalImage = ChatManager.createImage(message.id, message.username)
+                            val finalImage = ChatManager.createImage(finalBase64, message.username)
                             updateMessage(finalImage)
                         } else {
-                            val finalAudio = ChatManager.createAudio(message.id, message.username)
+                            val finalAudio = ChatManager.createAudio(finalBase64, message.username)
                             updateMessage(finalAudio)
                         }
 
-                        ChatManager.multipart.remove(message.id)
+                        ChatManager.multiPart.remove(message.id)
                     }
+                } else {
+                    ChatManager.multiPart[message.id] =
+                        Multi(
+                            totalParts = ChatManager.deductTotalParts(message.dataSize),
+                            parts = arrayListOf()
+                        )
                 }
             }
         }
     }
+
+//    private suspend fun processMultipart(message: Message, messageType: Int) {
+//        withContext(Dispatchers.Default) {
+//            if (message.partNumber != null) {
+//                if (message.partNumber == 0) {
+//                    ChatManager.multipart[message.id] =
+//                        Multipart(
+//                            message.partNumber,
+//                            ChatManager.deductTotalParts(message.dataSize),
+//                            message.dataBuffer
+//                        )
+//                } else {
+//                    val value = ChatManager.multipart[message.id]
+//
+//                    value?.apply {
+//                        actualPart = message.partNumber
+//                        base64 += message.dataBuffer
+//                    }
+//
+//                    ChatManager.multipart[message.id] = value
+//
+//                    if (value?.actualPart == value?.totalParts) {
+//                        if (messageType == MessageType.IMAGE_MULTIPART.code) {
+//                            val finalImage = ChatManager.createImage(message.id, message.username)
+//                            updateMessage(finalImage)
+//                        } else {
+//                            val finalAudio = ChatManager.createAudio(message.id, message.username)
+//                            updateMessage(finalAudio)
+//                        }
+//
+//                        ChatManager.multipart.remove(message.id)
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     fun transformIp(text: String): InetAddress = InetAddress.getByName(text)
 
