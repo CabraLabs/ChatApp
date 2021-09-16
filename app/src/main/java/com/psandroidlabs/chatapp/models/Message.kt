@@ -45,7 +45,8 @@ data class TicTacToePlay(
     val opponentId: Int
 )
 
-data class Multipart(var actualPart: Int, val totalParts: Int, var base64: String?)
+data class Multi(val totalParts: Int, val parts: ArrayList<Part>)
+data class Part(val partNumber: Int, val base64: String?)
 
 data class User(
     val socket: Socket,
