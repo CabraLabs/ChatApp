@@ -103,12 +103,11 @@ class ServerService : Service(), CoroutineScope {
     private fun ping(user: User) {
         launch(Dispatchers.IO) {
             val bytePing = Constants.PING.toByteArray(Charsets.UTF_8)
-            val userSocket = user.socket.getOutputStream()
 
             while (isActive) {
                 delay(1000)
                 try {
-                    userSocket.write(bytePing)
+                    user.socket.getOutputStream()?.write(bytePing)
                 } catch (e: java.net.SocketException) {
                     removeSocket(user)
                     return@launch
