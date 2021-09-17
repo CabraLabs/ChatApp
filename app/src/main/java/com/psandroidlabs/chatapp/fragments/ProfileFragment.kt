@@ -46,7 +46,7 @@ class ProfileFragment : Fragment() {
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            var square = PictureManager.uriToBitmap(uri, requireContext().contentResolver ).toSquare()
+            var square = PictureManager.uriToBitmap(uri, requireContext().contentResolver).toSquare()
             square = square?.let { PictureManager.compressBitmap(it, 50) }
 
             imageName = PictureManager.setImageName()
@@ -105,20 +105,23 @@ class ProfileFragment : Fragment() {
                             imageName = PictureManager.setImageName()
                             PictureManager.bitmapToUri(bitmap, imageName)
                             activity?.supportFragmentManager?.let { it1 ->
-                                PictureManager.showDialogImage(imageName,
+                                PictureManager.showDialogImage(
+                                    imageName,
                                     it1
                                 )
                             }
                         } else {
                             activity?.supportFragmentManager?.let { it1 ->
-                                PictureManager.showDialogImage("",
+                                PictureManager.showDialogImage(
+                                    "",
                                     it1
                                 )
                             }
                         }
                     } else {
                         activity?.supportFragmentManager?.let { it1 ->
-                            PictureManager.showDialogImage(imageName,
+                            PictureManager.showDialogImage(
+                                imageName,
                                 it1
                             )
                         }
@@ -126,13 +129,13 @@ class ProfileFragment : Fragment() {
                 }
 
                 btnTakePhoto.setOnClickListener {
-                    if(ChatManager.requestPermission(activity, Manifest.permission.CAMERA, Constants.CAMERA_PERMISSION)){
+                    if (ChatManager.requestPermission(activity, Manifest.permission.CAMERA, Constants.CAMERA_PERMISSION)) {
                         takePhoto()
                     }
                 }
 
                 btnChoosePicture.setOnClickListener {
-                    if(ChatManager.requestPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, Constants.CHOOSE_IMAGE_GALLERY)){
+                    if (ChatManager.requestPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE, Constants.CHOOSE_IMAGE_GALLERY)) {
                         choosePicture()
                     }
                 }
@@ -144,7 +147,8 @@ class ProfileFragment : Fragment() {
                     if (imageName.isBlank()) {
                         imageName = PictureManager.setImageName()
                     }
-                    val uri = PictureManager.bitmapToUri(bitmap, imageName)
+
+                    PictureManager.bitmapToUri(bitmap, imageName)
                     AppPreferences.saveClient(
                         userNameField.text.toString(),
                         clientAvatar = imageName,

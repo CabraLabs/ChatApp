@@ -202,6 +202,8 @@ class ChatAdapter(
                 mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
             } catch (e: IllegalArgumentException) {
                 null
+            } catch (e: java.lang.RuntimeException) {
+                null
             }
         }
     }
@@ -301,6 +303,8 @@ class ChatAdapter(
 
                 mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
             } catch (e: IllegalArgumentException) {
+                null
+            } catch (e: java.lang.RuntimeException) {
                 null
             }
         }

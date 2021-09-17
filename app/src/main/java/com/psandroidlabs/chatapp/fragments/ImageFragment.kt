@@ -8,13 +8,13 @@ import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.psandroidlabs.chatapp.R
-import com.psandroidlabs.chatapp.databinding.FragmentImageBinding
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
+import com.psandroidlabs.chatapp.R
+import com.psandroidlabs.chatapp.databinding.FragmentImageBinding
 
 
-class ImageFragment (private val bitmap: Bitmap?) : DialogFragment() {
+class ImageFragment(private val bitmap: Bitmap?) : DialogFragment() {
 
     private lateinit var binding: FragmentImageBinding
 

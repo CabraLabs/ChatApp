@@ -5,7 +5,6 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.squareup.moshi.JsonClass
 import java.net.Socket
-import java.nio.ByteBuffer
 
 @Entity
 @JsonClass(generateAdapter = true)
@@ -45,7 +44,7 @@ data class TicTacToePlay(
     val opponentId: Int
 )
 
-data class Multi(val totalParts: Int, val parts: ArrayList<Part>)
+data class Multi(val totalParts: Int, val parts: ArrayList<Part>?)
 data class Part(val partNumber: Int, val base64: String?)
 
 data class User(

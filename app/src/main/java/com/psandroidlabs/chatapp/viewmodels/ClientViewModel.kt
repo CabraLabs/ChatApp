@@ -102,25 +102,25 @@ class ClientViewModel : ViewModel(), CoroutineScope {
             launch(Dispatchers.IO) {
                 outputMutex.withLock {
                     if (socketList.isNotEmpty()) {
-                        Log.d("Sent Message", messageByte)
+                        Log.d("Client sent", messageByte)
                         socketList[0]?.getOutputStream()
                             ?.write(messageByte.toByteArray(Charsets.UTF_8))
                     }
                 }
             }
         } catch (e: java.net.SocketException) {
-            Log.e("Cant send client message", "Error")
+            Log.e("Client cant send message", "Error")
         }
     }
 
     fun readSocket() {
-        GlobalScope.launch(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
             val scanner = Scanner(socketList[0]?.getInputStream())
 
             while (isActive && running) {
                 if (scanner.hasNextLine()) {
                     val receivedJson = scanner.nextLine()
-                    Log.d("Received Json", receivedJson)
+                    Log.d("Client received", receivedJson)
 
                     try {
                         val message = ChatManager.serializeMessage(receivedJson)
@@ -204,11 +204,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             }
                         }
                     } catch (e: JsonDataException) {
-                        Log.e("ClientViewModel", receivedJson)
+                        Log.e("Client JsonDataException", receivedJson)
                     } catch (e: JsonEncodingException) {
-                        if (receivedJson != Constants.PING) {
-                            Log.e("JsonEncodingException", receivedJson)
-                        }
+                        Log.e("Client JsonEncodingException", receivedJson)
                     }
                 }
             }
@@ -222,7 +220,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                     ChatManager.serializeProfiles(message.text) as ArrayList<Profile>
             } catch (e: JsonDataException) {
                 Log.e(
-                    "Bad acknowledge profile list",
+                    "Client bad profile list",
                     "Server sent an incorrect profile list: ${message.text}"
                 )
             }
@@ -234,8 +232,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
             id = message.id
                 ?: throw Exception(
                     "id cannot be changed to null, " +
-                            "it is useful to have it as nullable but" +
-                            " changing it's value to null is a mistake."
+                            "it is useful to have it as nullable but " +
+                            " hanging it's value to null is a mistake."
                 )
         } else {
             updateAccepted(AcceptedStatus.MISSING_ID)
@@ -269,9 +267,8 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         withContext(Dispatchers.Default) {
             if (message.partNumber != null) {
                 if (ChatManager.multiPart.containsKey(message.id)) {
-                    ChatManager.multiPart[message.id]?.apply {
-                        parts.add(Part(message.partNumber, message.dataBuffer))
-                    }
+                    ChatManager.multiPart[message.id]?.parts?.add(Part(message.partNumber, message.dataBuffer))
+                    Log.d("Client audio", "RECEIVED PART ${message.partNumber}")
 
                     if (ChatManager.multiPart[message.id]?.parts?.size == ChatManager.multiPart[message.id]?.totalParts) {
                         val sortedBase64 = ChatManager.multiPart[message.id]?.parts?.sortedWith(compareBy { it.partNumber })
@@ -279,12 +276,14 @@ class ClientViewModel : ViewModel(), CoroutineScope {
 
                         sortedBase64?.forEach {
                             finalBase64 += it.base64
+                            Log.d("Client audio", "CONCAT ${it.partNumber}")
                         }
 
                         if (messageType == MessageType.IMAGE_MULTIPART.code) {
                             val finalImage = ChatManager.createImage(finalBase64, message.username)
                             updateMessage(finalImage)
                         } else {
+                            Log.d("Client audio", "CREATING AUDIO")
                             val finalAudio = ChatManager.createAudio(finalBase64, message.username)
                             updateMessage(finalAudio)
                         }
@@ -295,8 +294,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                     ChatManager.multiPart[message.id] =
                         Multi(
                             totalParts = ChatManager.deductTotalParts(message.dataSize),
-                            parts = arrayListOf()
+                            parts = arrayListOf(Part(message.partNumber, message.dataBuffer))
                         )
+                    Log.d("Client audio", "RECEIVED PART ${message.partNumber}")
                 }
             }
         }

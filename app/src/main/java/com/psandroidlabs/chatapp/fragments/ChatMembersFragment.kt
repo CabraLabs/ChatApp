@@ -27,11 +27,11 @@ class ChatMembersFragment : DialogFragment() {
                 .setView(binding.root)
                 .setPositiveButton(
                     R.string.tictactoe_invite
-                ) { dialog, id ->
+                ) { _, _ ->
                 }
                 .setNegativeButton(
                     R.string.cancel
-                ) { dialog, id ->
+                ) { _, _ ->
                 }
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")

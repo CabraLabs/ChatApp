@@ -1,7 +1,6 @@
 package com.psandroidlabs.chatapp.utils
 
 import android.content.ContentResolver
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
@@ -11,14 +10,10 @@ import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import android.util.Base64
 import androidx.core.content.FileProvider
-import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.FragmentManager
 import com.psandroidlabs.chatapp.MainApplication
 import com.psandroidlabs.chatapp.fragments.ImageFragment
 import java.io.*
-import java.lang.Exception
-import java.net.URL
-import java.nio.channels.FileChannel
 import java.util.*
 
 object PictureManager {
@@ -99,14 +94,6 @@ object PictureManager {
         return "${UUID.randomUUID()}.jpg"
     }
 
-    fun imageDir(name: String): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            File(MainApplication.applicationContext().getExternalFilesDir(Constants.IMAGE_DIR), name).toString()
-        } else {
-            File(MainApplication.applicationContext().cacheDir, name).toString()
-        }
-    }
-
     fun getImage(name: String): Bitmap? {
         val file =
             File(
@@ -153,13 +140,13 @@ object PictureManager {
         }
     }
 
-    fun getPhotoBitmap (uri: Uri, contentResolver: ContentResolver): Bitmap? {
+    fun getPhotoBitmap(uri: Uri, contentResolver: ContentResolver): Bitmap? {
         try {
             val parcelFileDescriptor: ParcelFileDescriptor? = contentResolver.openFileDescriptor(uri, "r")
             val fileDescriptor: FileDescriptor? = parcelFileDescriptor?.fileDescriptor
-            return BitmapFactory.decodeFileDescriptor(fileDescriptor)
-
             parcelFileDescriptor?.close()
+
+            return BitmapFactory.decodeFileDescriptor(fileDescriptor)
         } catch (e: IOException) {
             e.printStackTrace()
         }
