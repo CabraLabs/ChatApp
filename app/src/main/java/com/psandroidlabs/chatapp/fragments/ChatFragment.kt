@@ -86,7 +86,7 @@ class ChatFragment : Fragment(), CoroutineScope {
                         requireContext().contentResolver
                     )
                 }
-                var bitmap = resultBitmap.await()?.let { PictureManager.compressBitmap(it,1) }
+                var bitmap = resultBitmap.await()?.let { PictureManager.compressBitmap(it, 1) }
                 bitmap = bitmap?.let { PictureManager.compressBitmap(it, 1) }
 
                 if (bitmap != null) {
