@@ -38,8 +38,6 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     private val parentJob = Job()
     override val coroutineContext = parentJob + Dispatchers.IO
 
-    private val outputMutex = Mutex()
-
     private lateinit var userName: String
     var id = 0
 
@@ -94,18 +92,17 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         }
     }
 
+    @Synchronized
     fun writeToSocket(message: Message) {
         message.id = id
         val messageByte = ChatManager.parseToJson(message)
 
         try {
             launch(Dispatchers.IO) {
-                outputMutex.withLock {
-                    if (socketList.isNotEmpty()) {
-                        Log.d("Client sent", messageByte)
-                        socketList[0]?.getOutputStream()
-                            ?.write(messageByte.toByteArray(Charsets.UTF_8))
-                    }
+                if (socketList.isNotEmpty()) {
+                    Log.d("Client sent", messageByte)
+                    socketList[0]?.getOutputStream()
+                        ?.write(messageByte.toByteArray(Charsets.UTF_8))
                 }
             }
         } catch (e: java.net.SocketException) {
@@ -256,7 +253,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         closeSocket()
     }
 
-    suspend inline fun sendMultipart(messageParts: ArrayList<Message>) {
+    suspend inline fun sendMultipart(messageParts: ArrayList<Message>) = withContext(Dispatchers.Default) {
         messageParts.forEach {
             delay(50)
             writeToSocket(it)
