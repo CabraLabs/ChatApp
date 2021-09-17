@@ -235,25 +235,23 @@ class ServerService : Service(), CoroutineScope {
             listMutex.withLock {
                 userList.forEach { user ->
                     try {
-                        when {
-                            ping -> {
-                                user.socket.getOutputStream().write(bytePing)
-                                Log.d("Server sent", "PING MESSAGE")
-                            }
+                        if (!accept) {
+                            when {
+                                ping -> {
+                                    user.socket.getOutputStream().write(bytePing)
+                                    Log.d("Server sent", "PING MESSAGE")
+                                }
 
-                            socket != null && message != null && !accept -> {
-                                if (user.socket.inetAddress != socket.inetAddress) {
-                                    user.socket.getOutputStream()?.write(message)
-                                    Log.d("Server sent", "NORMAL MESSAGE")
+                                socket != null && message != null && !accept -> {
+                                    if (user.socket.inetAddress != socket.inetAddress) {
+                                        user.socket.getOutputStream()?.write(message)
+                                        Log.d("Server sent", "NORMAL MESSAGE")
+                                    }
                                 }
                             }
-
-                            socket != null && message != null && accept -> {
-                                if (user.socket.inetAddress == socket.inetAddress) {
-                                    user.socket.getOutputStream()?.write(message)
-                                    Log.d("Server sent", "ACCEPTED/REVOKED MESSAGE")
-                                }
-                            }
+                        } else {
+                            user.socket.getOutputStream()?.write(message)
+                            Log.d("Server sent", "ACCEPTED/REVOKED MESSAGE")
                         }
                     } catch (e: java.net.SocketException) {
                         removeSocket(user)
