@@ -2,7 +2,6 @@ package com.psandroidlabs.chatapp.utils
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.os.Build
 import android.util.Base64
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -10,7 +9,6 @@ import androidx.fragment.app.Fragment
 import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
-import java.util.*
 import kotlin.math.min
 
 
@@ -18,10 +16,6 @@ fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_LONG) {
     context?.let {
         Toast.makeText(it, text, duration).show()
     } ?: Toast.makeText(applicationContext(), text, duration).show()
-}
-
-fun Any.toast(text: String, duration: Int = Toast.LENGTH_LONG) {
-    Toast.makeText(applicationContext(), text, duration).show()
 }
 
 fun Fragment.hideKeyboard() {
@@ -53,8 +47,8 @@ fun Bitmap.toSquare(): Bitmap? {
 }
 
 fun Bitmap.toBase64(): String {
-    val baos = ByteArrayOutputStream()
-    this.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-    val b = baos.toByteArray()
+    val byteOutput = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.JPEG, 100, byteOutput)
+    val b = byteOutput.toByteArray()
     return Base64.encodeToString(b, Base64.NO_WRAP)
 }
