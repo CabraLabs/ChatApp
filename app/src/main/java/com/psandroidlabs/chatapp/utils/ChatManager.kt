@@ -244,7 +244,7 @@ object ChatManager : CoroutineScope {
 
     fun deductTotalParts(size: Long?): Int {
         if (size != null) {
-            return (size / 1024.0).toInt()
+            return (size / 1024.0).toInt() + 1
         }
         return 0
     }
