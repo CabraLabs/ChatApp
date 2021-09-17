@@ -149,11 +149,11 @@ class ServerService : Service(), CoroutineScope {
                         }
                     } catch (e: JsonDataException) {
                         Log.e(
-                            "ServerService",
+                            "Server received error",
                             "Json data error: $json"
                         )
                     } catch (e: JsonEncodingException) {
-                        Log.e("ServerService", "Json encoding error: $json")
+                        Log.e("Server received error", "Json encoding error: $json")
                     }
                 }
             }
@@ -220,11 +220,9 @@ class ServerService : Service(), CoroutineScope {
         ).toByteArray(Charsets.UTF_8)
 
         forwardMessage(socket = user.socket, message = json, accept = true)
-
         removeSocket(user)
     }
 
-    @Synchronized
     private fun forwardMessage(
         socket: Socket? = null,
         message: ByteArray? = null,
@@ -233,29 +231,25 @@ class ServerService : Service(), CoroutineScope {
     ) {
         launch(Dispatchers.IO) {
             listMutex.withLock {
-                userList.forEach { user ->
-                    try {
-                        if (!accept) {
-                            when {
-                                ping -> {
-                                    user.socket.getOutputStream().write(bytePing)
-                                    Log.d("Server sent", "PING MESSAGE")
-                                }
-
-                                socket != null && message != null && !accept -> {
-                                    if (user.socket.inetAddress != socket.inetAddress) {
-                                        user.socket.getOutputStream()?.write(message)
-                                        Log.d("Server sent", "NORMAL MESSAGE")
-                                    }
+                if (!accept) {
+                    userList.forEach { user ->
+                        try {
+                            if (ping) {
+                                user.socket.getOutputStream().write(bytePing)
+                                Log.d("Server sent", "PING MESSAGE")
+                            } else {
+                                if (user.socket.inetAddress != socket?.inetAddress) {
+                                    user.socket.getOutputStream()?.write(message)
+                                    Log.d("Server sent", "NORMAL MESSAGE")
                                 }
                             }
-                        } else {
-                            user.socket.getOutputStream()?.write(message)
-                            Log.d("Server sent", "ACCEPTED/REVOKED MESSAGE")
+                        } catch (e: java.net.SocketException) {
+                            removeSocket(user = user)
                         }
-                    } catch (e: java.net.SocketException) {
-                        removeSocket(user)
                     }
+                } else {
+                    socket?.getOutputStream()?.write(message)
+                    Log.d("Server sent", "ACCEPTED/REVOKED MESSAGE")
                 }
             }
         }
@@ -303,7 +297,6 @@ class ServerService : Service(), CoroutineScope {
         return ChatManager.parseProfileList(profileList)
     }
 
-    @Synchronized
     private fun removeSocket(user: User) {
         launch(Dispatchers.IO) {
             listMutex.withLock {
