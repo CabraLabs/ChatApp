@@ -60,7 +60,7 @@ class ChatNotificationManager(val context: Context, private val channel: String)
         val closeIntent = Intent(context, ActionManager::class.java).apply {
             action = Constants.ACTION_STOP
         }
-        val closePendingIntent: PendingIntent = PendingIntent.getBroadcast(context, 100, closeIntent, 0)
+        val closePendingIntent: PendingIntent = PendingIntent.getBroadcast(context, 100, closeIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val closeAction = NotificationCompat.Action.Builder(
             R.drawable.ic_stop,

@@ -87,7 +87,6 @@ class ClientConnectFragment : Fragment() {
     }
 
     private fun initializeButtons() {
-        //TODO args treatment deeplink
         with(binding) {
             loadPreferences()
 

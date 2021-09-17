@@ -8,7 +8,6 @@ import androidx.navigation.fragment.findNavController
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.databinding.FragmentHomeBinding
 import com.psandroidlabs.chatapp.utils.ChatManager
-import kotlinx.coroutines.delay
 
 
 class HomeFragment : Fragment() {
