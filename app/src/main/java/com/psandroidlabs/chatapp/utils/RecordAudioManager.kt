@@ -34,18 +34,22 @@ object RecordAudioManager {
         return Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
     }
 
-    fun base64toAudio(base64: String?): String {
-        val audio = Base64.decode(base64, Base64.NO_WRAP)
-        val audioName = nameAudio()
+    fun base64toAudio(base64: String?): String? {
+        return try {
+            val audio = Base64.decode(base64, Base64.NO_WRAP)
+            val audioName = nameAudio()
 
-        val filePath = audioDir(audioName)
+            val filePath = audioDir(audioName)
 
-        FileOutputStream(filePath).apply {
-            write(audio)
-            flush()
-            close()
+            FileOutputStream(filePath).apply {
+                write(audio)
+                flush()
+                close()
+            }
+
+            audioName
+        } catch (e: java.lang.IllegalArgumentException) {
+            null
         }
-
-        return audioName
     }
 }
