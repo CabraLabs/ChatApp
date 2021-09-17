@@ -11,16 +11,18 @@ import com.psandroidlabs.chatapp.MainApplication.Companion.applicationContext
 import com.psandroidlabs.chatapp.R
 import com.psandroidlabs.chatapp.models.*
 import com.psandroidlabs.chatapp.models.Message
-import com.squareup.moshi.*
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 object ChatManager : CoroutineScope {
@@ -159,10 +161,10 @@ object ChatManager : CoroutineScope {
         val base64 = RecordAudioManager.audioBase64(path)
         var size = base64.length
 
-        while(size > 0) {
+        while (size > 0) {
             val actualSize = part * 1024
             if (size >= 1024) {
-                val data = base64.slice(actualSize until (actualSize+1024))
+                val data = base64.slice(actualSize until (actualSize + 1024))
                 messageList.add(
                     audioMessage(
                         type = MessageType.AUDIO_MULTIPART,
@@ -201,13 +203,13 @@ object ChatManager : CoroutineScope {
         val messageList = arrayListOf<Message>()
         var part = 0
 
-        val base64 = PictureManager.getImage(imageName)?.toBase64()?: ""
+        val base64 = PictureManager.getImage(imageName)?.toBase64() ?: ""
         var size = base64.length
 
-        while(size > 0) {
+        while (size > 0) {
             val actualSize = part * 1024
             if (size >= 1024) {
-                val data = base64.slice(actualSize until (actualSize+1024))
+                val data = base64.slice(actualSize until (actualSize + 1024))
                 messageList.add(
                     imageMessage(
                         type = MessageType.IMAGE_MULTIPART,
@@ -249,10 +251,10 @@ object ChatManager : CoroutineScope {
         return 0
     }
 
-    fun createAudio(base64: String, username: String?): Message {
+    suspend fun createAudio(base64: String, username: String?): Message = withContext(Dispatchers.Default) {
         val audioName = RecordAudioManager.base64toAudio(base64)
         if (username != null) {
-            return audioMessage(MessageType.AUDIO, username, audioName)
+            return@withContext audioMessage(MessageType.AUDIO, username, audioName)
         }
 
         throw Exception("Message needs to provide an username.")
@@ -301,7 +303,7 @@ object ChatManager : CoroutineScope {
         id = id
     )
 
-    fun imageMessage(
+    private fun imageMessage(
         type: MessageType,
         username: String,
         imageName: String?,
