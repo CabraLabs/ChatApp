@@ -114,7 +114,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
     }
 
     fun readSocket() {
-        GlobalScope.launch(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
             val scanner = Scanner(socketList[0]?.getInputStream())
 
             while (isActive && running) {
@@ -204,11 +204,9 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                             }
                         }
                     } catch (e: JsonDataException) {
-                        Log.e("ClientViewModel", receivedJson)
+                        Log.e("JsonDataException", receivedJson)
                     } catch (e: JsonEncodingException) {
-                        if (receivedJson != Constants.PING) {
-                            Log.e("JsonEncodingException", receivedJson)
-                        }
+                        Log.e("JsonEncodingException", receivedJson)
                     }
                 }
             }
@@ -269,9 +267,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
         withContext(Dispatchers.Default) {
             if (message.partNumber != null) {
                 if (ChatManager.multiPart.containsKey(message.id)) {
-                    ChatManager.multiPart[message.id]?.apply {
-                        parts.add(Part(message.partNumber, message.dataBuffer))
-                    }
+                    ChatManager.multiPart[message.id]?.parts?.add(Part(message.partNumber, message.dataBuffer))
 
                     if (ChatManager.multiPart[message.id]?.parts?.size == ChatManager.multiPart[message.id]?.totalParts) {
                         val sortedBase64 = ChatManager.multiPart[message.id]?.parts?.sortedWith(compareBy { it.partNumber })
@@ -295,7 +291,7 @@ class ClientViewModel : ViewModel(), CoroutineScope {
                     ChatManager.multiPart[message.id] =
                         Multi(
                             totalParts = ChatManager.deductTotalParts(message.dataSize),
-                            parts = arrayListOf()
+                            parts = arrayListOf(Part(message.partNumber, message.dataBuffer))
                         )
                 }
             }
