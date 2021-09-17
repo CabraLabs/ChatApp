@@ -5,7 +5,6 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.squareup.moshi.JsonClass
 import java.net.Socket
-import java.nio.ByteBuffer
 
 @Entity
 @JsonClass(generateAdapter = true)
