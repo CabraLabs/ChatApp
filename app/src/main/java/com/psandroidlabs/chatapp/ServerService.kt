@@ -31,6 +31,8 @@ class ServerService : Service(), CoroutineScope {
     private val mutex = Mutex()
     private val listMutex = Mutex()
 
+    private val bytePing = Constants.PING.toByteArray(Charsets.UTF_8)
+
     private lateinit var serverSocket: ServerSocket
     private val userList: ArrayList<User> = arrayListOf()
 
@@ -76,6 +78,7 @@ class ServerService : Service(), CoroutineScope {
         launch(Dispatchers.IO) {
             serverSocket = ServerSocket(port)
             running = true
+            ping()
 
             while (isActive && count <= Constants.MAX_SERVER_USERS) {
                 try {
@@ -90,7 +93,6 @@ class ServerService : Service(), CoroutineScope {
                     }
 
                     socketListen(user)
-                    ping(user)
 
                     count++
                 } catch (e: java.net.SocketException) {
@@ -100,18 +102,11 @@ class ServerService : Service(), CoroutineScope {
         }
     }
 
-    private fun ping(user: User) {
+    private fun ping() {
         launch(Dispatchers.IO) {
-            val bytePing = Constants.PING.toByteArray(Charsets.UTF_8)
-
             while (isActive) {
-                delay(1000)
-                try {
-                    user.socket.getOutputStream()?.write(bytePing)
-                } catch (e: java.net.SocketException) {
-                    removeSocket(user)
-                    return@launch
-                }
+                delay(5000)
+                forwardMessage(ping = true)
             }
         }
     }
@@ -122,7 +117,9 @@ class ServerService : Service(), CoroutineScope {
 
             while (isActive) {
                 if (scanner.hasNextLine()) {
+                    scanner.reset()
                     val json = scanner.nextLine() + "\n"
+
                     Log.d("Server received:", json)
 
                     try {
@@ -135,7 +132,7 @@ class ServerService : Service(), CoroutineScope {
 
                             MessageType.LEAVE.code -> {
                                 removeSocket(user)
-                                forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
+                                forwardMessage(socket = user.socket, message = json.toByteArray(Charsets.UTF_8))
                             }
 
                             MessageType.TIC_INVITE.code -> {
@@ -146,7 +143,7 @@ class ServerService : Service(), CoroutineScope {
                                 if (message?.id != user.profile.id) {
                                     removeSocket(user)
                                 } else {
-                                    forwardMessage(user.socket, json.toByteArray(Charsets.UTF_8))
+                                    forwardMessage(socket = user.socket, message = json.toByteArray(Charsets.UTF_8))
                                 }
                             }
                         }
@@ -196,19 +193,21 @@ class ServerService : Service(), CoroutineScope {
             )
         ).toByteArray(Charsets.UTF_8)
 
-        user.socket.getOutputStream().write(json)
+        forwardMessage(socket = user.socket, message = json, accept = true)
         joinMessage.id = id
 
         if (user.socket.inetAddress == serverSocket.inetAddress) {
             joinMessage.join?.isAdmin = true
             forwardMessage(
-                user.socket,
-                ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8)
+                socket = user.socket,
+                message = ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8),
+                accept = false,
             )
         } else {
             forwardMessage(
-                user.socket,
-                ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8)
+                socket = user.socket,
+                message = ChatManager.parseToJson(joinMessage).toByteArray(Charsets.UTF_8),
+                accept = false,
             )
         }
     }
@@ -220,22 +219,44 @@ class ServerService : Service(), CoroutineScope {
             )
         ).toByteArray(Charsets.UTF_8)
 
-        user.socket.getOutputStream().write(json)
+        forwardMessage(socket = user.socket, message = json, accept = true)
 
         removeSocket(user)
     }
 
     @Synchronized
-    private fun forwardMessage(socket: Socket, message: ByteArray) {
+    private fun forwardMessage(
+        socket: Socket? = null,
+        message: ByteArray? = null,
+        ping: Boolean = false,
+        accept: Boolean = false
+    ) {
         launch(Dispatchers.IO) {
             listMutex.withLock {
                 userList.forEach { user ->
-                    if (user.socket.inetAddress != socket.inetAddress) {
-                        try {
-                            user.socket.getOutputStream()?.write(message)
-                        } catch (e: java.net.SocketException) {
-                            removeSocket(user)
+                    try {
+                        when {
+                            ping -> {
+                                user.socket.getOutputStream().write(bytePing)
+                                Log.d("Server sent", "PING MESSAGE")
+                            }
+
+                            socket != null && message != null && !accept -> {
+                                if (user.socket.inetAddress != socket.inetAddress) {
+                                    user.socket.getOutputStream()?.write(message)
+                                    Log.d("Server sent", "NORMAL MESSAGE")
+                                }
+                            }
+
+                            socket != null && message != null && accept -> {
+                                if (user.socket.inetAddress == socket.inetAddress) {
+                                    user.socket.getOutputStream()?.write(message)
+                                    Log.d("Server sent", "ACCEPTED/REVOKED MESSAGE")
+                                }
+                            }
                         }
+                    } catch (e: java.net.SocketException) {
+                        removeSocket(user)
                     }
                 }
             }
@@ -289,6 +310,7 @@ class ServerService : Service(), CoroutineScope {
         launch(Dispatchers.IO) {
             listMutex.withLock {
                 userList.remove(user)
+                Log.d("Server removing", "DISCONNECTING ${user.socket.inetAddress}")
             }
         }
     }
