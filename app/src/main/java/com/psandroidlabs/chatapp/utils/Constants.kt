@@ -2,8 +2,8 @@ package com.psandroidlabs.chatapp.utils
 
 object Constants {
     const val PASSWORD = "Password"
-    const val PORT = "Port"
 
+    const val PORT = "Port"
     const val PORT_1027 = 1027
     const val PORT_1028 = 1028
     const val PORT_1029 = 1029
