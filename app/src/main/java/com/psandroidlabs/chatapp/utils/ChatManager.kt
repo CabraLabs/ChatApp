@@ -28,7 +28,7 @@ import kotlin.collections.ArrayList
 object ChatManager : CoroutineScope {
 
     private val parentJob = Job()
-    override val coroutineContext = parentJob + Dispatchers.Main
+    override val coroutineContext = parentJob + Dispatchers.Default
 
     var chatList: ArrayList<Message> = ArrayList()
     var chatMembersList: ArrayList<Profile> = ArrayList()
