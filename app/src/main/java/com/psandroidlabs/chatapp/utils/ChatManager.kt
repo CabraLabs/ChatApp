@@ -28,7 +28,7 @@ import kotlin.collections.ArrayList
 object ChatManager : CoroutineScope {
 
     private val parentJob = Job()
-    override val coroutineContext = parentJob + Dispatchers.Main
+    override val coroutineContext = parentJob + Dispatchers.Default
 
     var chatList: ArrayList<Message> = ArrayList()
     var chatMembersList: ArrayList<Profile> = ArrayList()
@@ -162,9 +162,9 @@ object ChatManager : CoroutineScope {
         var size = base64.length
 
         while (size > 0) {
-            val actualSize = part * 1024
-            if (size >= 1024) {
-                val data = base64.slice(actualSize until (actualSize + 1024))
+            val actualSize = part * Constants.PART_BUFFER_SIZE
+            if (size >= Constants.PART_BUFFER_SIZE) {
+                val data = base64.slice(actualSize until (actualSize + Constants.PART_BUFFER_SIZE))
                 messageList.add(
                     audioMessage(
                         type = MessageType.AUDIO_MULTIPART,
@@ -192,7 +192,7 @@ object ChatManager : CoroutineScope {
             }
 
             part++
-            size -= 1024
+            size -= Constants.PART_BUFFER_SIZE
         }
 
         val fullMessage = audioMessage(MessageType.AUDIO, username, audioName)
@@ -207,9 +207,9 @@ object ChatManager : CoroutineScope {
         var size = base64.length
 
         while (size > 0) {
-            val actualSize = part * 1024
-            if (size >= 1024) {
-                val data = base64.slice(actualSize until (actualSize + 1024))
+            val actualSize = part * Constants.PART_BUFFER_SIZE
+            if (size >= Constants.PART_BUFFER_SIZE) {
+                val data = base64.slice(actualSize until (actualSize + Constants.PART_BUFFER_SIZE))
                 messageList.add(
                     imageMessage(
                         type = MessageType.IMAGE_MULTIPART,
@@ -237,7 +237,7 @@ object ChatManager : CoroutineScope {
             }
 
             part++
-            size -= 1024
+            size -= Constants.PART_BUFFER_SIZE
         }
 
         val fullMessage = imageMessage(MessageType.IMAGE, username, imageName)
@@ -246,7 +246,7 @@ object ChatManager : CoroutineScope {
 
     fun deductTotalParts(size: Long?): Int {
         if (size != null) {
-            return (size / 1024.0).toInt() + 1
+            return (size / Constants.PART_BUFFER_SIZE).toInt() + 1
         }
         return 0
     }

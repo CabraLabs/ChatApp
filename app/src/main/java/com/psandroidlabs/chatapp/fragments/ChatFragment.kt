@@ -95,11 +95,8 @@ class ChatFragment : Fragment(), CoroutineScope {
                             ChatManager.bufferedImageMessage(clientUsername, imageName)
                         notifyAdapterChange(messageParts.first, false)
 
-                        withContext(Dispatchers.Default) {
-                            messageParts.second.forEach {
-                                delay(500)
-                                client.writeToSocket(it)
-                            }
+                        launch(Dispatchers.Default) {
+                            client.sendMultipart(messageParts.second)
                         }
                     }
                 }
@@ -127,11 +124,8 @@ class ChatFragment : Fragment(), CoroutineScope {
                         ChatManager.bufferedImageMessage(clientUsername, imageName)
                     notifyAdapterChange(messageParts.first, false)
 
-                    withContext(Dispatchers.Default) {
-                        messageParts.second.forEach {
-                            delay(500)
-                            client.writeToSocket(it)
-                        }
+                    launch(Dispatchers.Default) {
+                        client.sendMultipart(messageParts.second)
                     }
                 }
             }
