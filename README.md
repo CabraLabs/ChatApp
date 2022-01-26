@@ -1,5 +1,5 @@
 ### ChatApp
-[Preview Images](./Preview.md)
+Look at the [Preview Images](./Preview.md).
 
 ChatApp is a simple local chat for Android. Features included in the chat are:
 - Text messages
@@ -11,10 +11,7 @@ ChatApp is a simple local chat for Android. Features included in the chat are:
 
 The app implements its own message protocol and uses JSON to send messages across connected members.
 
-ChatApp needs a host to work, anyone with the app installed can run the server (which is an android foreground service) and invite
-people who have the app installed (or any compatible implementation of the protocol) and are on the same local network.
-
-It works via the standard IPv4:Port connection.
+ChatApp needs a host to work, anyone with the app installed can run the server (which is an android foreground service) and send their IP and port to people who have the app installed.
 
 ### License
 ChatApp is licensed under the BSD 3-Clause [license](./LICENSE).
@@ -23,6 +20,5 @@ ChatApp is licensed under the BSD 3-Clause [license](./LICENSE).
 - English (US)
 - Portuguese (BR)
 
-### Protocol
-ChatApp protocol was self made and can be implemented anywhere so different devices can communicate with one another. You
-could create a CLI chat, or an iOS app or web application too.
+### Archive
+The project has been archived and will no longer receive updates, this was a study purpose project from begginer Android developers.
